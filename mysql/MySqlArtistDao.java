@@ -156,6 +156,29 @@ public class MySqlArtistDao {
 		}
 		return list.iterator().next();
 	}
+	
+	public Artist readByName(String artistName) throws PersistException {
+		List<Artist> list;
+		ResultSet selectedByName = null;
+		try {
+			statementSelectName.setString(1, artistName);
+			selectedByName = statementSelectName.executeQuery();
+			list = parseResultSet(selectedByName);
+		} catch (Exception e) {
+			throw new PersistException("Record with name = " + artistName
+					+ " not found.", e);
+		} finally{
+			try {
+			selectedByName.close();
+		} catch (Exception e){
+			throw new PersistException("Unable to close resourses. ", e);
+		}
+		}
+		if(list.isEmpty()) {
+			return new Artist();
+		}
+		return list.iterator().next();
+	}
 
 	public void update(Artist artist) throws PersistException {
 		try {
@@ -237,4 +260,6 @@ public class MySqlArtistDao {
 			throw new PersistException("Unable to set values to object", e);
 		}
 	}
+
+	
 }

@@ -16,6 +16,7 @@ public class MySqlArtDao {
 	private PreparedStatement statementSelectAll;
 	private PreparedStatement statementSelectArtistId;
 	private PreparedStatement statementSelectCategoryId;
+	private PreparedStatement statementSelectName;
 	private PreparedStatement statementSelectId;
 	private PreparedStatement statementDelete;
 	
@@ -29,6 +30,8 @@ public class MySqlArtDao {
 					+ "WHERE ARTIST_ID = ?;");
 			statementSelectCategoryId = connection.prepareStatement(getSelectQuery()
 					+ "WHERE CATEGORY_ID = ?;");
+			statementSelectName = connection.prepareStatement(getSelectQuery()
+					+ "WHERE ART_NAME = ?;");
 			statementSelectId = connection.prepareStatement(getSelectQuery()
 					+ "WHERE ID = ?;");
 			statementDelete = connection.prepareStatement(getDeleteQuery());
@@ -66,6 +69,11 @@ public class MySqlArtDao {
 		}
 		try {
 			statementSelectCategoryId.close();
+		} catch (Exception ex) {
+			e = ex;
+		}
+		try {
+			statementSelectName.close();
 		} catch (Exception ex) {
 			e = ex;
 		}
@@ -163,6 +171,31 @@ public class MySqlArtDao {
 		} catch (Exception e){
 			throw new PersistException("Unable to close resourses. ", e);
 		}
+		}
+		return list.iterator().next();
+	}
+	
+	public Art readByName(String artName) throws PersistException {
+		List<Art> list;
+		ResultSet selectedByName = null;
+		try {
+			statementSelectName.setString(1, artName);
+			selectedByName = statementSelectName.executeQuery();
+			list = parseResultSet(selectedByName);
+		} catch (Exception e) {
+			throw new PersistException("Record with PK = " + artName
+					+ " not found.", e);
+		} finally{
+			try {
+				if(selectedByName != null){
+				selectedByName.close();
+				}
+		} catch (Exception e){
+			throw new PersistException("Unable to close resourses. ", e);
+		}
+		}
+		if(list.isEmpty()) {
+			return new Art();
 		}
 		return list.iterator().next();
 	}
@@ -306,4 +339,6 @@ public class MySqlArtDao {
 			throw new PersistException("Unable to set values to object", e);
 		}
 	}
+
+	
 }
