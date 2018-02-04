@@ -34,437 +34,290 @@ public class ControllerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		processing(req, resp);
 	}
-		
+
 	public void processing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
-		Enumeration<String> en = req.getParameterNames();		
-		try {			
-			if(req.getSession().getAttribute("errorPage")!=null){
+		Enumeration<String> en = req.getParameterNames();
+		try {
+			if (req.getSession().getAttribute("errorPage") != null) {
 				getExceptionPage(req, resp);
-			// Главная страница
-			} else if (!en.hasMoreElements()||req.getParameter("Chaos")!=null) {
+				// Главная страница
+			} else if (!en.hasMoreElements() || req.getParameter("Chaos") != null) {
 				mainPageProcessing(req, resp);
-			// Страница конкретного арта
+				// Страница конкретного арта
 			} else if (req.getParameter("artId") != null) {
-				req.getSession().setAttribute("artId", req.getParameter("artId"));
 				artPageProcessing(req, resp);
-			// Главная страница с артами конкретной категории
+				// Главная страница с артами конкретной категории
 			} else if (req.getParameter("categoryId") != null) {
 				mainPageProcessing(req, resp);
-			// Форма Регистрации
-			} else if (req.getParameter("newAccount")!= null) {
+				// Форма Регистрации
+			} else if (req.getParameter("newAccount") != null) {
 				regFormProcessing(req, resp);
-			// Форма Login
-			} else if (req.getParameter("logIn")!= null) {
+				// Форма Login
+			} else if (req.getParameter("logIn") != null) {
 				loginFormProcessing(req, resp);
-			// Обработка формы добавления новой категории
-			} else if (req.getParameter("addCategory")!= null) {
+				// Обработка формы добавления новой категории
+			} else if (req.getParameter("addCategory") != null) {
 				addNewCategory(req, resp);
-			// Обработка формы добавления нового арта
-			} else if (req.getParameter("addArt")!= null) {
+				// Обработка формы добавления нового арта
+			} else if (req.getParameter("addArt") != null) {
 				addNewArt(req, resp);
-			// Обработка формы изменения арта
-			} else if (req.getParameter("updateArt")!= null) {
+				// Обработка формы изменения арта
+			} else if (req.getParameter("updateArt") != null) {
 				updateArt(req, resp);
-			// Обработка формы удаления арта
-			} else if (req.getParameter("deleteArt")!=null) {
-				deleteArt(req, resp);	
-			// Обработка формы добавления нового комментария
-			} else if (req.getParameter("newComment")!= null) {
-				addComment(req, resp);		
-			}				
+				// Обработка формы удаления арта
+			} else if (req.getParameter("deleteArt") != null) {
+				deleteArt(req, resp);
+				// Обработка формы добавления нового комментария
+			} else if (req.getParameter("newComment") != null) {
+				addComment(req, resp);
+			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			getExceptionPage(req, resp); // страница исключений
-		} 
-	}
-	
-	// Переход на главную страницу, исходя из роли пользователя
-	public void mainPageProcessing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
-			MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-			try{
-			PrintWriter pw = resp.getWriter();				
-			if (req.getSession().getAttribute("roleId")==null){	
-				// mainWithOutReg
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-				getCss("main", req, resp);
-				pw.println("</head>");
-				pw.println("<body>");
-				getHeader(req, resp); //header страницы			
-				pw.println("<div id=\"sidebar\">");
-				pw.println("<h3>Категории</h3>");
-				if(categoryDao.getAll()!=null) {
-				List<Category> categoryList = categoryDao.getAll();
-				for (Category c : categoryList) {
-					pw.println("<p><a id=\"link\" href=\"?categoryId=" + c.getId() + "\">" + c.getName() + "</a></p>");
-				}
-				}
-				pw.println("</div>");
-				pw.println("<div id=\"content\">");
-				List<Art> artList = artDao.getAll();
-				if (req.getParameter("categoryId") != null) {
-					String categoryId = req.getParameter("categoryId");
-					String categoryName = categoryDao.read(categoryId).getName();
-					pw.println("<h2>" + categoryName + "</h2>");
-					artList = artDao.getAllOfCat(categoryId);
-				}
-				for (Art art : artList) {
-					pw.println("<a id=\"img\" href=\"?artId=" + art.getId() + "\"><img src= \"" + art.getImage()
-							+ "\"height=\"300\"></a>");
-				}
-				pw.println("</div>");
-				getFooter(req, resp); // footer страницы
-				pw.println("</body>");
-			} else if (req.getSession().getAttribute("roleId").equals(1)) {
-					// mainAdmin				
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-					getCss("main", req, resp);				
-					pw.println("</head>");
-					pw.println("<body>");
-					getHeader(req, resp); //header страницы				
-					pw.println("<div id=\"sidebar\">");
-					pw.println("<h3>Категории</h3>");
-					if(categoryDao.getAll()!=null) {
-					List<Category> categoryList = categoryDao.getAll();					
-					for (Category c : categoryList) {
-						pw.println("<p><a id=\"link\" href=\"/Chaos/ControllerServlet?categoryId=" + c.getId() + "\">"
-								+ c.getName() + "</a></p>");
-					}
-					}
-					pw.println("<form name = \"addCategory\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Добавить категорию\">");
-					pw.println("</form>");
-					pw.println("</div>");
-					pw.println("<div id=\"content\">");
-					pw.println("<form name = \"addArt\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Добавить Арт\">");
-					pw.println("</form>");
-					List<Art> artList = artDao.getAll();
-					if (req.getParameter("categoryId") != null) {
-						String categoryId = req.getParameter("categoryId");
-						String categoryName = categoryDao.read(categoryId).getName();
-						pw.println("<h2>" + categoryName + "</h2>");
-						artList = artDao.getAllOfCat(categoryId);
-					}
-					for (Art art : artList) {
-						pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + art.getId() + "\"><img src= \""
-								+ art.getImage() + "\"height=\"300\"></a>");
-					}
-					pw.println("</div>");				
-					getFooter(req, resp); // footer страницы				
-					pw.println("</body>");
-				} else {
-					// mainUser				
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-					getCss("main", req, resp);					
-					pw.println("</head>");
-					pw.println("<body>");
-					getHeader(req, resp); //header страницы				
-					pw.println("<div id=\"sidebar\">");
-					pw.println("<h3>Категории</h3>");
-					if(categoryDao.getAll()!=null) {
-					List<Category> categoryList = categoryDao.getAll();
-					for (Category c : categoryList) {
-						pw.println("<p><a id=\"link\" href=\"/Chaos/ControllerServlet?categoryId=" + c.getId() + "\">"
-								+ c.getName() + "</a></p>");
-					}
-					}
-					pw.println("</div>");
-					pw.println("<div id=\"content\">");
-					List<Art> artList = artDao.getAll();
-					if (req.getParameter("categoryId") != null) {
-						String categoryId = req.getParameter("categoryId");
-						String categoryName = categoryDao.read(categoryId).getName();
-						pw.println("<h2>" + categoryName + "</h2>");
-						artList = artDao.getAllOfCat(categoryId);
-					}
-					for (Art art : artList) {
-						pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + art.getId() + "\"><img src= \""
-								+ art.getImage() + "\"height=\"300\"></a>");
-					}
-					pw.println("</div>");								
-					getFooter(req, resp); // footer страницы					
-					pw.println("</body>");
-				}			
-		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);		
-		} 
-	}
-	
-	// Переход на страницу конкретного арта, исходя из роли пользователя
-		public void artPageProcessing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {			
-			MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-			MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
-			MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
-			MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");		
-			try {
-				PrintWriter pw = resp.getWriter();
-				if (req.getSession().getAttribute("roleId")==null) {
-					// artWithOutReg
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-					getCss("art", req, resp);
-					pw.println("</head>");
-					pw.println("<body>");
-					getHeader(req, resp); //header страницы
-					String artId = req.getParameter("artId");
-					Art art = artDao.read(artId);
-					String artistId = art.getArtistId();
-					Artist artist = artistDao.read(artistId);
-					pw.println("<div id=\"content\">");
-					pw.println("<div id=\"art\">");
-					pw.println("<img src= \""+ art.getImage() +"\" height=55% >");
-					pw.println("</div>");
-					pw.println("<div id=\"comments\">");
-					pw.println("<h3>Комментарии</h3>");
-					pw.println("<table border=1>");
-					List<Comment> commentList = commentDao.getAll(artId);
-					for (Comment c : commentList) {
-						User u = userDao.read(c.getUserId());
-						pw.println("<tr>");
-						pw.println("<td id=\"td1\">" + u.getName() + "</td>");
-						pw.println("<td>" + c.getText() + "</td>");
-						pw.println("</tr>");
-					}
-					pw.println("</table>");
-					pw.println("</div>");
-					pw.println("</div>");
-					pw.println("<div id=\"sidebar\">");
-					pw.println("<h2>Еще работы от <a id=\"link\" href=\"\">" + artist.getName() + "</a></h2>");
-					List<Art> artList1 = artDao.getAll(artistId);
-					for (Art a : artList1) {
-						pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
-								+ a.getImage() + "\"height=\"120\"></a>");
-					}
-					pw.println("</div>");
-					getFooter(req, resp); // footer страницы
-					pw.println("</body>");													
-				} else if (req.getSession().getAttribute("roleId").equals(1)) {					 
-						// artAdmin
-						pw.println("<head>");
-						pw.println("<title>ChaosArt</title>");
-						pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-						getCss("art", req, resp);
-						pw.println("</head>");
-						pw.println("<body>");
-						getHeader(req, resp); //header страницы
-						String artId = req.getParameter("artId");
-						Art art = artDao.read(artId);
-						String artistId = art.getArtistId();
-						Artist artist = artistDao.read(artistId);
-						pw.println("<div id=\"content\">");
-						pw.println("<div id=\"art\">");
-						pw.println("<img src= \"" + art.getImage() + "\" height=55% >");
-						pw.println("<div id=\"buttons\">");
-						pw.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-						pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
-						pw.println("<input id=\"button\" type=\"submit\" name = \"deleteArt\" value=\"Удалить\">");
-						pw.println("</form>");
-						pw.println("</div>");
-						pw.println("</div>");					
-						pw.println("<div id=\"comments\">");
-						pw.println("<h3>Комментарии</h3>");
-						pw.println("<table>");
-						List<Comment> commentList = commentDao.getAll(artId);
-						for (Comment c : commentList) {
-							User u = userDao.read(c.getUserId());
-							pw.println("<tr>");
-							pw.println("<td id=\"td1\">" + u.getName() + "</td>");
-							pw.println("<td>" + c.getText() + "</td>");
-							pw.println("</tr>");
-						}
-						pw.println("</table>");
-						pw.println("<div id=\"form\">");
-						pw.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-						pw.println(
-								"<textarea rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
-						pw.println(
-								"<input id=\"button\" type=\"submit\" name = \"newComment\" value=\"Добавить комментарий\">");
-						pw.println("</div>");
-						pw.println("</div>");
-						pw.println("</div>");
-						pw.println("<div id=\"sidebar\">");
-						pw.println("<h2>Еще работы от  " + artist.getName() + "</h2>");
-						List<Art> artList = artDao.getAll(artistId);
-						for (Art a : artList) {
-							pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
-									+ a.getImage() + "\"height=\"120\"></a>");
-						}
-						pw.println("</div>");
-						getFooter(req, resp); // footer страницы						
-						pw.println("</body>");										
-					} else {
-						// artUser
-						pw.println("<head>");
-						pw.println("<title>ChaosArt</title>");
-						pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-						getCss("art", req, resp);						
-						pw.println("</head>");
-						pw.println("<body>");
-						getHeader(req, resp); //header страницы						
-						String artId = req.getParameter("artId");
-						Art art = artDao.read(artId);
-						Artist artist = artistDao.read(art.getArtistId());
-						pw.println("<div id=\"content\">");
-						pw.println("<div id=\"art\">");
-						pw.println("<img src= \"" + art.getImage() + "\" height=55% >");
-						pw.println("</div>");
-						pw.println("<div id=\"comments\">");
-						pw.println("<h3>Комментарии</h3>");
-						pw.println("<table>");
-						List<Comment> commentList = commentDao.getAll(artId);
-						for (Comment c : commentList) {
-							User u = userDao.read(c.getUserId());
-							pw.println("<tr>");
-							pw.println("<td id=\"td1\">" + u.getName() + "</td>");
-							pw.println("<td>" + c.getText() + "</td>");
-							pw.println("</tr>");
-						}
-						pw.println("</table>");
-						pw.println("<div id=\"form\">");
-						pw.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-						pw.println(
-								"<textarea rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
-						pw.println(
-								"<input id=\"button\" type=\"submit\" name = \"newComment\" value=\"Добавить комментарий\">");
-						pw.println("</div>");
-						pw.println("</div>");
-						pw.println("</div>");
-						pw.println("<div id=\"sidebar\">");
-						pw.println("<h2>Еще работы от  " + artist.getName() + "</h2>");
-						List<Art> artList = artDao.getAll(art.getArtistId());
-						for (Art a : artList) {
-							pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
-									+ a.getImage() + "\"height=\"120\"></a>");
-						}
-						pw.println("</div>");
-						getFooter(req, resp); // footer страницы						
-						pw.println("</body>");
-					}												
-			} catch (Exception e) {
-				req.getSession().setAttribute("errorPage", e); 
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-				requestDispatcher.forward(req, resp);
-			} 
 		}
-		
-	// Форма Регистрации
-	public void regFormProcessing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");	
+	}
+
+	// Переход на главную страницу, исходя из роли пользователя
+	public void mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
+		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
+		Integer roleId = (Integer) req.getSession().getAttribute("roleId");
 		try {
-			PrintWriter pw = resp.getWriter();		
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("main", req, resp);
+			pw.println("</head>");
+			pw.println("<body>");
+			getHeader(req, resp); // header страницы
+			pw.println("<div id=\"sidebar\">");
+			pw.println("<h3>Категории</h3>");
+			List<Category> categoryList = categoryDao.getAll();
+			for (Category c : categoryList) {
+				pw.println("<p><a id=\"link\" href=\"/Chaos/ControllerServlet?categoryId=" + c.getId() + "\">"
+						+ c.getName() + "</a></p>");
+			}
+			if (roleId != null && roleId.equals(1)) {
+				pw.println("<form name = \"addCategory\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Добавить категорию\">");
+				pw.println("</form>");
+			}
+			pw.println("</div>");
+			pw.println("<div id=\"content\">");
+			if (roleId != null && roleId.equals(1)) {
+				pw.println("<form name = \"addArt\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Добавить Арт\">");
+				pw.println("</form>");
+			}
+			List<Art> artList = artDao.getAll();
+			if (req.getParameter("categoryId") != null) {
+				String categoryId = req.getParameter("categoryId");
+				String categoryName = categoryDao.read(categoryId).getName();
+				pw.println("<h2>" + categoryName + "</h2>");
+				artList = artDao.getAllOfCat(categoryId);
+			}
+			for (Art art : artList) {
+				pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + art.getId() + "\"><img src= \""
+						+ art.getImage() + "\"height=\"300\"></a>");
+			}
+			pw.println("</div>");
+			getFooter(req, resp); // footer страницы
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
+	}
+
+	// Переход на страницу конкретного арта, исходя из роли пользователя
+	public void artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
+		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
+		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
+		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
+		String artId = req.getParameter("artId");
+		req.getSession().setAttribute("artId", artId);
+		Integer roleId = (Integer) req.getSession().getAttribute("roleId");
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("art", req, resp);
+			pw.println("</head>");
+			pw.println("<body>");
+			getHeader(req, resp); // header страницы
+			Art art = artDao.read(artId);
+			String artistId = art.getArtistId();
+			Artist artist = artistDao.read(artistId);
+			pw.println("<div id=\"content\">");
+			pw.println("<div id=\"art\">");
+			pw.println("<img src= \"" + art.getImage() + "\" height=55% >");
+			if (roleId != null && roleId.equals(1)) {
+				pw.println("<div id=\"buttons\">");
+				pw.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
+				pw.println("<input id=\"button\" type=\"submit\" name = \"deleteArt\" value=\"Удалить\">");
+				pw.println("</form>");
+				pw.println("</div>");
+			}
+			pw.println("</div>");
+			pw.println("<div id=\"comments\">");
+			pw.println("<h3>Комментарии</h3>");
+			pw.println("<table>");
+			List<Comment> commentList = commentDao.getAll(artId);
+			for (Comment c : commentList) {
+				User u = userDao.read(c.getUserId());
+				pw.println("<tr>");
+				pw.println("<td id=\"td1\">" + u.getName() + "</td>");
+				pw.println("<td>" + c.getText() + "</td>");
+				pw.println("</tr>");
+			}
+			pw.println("</table>");
+			if (roleId != null && (roleId.equals(1) || roleId.equals(2))) {
+				pw.println("<div id=\"form\">");
+				pw.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				pw.println(
+						"<textarea rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
+				pw.println(
+						"<input id=\"button\" type=\"submit\" name = \"newComment\" value=\"Добавить комментарий\">");
+				pw.println("</form>");
+				pw.println("</div>");
+			}
+			pw.println("</div>");
+			pw.println("</div>");
+			pw.println("<div id=\"sidebar\">");
+			pw.println("<h2>Еще работы от  " + artist.getName() + "</h2>");
+			List<Art> artList = artDao.getAll(artistId);
+			for (Art a : artList) {
+				pw.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
+						+ a.getImage() + "\"height=\"120\"></a>");
+			}
+			pw.println("</div>");
+			getFooter(req, resp); // footer страницы
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
+	}
+
+	// Форма Регистрации
+	public void regFormProcessing(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
+		try {
+			PrintWriter pw = resp.getWriter();
 			if (req.getParameter("newAccount").equals("Регистрация")) {
 				// registration
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-				getCss("registration", req, resp);
-				pw.println("<body>");
-				pw.println("<div id=\"registration-page\">");
-				pw.println("<div id=\"form\">");
-				pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<input type=\"text\" name = \"name\" placeholder=\"Имя\"/>");
-				pw.println("<input type=\"text\" name = \"surname\" placeholder=\"Фамилия\"/>");
-				pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
-				pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"newAccount\" value=\"Создать\">");
-				pw.println("<p id=\"message\">Уже зарегистрированы? "
-						+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<input id=\"link\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
-				pw.println("</form></p>");
-				pw.println("</body>");
+				getRegistrationPage(req, resp);
 			} else if (req.getParameter("newAccount").equals("Создать")) {
 				String name = req.getParameter("name");
 				String surname = req.getParameter("surname");
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
-				String hashCode = String.valueOf(password.hashCode());
-				String adminPassword = "Admin";
-				String adminHashCode = String.valueOf(adminPassword.hashCode());
-				User user = userDao.readByLogin(login);
-				if (user.getLogin() != null) {
-					pw.println("<h3>Пользователь с таким логином уже существует.</h3>");
-					// registration
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-					getCss("registration", req, resp);					
-					pw.println("<body>");
-					pw.println("<div id=\"registration-page\">");
-					pw.println("<div id=\"form\">");
-					pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input type=\"text\" name = \"name\" placeholder=\"Имя\"/>");
-					pw.println("<input type=\"text\" name = \"surname\" placeholder=\"Фамилия\"/>");
-					pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
-					pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"newAccount\" value=\"Создать\">");
-					pw.println("<p id=\"message\">Уже зарегистрированы? "
-							+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input id=\"link\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
-					pw.println("</form></p>");
-					pw.println("</body>");				
+				String password2 = req.getParameter("password2");
+				// Проверка валидности введенных данных
+				if (name.isEmpty() || login.isEmpty() || password.isEmpty() || password2.isEmpty()) {
+					pw.println("<h3>Необходимо заполнить все обязательные поля</h3>");
+					getRegistrationPage(req, resp);
+				} else if (!name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					pw.println("<h3>Проверьте правильность заполнения полей Имя и Фамилия.</h3>");
+					pw.println(
+							"<h3>(Введенные параметры должны состоять из букв латинского или русского алфавита,</h3>");
+					pw.println(
+							"<h3>начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)</h3>");
+					getRegistrationPage(req, resp);
+				} else if (login.matches("^[*№;%:#&\'\"!)(\\.,]+") || password.matches("^[*№;%:#&\'\"!)(\\.,]+")) {
+					pw.println("<h3>Проверьте правильность заполнения полей Логин и Пароль.</h3>");
+					pw.println("<h3>(не должны содержать символов *, №, ?, %, ;, |, /, \\, (, ), &, !)</h3>");
+					getRegistrationPage(req, resp);
+				} else if (!password.equals(password2)) {
+					pw.println("<h3>Пароли должны совпадать!</h3>");
+					getRegistrationPage(req, resp);
 				} else {
-					// устанавливаем параметры нового пользователя и создаем запись в БД
-					if (hashCode.equals(adminHashCode)) {
-						user.setRoleId(1);												
+					String hashCode = String.valueOf(password.hashCode());
+					String adminPassword = "Admin";
+					String adminHashCode = String.valueOf(adminPassword.hashCode());
+					User user = userDao.readByLogin(login);
+					if (user.getLogin() != null) {
+						pw.println("<h3>Пользователь с таким логином уже существует.</h3>");
+						// registration
+						getRegistrationPage(req, resp);
 					} else {
-						user.setRoleId(2);				
+						// устанавливаем параметры нового пользователя и создаем запись в БД
+						if (hashCode.equals(adminHashCode)) {
+							user.setRoleId(1);
+						} else {
+							user.setRoleId(2);
+						}
+						user.setName(name);
+						user.setSurname(surname);
+						user.setLogin(login);
+						user.setPassword(hashCode);
+						user = userDao.create(user);
+						// Создаем сессию и записываем в нее параметры пользователя
+						HttpSession session = req.getSession();
+						session.setAttribute("userId", user.getId());
+						session.setAttribute("roleId", user.getRoleId());
+						// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
+						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
-					user.setName(name);
-					user.setSurname(surname);
-					user.setLogin(login);
-					user.setPassword(hashCode);
-					user = userDao.create(user);
-					// Создаем сессию и записываем в нее параметры пользователя
-					HttpSession session = req.getSession();
-					session.setAttribute("userId", user.getId());
-					session.setAttribute("roleId", user.getRoleId());
-					// переходим на главную страницу
-					resp.sendRedirect("/Chaos/ControllerServlet");
-				}				
+				}
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		} 
+		}
+	}
+
+	public void getRegistrationPage(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("registration", req, resp);
+			pw.println("<body>");
+			pw.println("<div id=\"registration-page\">");
+			pw.println("<div id=\"form\">");
+			pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<input type=\"text\" name = \"name\" placeholder=\"Имя (обязательное поле)\"/>");
+			pw.println("<input type=\"text\" name = \"surname\" placeholder=\"Фамилия\"/>");
+			pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин (обязательное поле)\"/>");
+			pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль (обязательное поле)\"/>");
+			pw.println("<input type=\"password\" name = \"password2\" placeholder=\"Повторите пароль \"/>");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"newAccount\" value=\"Создать\">");
+			pw.println("<p id=\"message\">Уже зарегистрированы? "
+					+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<input id=\"link\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
+			pw.println("</form></p>");
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
 	}
 
 	// Форма Входа
-	public void loginFormProcessing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");	
+	public void loginFormProcessing(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		try {
 			PrintWriter pw = resp.getWriter();
 			if (req.getParameter("logIn").equals("Вход")) {
 				// login
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-				getCss("login", req, resp);				
-				pw.println("<body>");
-				pw.println("<div id=\"login-page\">");
-				pw.println("<div id=\"form\">");
-				pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
-				pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Войти\">");
-				pw.println("<p id=\"message\">Еще не зарегистрированы? "
-						+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<input id=\"link\" type=\"submit\" name = \"newAccount\" value=\"Регистрация\">");
-				pw.println("</form></p>");
-				pw.println("</form>");
-				pw.println("</body>");			
+				getLoginPage(req, resp);
 			} else if (req.getParameter("logIn").equals("Выйти")) {
 				HttpSession session = req.getSession();
 				session.removeAttribute("login");
@@ -480,43 +333,11 @@ public class ControllerServlet extends HttpServlet {
 				if (user.getLogin() == null) {
 					pw.println("<h3>Проверьте правильность написания логина.</h3>");
 					// login
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-					getCss("login", req, resp);					
-					pw.println("<body>");
-					pw.println("<div id=\"login-page\">");
-					pw.println("<div id=\"form\">");
-					pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
-					pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Войти\">");
-					pw.println("<p id=\"message\">Еще не зарегистрированы? "
-							+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input id=\"link\" type=\"submit\" name = \"newAccount\" value=\"Регистрация\">");
-					pw.println("</form></p>");
-					pw.println("</form>");
-					pw.println("</body>");				
+					getLoginPage(req, resp);
 				} else if (user.getPassword() != null && !hashCode.equals(user.getPassword())) {
 					pw.println("<h3>Проверьте правильность написания пароля.</h3>");
 					// login
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-					getCss("login", req, resp);					
-					pw.println("<body>");
-					pw.println("<div id=\"login-page\">");
-					pw.println("<div id=\"form\">");
-					pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
-					pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Войти\">");
-					pw.println("<p id=\"message\">Еще не зарегистрированы? "
-							+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<input id=\"link\" type=\"submit\" name = \"newAccount\" value=\"Регистрация\">");
-					pw.println("</form></p>");
-					pw.println("</form>");
-					pw.println("</body>");					
+					getLoginPage(req, resp);
 				} else {
 					String userId = String.valueOf(user.getId());
 					String adminPassword = "Admin";
@@ -526,7 +347,7 @@ public class ControllerServlet extends HttpServlet {
 					if (hashCode.equals(adminHashCode)) {
 						session.setAttribute("roleId", new Integer(1));
 						// переходим на главную страницу (mainAdmin)
-						resp.sendRedirect("/Chaos/ControllerServlet");		
+						resp.sendRedirect("/Chaos/ControllerServlet");
 					} else {
 						session.setAttribute("roleId", new Integer(2));
 						// переходим на главную страницу (mainUser)
@@ -535,7 +356,34 @@ public class ControllerServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
+	}
+
+	public void getLoginPage(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("login", req, resp);
+			pw.println("<body>");
+			pw.println("<div id=\"login-page\">");
+			pw.println("<div id=\"form\">");
+			pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<input type=\"text\" name = \"login\" placeholder=\"Логин\"/>");
+			pw.println("<input type=\"password\" name = \"password\" placeholder=\"Пароль\"/>");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Войти\">");
+			pw.println("<p id=\"message\">Еще не зарегистрированы? "
+					+ "<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<input id=\"link\" type=\"submit\" name = \"newAccount\" value=\"Регистрация\">");
+			pw.println("</form></p>");
+			pw.println("</form>");
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
 		}
@@ -548,56 +396,67 @@ public class ControllerServlet extends HttpServlet {
 			PrintWriter pw = resp.getWriter();
 			if (req.getParameter("addCategory").equals("Добавить категорию")) {
 				// addCategory
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-				getCss("addCategory", req, resp);			
-				pw.println("<body>");
-				pw.println("<div id=\"addCat-page\">");
-				pw.println("<div id=\"form\">");
-				pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<p id=\"message\">Введите название категории:</p>");
-				pw.println("<input type=\"text\" name = \"category\" placeholder=\"Название категории\"/>");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Создать\">");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Отмена\">");
-				pw.println("</form>");
-				pw.println("</body>");			
+				getAddCategoryPage(req, resp);
 			} else if (req.getParameter("addCategory").equals("Отмена")) {
 				// переходим на главную страницу (mainAdmin)
-				resp.sendRedirect("/Chaos/ControllerServlet");					
+				resp.sendRedirect("/Chaos/ControllerServlet");
 			} else if (req.getParameter("addCategory").equals("Создать")) {
 				String categoryName = req.getParameter("category");
-				Category category = categoryDao.readByName(categoryName);
-				if (category.getName()!=null) {
-					pw.println("<h3>Данная категория уже существует.</h3>");
-					// addCategory
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-					getCss("addCategory", req, resp);					
-					pw.println("<body>");
-					pw.println("<div id=\"addCat-page\">");
-					pw.println("<div id=\"form\">");
-					pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<p id=\"message\">Введите название категории:</p>");
-					pw.println("<input type=\"text\" name = \"category\" placeholder=\"Название категории\"/>");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Создать\">");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Отмена\">");
-					pw.println("</form>");
-					pw.println("</body>");			
+				// Валидация введенных данных
+				if (categoryName.isEmpty()) {
+					pw.println("<h3>Название категории не может быть пустым</h3>");
+					getAddCategoryPage(req, resp);
+				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					pw.println("<h3>Проверьте правильность заполнения поля Название категории.</h3>");
+					pw.println("<h3>(название должно состоять из букв латинского или русского алфавита,</h3>");
+					pw.println(
+							"<h3>начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)</h3>");
+					getAddCategoryPage(req, resp);
 				} else {
-					// устанавливаем параметры категории, записываем ее в БД
-					category.setName(categoryName);
-					categoryDao.create(category);
-					// переходим на главную страницу (mainAdmin)
-					resp.sendRedirect("/Chaos/ControllerServlet");	
+					Category category = categoryDao.readByName(categoryName);
+					if (category.getName() != null) {
+						pw.println("<h3>Данная категория уже существует.</h3>");
+						// addCategory
+						getAddCategoryPage(req, resp);
+					} else {
+						// устанавливаем параметры категории, записываем ее в БД
+						category.setName(categoryName);
+						categoryDao.create(category);
+						// переходим на главную страницу (mainAdmin)
+						resp.sendRedirect("/Chaos/ControllerServlet");
+					}
 				}
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		} 
+		}
+	}
+
+	public void getAddCategoryPage(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("addCategory", req, resp);
+			pw.println("<body>");
+			pw.println("<div id=\"addCat-page\">");
+			pw.println("<div id=\"form\">");
+			pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<p id=\"message\">Введите название категории:</p>");
+			pw.println("<input type=\"text\" name = \"category\" placeholder=\"Название категории\"/>");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Создать\">");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"addCategory\" value=\"Отмена\">");
+			pw.println("</form>");
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
 	}
 
 	// Форма Добавления нового арта
@@ -609,187 +468,231 @@ public class ControllerServlet extends HttpServlet {
 			PrintWriter pw = resp.getWriter();
 			if (req.getParameter("addArt").equals("Добавить Арт")) {
 				// addArt
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-				getCss("addArt", req, resp);			
-				pw.println("<body>");
-				pw.println("<div id=\"login-page\">");
-				pw.println("<div id=\"form\">");
-				pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				pw.println("<p id=\"message\">Введите параметры арта:</p>");
-				pw.println("<input type=\"text\" name = \"artName\" placeholder=\"Название арта\"/>");
-				pw.println("<input type=\"text\" name = \"artistName\" placeholder=\"Имя художника\"/>");
-				pw.println("<input type=\"text\" name = \"category\" placeholder=\"Категория\"/>");
-				pw.println("<input type=\"text\" name = \"originalURL\" placeholder=\"Ссылка на оригинал\"/>");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Создать\">");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Отмена\">");
-				pw.println("</form>");
-				pw.println("</body>");				
-			} else if (req.getParameter("addArt").equals("Отмена")) {								
+				getAddArtPage(req, resp);
+			} else if (req.getParameter("addArt").equals("Отмена")) {
 				// переходим на главную страницу (mainAdmin)
-				resp.sendRedirect("/Chaos/ControllerServlet");							
+				resp.sendRedirect("/Chaos/ControllerServlet");
 			} else if (req.getParameter("addArt").equals("Создать")) {
 				String artName = req.getParameter("artName");
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalURL = req.getParameter("originalURL");
-				Art art = artDao.readByName(artName);
-				if (art.getName()!=null) {
-					pw.println("<h3>Арт с таким названием уже существует.</h3>");
-					// addArt
-					pw.println("<head>");
-					pw.println("<title>ChaosArt</title>");
-					pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-					getCss("addArt", req, resp);				
-					pw.println("<body>");
-					pw.println("<div id=\"login-page\">");
-					pw.println("<div id=\"form\">");
-					pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-					pw.println("<p id=\"message\">Введите параметры арта:</p>");
-					pw.println("<input type=\"text\" name = \"artName\" placeholder=\"Название арта\"/>");
-					pw.println("<input type=\"text\" name = \"artistName\" placeholder=\"Имя художника\"/>");
-					pw.println("<input type=\"text\" name = \"category\" placeholder=\"Категория\"/>");
-					pw.println("<input type=\"text\" name = \"originalURL\" placeholder=\"Ссылка на оригинал\"/>");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Создать\">");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Отмена\">");
-					pw.println("</form>");
-					pw.println("</body>");					
+				// Валидация пользовательского ввода
+				if (artName.isEmpty() || artistName.isEmpty() || categoryName.isEmpty() || originalURL.isEmpty()) {
+					pw.println("<h3>Все поля обязательны к заполнению</h3>");
+					getAddArtPage(req, resp);
+				} else if (!artName.matches(".+\\.(jpg|png|jpeg|bmp|tif|gif)")) {
+					pw.println("<h3>Проверьте правильность заполнения поля Название арта.</h3>");
+					getAddArtPage(req, resp);
+				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					pw.println("<h3>Проверьте правильность заполнения поля Название категории.</h3>");
+					pw.println("<h3>(название должно состоять из букв латинского или русского алфавита,</h3>");
+					pw.println(
+							"<h3>начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)</h3>");
+					getAddArtPage(req, resp);
+				} else if (!originalURL.matches("^(?i)http://\\w+\\.(com|ru|by|ua|edu|gov|net|org)$")) {
+					pw.println("<h3>Проверьте правильность заполнения поля Ссылка на оригинал.</h3>");
+					getAddArtPage(req, resp);
 				} else {
-					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его 
-					Artist artist = artistDao.readByName(artistName);
-					if (artist.getName()==null) {
-						artist.setName(artistName);
-						artist = artistDao.create(artist);
-						art.setArtistId(artist.getId());
+					Art art = artDao.readByName(artName);
+					if (art.getName() != null) {
+						pw.println("<h3>Арт с таким названием уже существует.</h3>");
+						// addArt
+						getAddArtPage(req, resp);
 					} else {
-						art.setArtistId(artist.getId());
+						// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем
+						// его
+						Artist artist = artistDao.readByName(artistName);
+						if (artist.getName() == null) {
+							artist.setName(artistName);
+							artist = artistDao.create(artist);
+							art.setArtistId(artist.getId());
+						} else {
+							art.setArtistId(artist.getId());
+						}
+						// Получаем и устанавливаем id категории арта, если такой категории еще нет,
+						// создаем ее
+						Category cat = categoryDao.readByName(categoryName);
+						if (cat.getName() == null) {
+							cat.setName(categoryName);
+							cat = categoryDao.create(cat);
+							art.setCategoryId(cat.getId());
+						} else {
+							art.setCategoryId(cat.getId());
+						}
+						// Устанавливаем параметры арта, записываем его в БД
+						art.setName(artName);
+						art.setImage("img/content/" + artName);
+						art.setOriginalUrl(originalURL);
+						art = artDao.create(art);
+						// переходим на страницу созданного арта
+						RequestDispatcher requestDispatcher = req
+								.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
+						requestDispatcher.forward(req, resp);
 					}
-					// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
-					Category cat = categoryDao.readByName(categoryName);					
-					if (cat.getName()==null) {						
-						cat.setName(categoryName);
-						cat = categoryDao.create(cat);
-						art.setCategoryId(cat.getId());
-					} else {
-						art.setCategoryId(cat.getId());
-					}
-					// Устанавливаем параметры арта, записываем его в БД
-					art.setName(artName);
-					art.setImage("img/content/" + artName);
-					art.setOriginalUrl(originalURL);
-					art = artDao.create(art);
-					// переходим на страницу созданного арта
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+art.getId());
-					requestDispatcher.forward(req, resp);
 				}
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		} 
+		}
+	}
+
+	public void getAddArtPage(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("addArt", req, resp);
+			pw.println("<body>");
+			pw.println("<div id=\"login-page\">");
+			pw.println("<div id=\"form\">");
+			pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<p id=\"message\">Введите параметры арта:</p>");
+			pw.println("<input type=\"text\" name = \"artName\" placeholder=\"Название арта (формат: арт1.jpg)\"/>");
+			pw.println("<input type=\"text\" name = \"artistName\" placeholder=\"Имя художника\"/>");
+			pw.println("<input type=\"text\" name = \"category\" placeholder=\"Категория\"/>");
+			pw.println("<input type=\"text\" name = \"originalURL\" placeholder=\"Ссылка на оригинал\"/>");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Создать\">");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Отмена\">");
+			pw.println("</form>");
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
 	}
 
 	// Форма Изменения арта
 	public void updateArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
-		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");	
+		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			PrintWriter pw = resp.getWriter();
-			if (req.getParameter("updateArt").equals("Изменить")) {			
+			if (req.getParameter("updateArt").equals("Изменить")) {
 				// updateArt
-				pw.println("<head>");
-				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
-				getCss("updateArt", req, resp);		
-				pw.println("<body>");
-				pw.println("<div id=\"update-page\">");
-				pw.println("<div id=\"form\">");			
-				Art art = artDao.read(artId);
-				Artist artist = artistDao.read(art.getArtistId());
-				Category category = categoryDao.read(art.getCategoryId());
-				pw.println("<div id=\"content\">");
-				pw.println("<img src= \"" + art.getImage() + "\" width= \"100%\">");
-				pw.println("</div>");
-				pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");			
-				pw.println("<p id=\"message\">Имя автора:</p>");
-				pw.println("<input type=\"text\" name = \"artistName\" placeholder=\"" + artist.getName() + "\"/>");
-				pw.println("<p id=\"message\">Категория:</p>");
-				pw.println("<input type=\"text\" name = \"category\" placeholder=\"" + category.getName() + "\"/>");
-				pw.println("<p id=\"message\">Ссылка на оригинал:</p>");
-				pw.println(
-						"<input type=\"text\" name = \"originalURL\" placeholder=\"" + art.getOriginalUrl() + "\"/>");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Изменить Арт\">");
-				pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Отмена\">");
-				pw.println("</form>");
-				pw.println("</div>");
-				pw.println("</div>");
-				pw.println("</body>");			
+				getUpdateArtPage(req, resp);
 			} else if (req.getParameter("updateArt").equals("Отмена")) {
 				// возвращаемся на страницу арта (artAdmin)
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
-				requestDispatcher.forward(req, resp);							
-			} else if (req.getParameter("updateArt").equals("Изменить Арт")) {				
+				requestDispatcher.forward(req, resp);
+			} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalUrl = req.getParameter("originalURL");
 				Art art = artDao.read(artId);
 				if (!artistName.isEmpty()) {
-					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его 
+					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем
+					// его
 					Artist artist = artistDao.readByName(artistName);
-					if (artist.getName()==null) {
+					if (artist.getName() == null) {
 						artist.setName(artistName);
 						artist = artistDao.create(artist);
 						art.setArtistId(artist.getId());
 					} else {
 						art.setArtistId(artist.getId());
 					}
-				if (!categoryName.isEmpty()) {
-					// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
-					Category cat = categoryDao.readByName(categoryName);					
-					if (cat.getName()==null) {						
+				}
+				if (!categoryName.isEmpty()
+						&& (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)"))) {
+					// Получаем и устанавливаем id категории арта, если такой категории еще нет,
+					// создаем ее
+					Category cat = categoryDao.readByName(categoryName);
+					if (cat.getName() == null) {
 						cat.setName(categoryName);
 						cat = categoryDao.create(cat);
 						art.setCategoryId(cat.getId());
 					} else {
 						art.setCategoryId(cat.getId());
 					}
+				} else {
+					pw.println("<h3>Проверьте правильность заполнения поля Название категории.</h3>");
+					pw.println("<h3>(название должно состоять из букв латинского или русского алфавита,</h3>");
+					pw.println(
+							"<h3>начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)</h3>");
+					getUpdateArtPage(req, resp);
 				}
-				if (!originalUrl.isEmpty()) {
+				if (!originalUrl.isEmpty()
+						&& originalUrl.matches("^(?i)http://\\w+\\.(com|ru|by|ua|edu|gov|net|org)$")) {
 					art.setOriginalUrl(originalUrl);
+				} else {
+					pw.println("<h3>Проверьте правильность заполнения поля Ссылка на оригинал.</h3>");
+					getUpdateArtPage(req, resp);
 				}
 				artDao.update(art);
 				// переходим на обновленную страницу арта (artAdmin)
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
+				RequestDispatcher requestDispatcher = req
+						.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
 				requestDispatcher.forward(req, resp);
-				}				
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		} 
-	}	
+		}
+	}
+
+	public void getUpdateArtPage(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
+		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
+		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
+		String artId = (String) req.getSession().getAttribute("artId");
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<head>");
+			pw.println("<title>ChaosArt</title>");
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("updateArt", req, resp);
+			pw.println("<body>");
+			pw.println("<div id=\"update-page\">");
+			pw.println("<div id=\"form\">");
+			Art art = artDao.read(artId);
+			Artist artist = artistDao.read(art.getArtistId());
+			Category category = categoryDao.read(art.getCategoryId());
+			pw.println("<div id=\"content\">");
+			pw.println("<img src= \"" + art.getImage() + "\" width= \"100%\">");
+			pw.println("</div>");
+			pw.println("<form id=\"register-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			pw.println("<p id=\"message\">Имя автора:</p>");
+			pw.println("<input type=\"text\" name = \"artistName\" placeholder=\"" + artist.getName() + "\"/>");
+			pw.println("<p id=\"message\">Категория:</p>");
+			pw.println("<input type=\"text\" name = \"category\" placeholder=\"" + category.getName() + "\"/>");
+			pw.println("<p id=\"message\">Ссылка на оригинал:</p>");
+			pw.println("<input type=\"text\" name = \"originalURL\" placeholder=\"" + art.getOriginalUrl() + "\"/>");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Изменить Арт\">");
+			pw.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Отмена\">");
+			pw.println("</form>");
+			pw.println("</div>");
+			pw.println("</div>");
+			pw.println("</body>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
+	}
 
 	// Форма Удаления арта
 	public void deleteArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-		String artId = (String) req.getSession().getAttribute("artId");		
+		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			PrintWriter pw = resp.getWriter();
-			pw.println("1");
 			if (req.getParameter("deleteArt").equals("Удалить")) {
 				// deleteArt
 				pw.println("<head>");
 				pw.println("<title>ChaosArt</title>");
-				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-				getCss("deleteArt", req, resp);			
+				pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+				getCss("deleteArt", req, resp);
 				pw.println("<body>");
 				pw.println("<div id=\"delete-page\">");
-				pw.println("<div id=\"form\">");			
+				pw.println("<div id=\"form\">");
 				pw.println("<div id=\"content\">");
 				Art art = artDao.read(artId);
 				pw.println("<img src= \"" + art.getImage() + "\" width= \"100%\">");
@@ -801,43 +704,17 @@ public class ControllerServlet extends HttpServlet {
 				pw.println("<input id=\"button\" type=\"submit\" name = \"no\" value=\"Нет\"/>");
 				pw.println("</form>");
 				pw.println("</div>");
-				pw.println("</body>");			
-			} else if (req.getParameter("deleteArt").equals("Удалить арт")) {			
-				String yes = req.getParameter("yes");			
-				if (yes!= null) {				
+				pw.println("</body>");
+			} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
+				String yes = req.getParameter("yes");
+				if (yes != null) {
 					Art art = artDao.read(artId);
-					artDao.delete(art);				
+					artDao.delete(art);
 					req.getSession().removeAttribute("artId");
 					// переходим на главную страницу
 					resp.sendRedirect("/Chaos/ControllerServlet");
 				} else {
 					// возвращаемся на страницу арта (artAdmin)
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId);
-					requestDispatcher.forward(req, resp);
-				}								
-			}
-		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
-		} 
-	}
-
-	// Форма Добавления комментария
-	public void addComment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {		
-		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");		
-		try {
-			if (req.getParameter("newComment").equals("Добавить комментарий")) {
-				String userId = String.valueOf(req.getSession().getAttribute("userId"));
-				String comment = req.getParameter("comment");
-				String artId = req.getParameter("aartId");
-				Comment com = new Comment();
-				if (!comment.isEmpty()) {
-					com.setText(comment);
-					com.setUserId(userId);
-					com.setArtId(artId);
-					commentDao.create(com);
-					req.setAttribute("artId", artId);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
 					requestDispatcher.forward(req, resp);
 				}
@@ -846,73 +723,98 @@ public class ControllerServlet extends HttpServlet {
 			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		} 
+		}
 	}
-	
-	public void getHeader(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException  {	
-		try {			
-				PrintWriter pw = resp.getWriter();		
-				pw.println("<div id=\"header\">");
-				pw.println(
-						"<div id=\"logo\"><a href=\"/Chaos\"><img src='img/logo_2.png' height=\"70\" alt=\"logo\"></a></div>");
-				pw.println("<div id=\"rightsideofheader\">");
-				pw.println("<div id=\"rightLinks\">");
-				pw.println("<a href=\"/Chaos\">К Порядку</a>");
-				pw.println("<a href=\"/Chaos/ControllerServlet\">Главная</a>");
-				pw.println("</div>");
-				pw.println("<div id=\"rightTabs\">");			
-				pw.println("<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-				if(req.getSession().getAttribute("roleId")!=null){
-				pw.println("<input id=\"button\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
-				} else {
-					pw.println("<input id=\"button\" type=\"submit\" name=\"newAccount\" value=\"Регистрация\">");
-					pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
-					}
-				pw.println("</form>");
-				pw.println("</div>");
-				pw.println("</div>");
-				pw.println("</div>"); 
+
+	// Форма Добавления комментария
+	public void addComment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
+		try {
+			if (req.getParameter("newComment").equals("Добавить комментарий")) {
+				String userId = String.valueOf(req.getSession().getAttribute("userId"));
+				String comment = req.getParameter("comment");
+				String artId = (String) req.getSession().getAttribute("artId");
+				Comment com = new Comment();
+				if (!comment.isEmpty()) {
+					com.setText(comment);
+					com.setUserId(userId);
+					com.setArtId(artId);
+					commentDao.create(com);
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+					requestDispatcher.forward(req, resp);
+				}
+			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
-		}		
+		}
 	}
-	
-	public void getFooter(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
+
+	public void getHeader(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-			PrintWriter pw = resp.getWriter();		
-			pw.println("<div id=\"footer\">&copy; Balev</div>");			
+			PrintWriter pw = resp.getWriter();
+			pw.println("<div id=\"header\">");
+			pw.println(
+					"<div id=\"logo\"><a href=\"/Chaos\"><img src='img/logo_2.png' height=\"70\" alt=\"logo\"></a></div>");
+			pw.println("<div id=\"rightsideofheader\">");
+			pw.println("<div id=\"rightLinks\">");
+			pw.println("<a href=\"/Chaos\">К Порядку</a>");
+			pw.println("<a href=\"/Chaos/ControllerServlet\">Главная</a>");
+			pw.println("</div>");
+			pw.println("<div id=\"rightTabs\">");
+			pw.println("<form name = \"newAccount\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+			if (req.getSession().getAttribute("roleId") != null) {
+				pw.println("<input id=\"button\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
+			} else {
+				pw.println("<input id=\"button\" type=\"submit\" name=\"newAccount\" value=\"Регистрация\">");
+				pw.println("<input id=\"button\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
+			}
+			pw.println("</form>");
+			pw.println("</div>");
+			pw.println("</div>");
+			pw.println("</div>");
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 			
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);			
-		}		
+			requestDispatcher.forward(req, resp);
+		}
 	}
-	
-	public void getExceptionPage(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+	public void getFooter(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		try {
+			PrintWriter pw = resp.getWriter();
+			pw.println("<div id=\"footer\">&copy; Balev</div>");
+		} catch (Exception e) {
+			req.getSession().setAttribute("errorPage", e);
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
+			requestDispatcher.forward(req, resp);
+		}
+	}
+
+	public void getExceptionPage(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		PrintWriter pw;
 		try {
 			Exception e = (Exception) req.getSession().getAttribute("errorPage"); // получаем исключение из сессии
 			req.getSession().setAttribute("errorPage", null); // обнуляем исключение в сессии
+			e.printStackTrace();
 			pw = resp.getWriter();
 			pw.println("<head>");
 			pw.println("<title>ChaosArt</title>");
-			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");	
-			getCss("login", req, resp);			
-			pw.println("<body>");
-			e.printStackTrace();
+			pw.println("<link rel=\"shortcut icon\" href=\"img/logo_1.jpg\" type=\"image/jpg\">");
+			getCss("login", req, resp);
+			pw.println("<body>");			
 			pw.println("<div id=\"login-page\">");
 			pw.println("<form id=\"form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
-			pw.println("<p id=\"message\">"+e.toString()+"</p>");
-			pw.println("<p id=\"message\">Хаос захлестнул этот мир...</p>");
-			pw.println("<p id=\"message\">Попробуйте вернуться к порядку!</p>");
+			pw.println("<h3>Хаос захлестнул этот мир...</h3>");
+			pw.println("<h3>Попробуйте вернуться к порядку!</h3>");
 			pw.println("<a id=\"link\" href=\"/Chaos\">К Порядку</a>");
 			pw.println("</form>");
 			pw.println("</div>");
-			pw.println("</body>");			
+			pw.println("</body>");
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e); 
+			req.getSession().setAttribute("errorPage", e);
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
 			requestDispatcher.forward(req, resp);
 		}
@@ -920,7 +822,6 @@ public class ControllerServlet extends HttpServlet {
 
 	public void getCss(String page, HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
 		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
 		PrintWriter pw = resp.getWriter();
@@ -1152,7 +1053,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "updateArt":
 			pw.println("<style>");
 			pw.println("body {");
@@ -1212,7 +1113,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "deleteArt":
 			pw.println("<style>");
 			pw.println("body {");
@@ -1271,7 +1172,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "addArt":
 			pw.println("<style>");
 			pw.println("body {");
@@ -1320,7 +1221,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "addCategory":
 			pw.println("<style>");
 			pw.println("body {");
@@ -1369,7 +1270,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "login":
 			pw.println("<style>");
 			pw.println("body {");
@@ -1429,7 +1330,7 @@ public class ControllerServlet extends HttpServlet {
 			pw.println("}");
 			pw.println("</style>");
 			break;
-			
+
 		case "registration":
 			pw.println("<style>");
 			pw.println("body {");
