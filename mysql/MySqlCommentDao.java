@@ -231,7 +231,7 @@ public class MySqlCommentDao {
 			while (rs.next()) {
 				Comment comment = new Comment();
 				comment.setId(rs.getString("ID"));
-				comment.setUserId(rs.getString("USER_ID"));
+				comment.setUserId(rs.getInt("USER_ID"));
 				comment.setArtId(rs.getString("ART_ID"));
 				comment.setText(rs.getString("COMMENT_TEXT"));
 				result.add(comment);
@@ -245,7 +245,7 @@ public class MySqlCommentDao {
 	protected void prepareStatementForUpdate(PreparedStatement statement,
 			Comment object) throws PersistException {
 		try {
-			statement.setString(1, object.getUserId());
+			statement.setInt(1, object.getUserId());
 			statement.setString(2, object.getArtId());
 			statement.setString(3, object.getText());
 			statement.setString(4, object.getId());
@@ -257,7 +257,7 @@ public class MySqlCommentDao {
 	protected void prepareStatementForInsert(PreparedStatement statement,
 			Comment object) throws PersistException {
 		try {
-			statement.setString(1, object.getUserId());
+			statement.setInt(1, object.getUserId());
 			statement.setString(2, object.getArtId());
 			statement.setString(3, object.getText());
 		} catch (Exception e) {

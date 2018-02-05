@@ -132,15 +132,15 @@ public class MySqlUserDao {
 		return persistInstance;
 	}
 		
-	public User read(String key) throws PersistException {
+	public User read(int i) throws PersistException {
 		List<User> list;
 		ResultSet selectedById = null;
 		try {
-			statementSelectID.setString(1, key);
+			statementSelectID.setInt(1, i);
 			selectedById = statementSelectID.executeQuery();
 			list = parseResultSet(selectedById);
 		} catch (Exception e) {
-			throw new PersistException("Record with PK = " + key
+			throw new PersistException("Record with PK = " + i
 					+ " not found.", e);
 		} finally{
 			try {
