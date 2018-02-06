@@ -18,21 +18,20 @@
 	}
 	%> 
 	<div id="registration-page">
-			<div id="form">
-			<form id="register-form" ACTION="/Chaos/ControllerServlet" METHOD="POST">
-			<input type="text" name = "name" placeholder="Имя (обязательное поле)"/>
-			<input type="text" name = "surname" placeholder="Фамилия"/>
-			<input type="text" name = "login" placeholder="Логин (обязательное поле)"/>
-			<input type="password" name = "password" placeholder="Пароль (обязательное поле)"/>
-			<input type="password" name = "password2" placeholder="Повторите пароль"/>
-			<input id="button" type="submit" name = "newAccount" value="Создать">
-			<input id="button" type="submit" name ="logIn" value="Отмена">
-			</form>
-			<p id="message">Уже зарегистрированы?<form name ="newAccount" ACTION="/Chaos/ControllerServlet" METHOD="POST">
-			<input id="link" type="submit" name ="logIn" value="Вход">
-			</form></p>
-			</div>
-			</div>
+		<div id="form">
+				<form id="register-form" ACTION="/Chaos/ControllerServlet" METHOD="POST">
+				<input type="text" name = "name" placeholder="Имя (обязательное поле)"/>
+				<input type="text" name = "surname" placeholder="Фамилия"/>
+				<input type="text" name = "login" placeholder="Логин (обязательное поле)"/>
+				<input type="password" name = "password" placeholder="Пароль (обязательное поле)"/>
+				<input type="password" name = "password2" placeholder="Повторите пароль"/>
+				<input id="button" type="submit" name = "newAccount" value="Создать">
+				<input id="button" type="submit" name ="logIn" value="Отмена">
+				</form>
+				<p id="message">Уже зарегистрированы?<form name ="newAccount" ACTION="/Chaos/ControllerServlet" METHOD="POST">
+					<input id="link" type="submit" name ="logIn" value="Вход"></form></p>
+		</div>
+	</div>
 </body>
 </html>
 
