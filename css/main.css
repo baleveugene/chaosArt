@@ -15,10 +15,6 @@ body {
 	height: auto;
 }
 
-#logo {
-	float: left;
-}
-
 #rightsideofheader {
 	float: right;
 	width: 30%;
@@ -50,7 +46,7 @@ a {
 
 #sidebar {
 	float: left;
-	height: 80%;
+	height: 150%;
 	width: 15%;
 	padding: 10px;
 	background: #EAEBCA;
@@ -74,7 +70,7 @@ a {
 	outline: 0;
 	background: #567348;
 	border: 0;
-	margin: 10px 8px 0 0;
+	margin: 10px 10px 10px 0;
 	padding: 12px;
 	color: #FFFFFF;
 	font-size: 14px;

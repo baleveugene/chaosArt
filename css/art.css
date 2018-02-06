@@ -10,11 +10,7 @@ body {
 	background-image: url(img/back_for_Chaos.jpg);
 	background-position: center center;
 	padding: 5px;
-	height: 20%;
-}
-
-#logo {
-	float: left;
+	height: 12%;
 }
 
 #rightsideofheader {
@@ -68,7 +64,7 @@ a {
 }
 
 #art {
-	width: 95%;
+	height: 50%;
 	float: center;
 	padding: 10px;
 	text-align: center;

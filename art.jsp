@@ -19,13 +19,11 @@
 	import="by.java.dokwork.domain.User"%>
 
 	<div id="header">
-		<div id="logo">
 			<a href="/Chaos"><img src='img/logo_2.png' height="70" alt="logo"></a>
-		</div>
 		<div id="rightsideofheader">
 			<div id="rightLinks">
 				<a href="/Chaos">К Порядку</a> 
-				<a href="/Chaos/ControllerServlet">Home</a>
+				<a href="/Chaos/ControllerServlet">Главная</a>
 			</div>
 			<div id="rightTabs">
 				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
@@ -44,7 +42,7 @@
 		<div id="art">
 			<%
 			Art art = (Art)session.getAttribute("art");
-			out.println("<img src= \"" +art.getImage() + "\" height=55% >");	
+			out.println("<img src= \"" +art.getImage() + "\" height=\"65%\">");	
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
 				out.println("<div id=\"buttons\">");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");

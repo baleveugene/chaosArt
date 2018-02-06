@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
+import by.java.dokwork.dao.DaoFactory;
 import by.java.dokwork.domain.Art;
 import by.java.dokwork.domain.Artist;
 import by.java.dokwork.domain.Category;
@@ -21,6 +24,7 @@ import by.java.dokwork.mysql.MySqlArtDao;
 import by.java.dokwork.mysql.MySqlArtistDao;
 import by.java.dokwork.mysql.MySqlCategoryDao;
 import by.java.dokwork.mysql.MySqlCommentDao;
+import by.java.dokwork.mysql.MySqlDaoFactory;
 import by.java.dokwork.mysql.MySqlUserDao;
 
 public class ControllerServlet extends HttpServlet {
@@ -84,10 +88,15 @@ public class ControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-		if(categoryDao==null||artDao==null){
-			req.getSession(true);
-		}
-		try {		
+		try {
+			if(categoryDao==null||artDao==null){
+				DaoFactory factory = new MySqlDaoFactory();
+				artDao = factory.getMySqlArtDao();
+				categoryDao = factory.getMySqlCategoryDao();
+				HttpSession session = req.getSession();
+				session.setAttribute("artDao", artDao);
+				session.setAttribute("categoryDao", categoryDao);
+			}	
 			List<Category> categoryList = categoryDao.getAll();
 			req.getSession().setAttribute("categoryList", categoryList);			
 			List<Art> artList = artDao.getAll();
@@ -118,6 +127,20 @@ public class ControllerServlet extends HttpServlet {
 		String artId = req.getParameter("artId");
 		req.getSession().setAttribute("artId", artId);
 		try {
+			if(artDao==null||artistDao==null||commentDao==null||userDao==null){
+				HttpSessionListener sessionListener = new SessionListener();
+				sessionListener.sessionCreated(new HttpSessionEvent(req.getSession()));
+				DaoFactory factory = new MySqlDaoFactory();
+				artDao = factory.getMySqlArtDao();		
+				artistDao = factory.getMySqlArtistDao();
+				commentDao = factory.getMySqlCommentDao();
+				userDao = factory.getMySqlUserDao();
+				HttpSession session = req.getSession();
+				session.setAttribute("artDao", artDao);
+				session.setAttribute("artistDao", artistDao);
+				session.setAttribute("commentDao", commentDao);
+				session.setAttribute("userDao", userDao);
+			}	
 			Art art = artDao.read(artId);
 			req.getSession().setAttribute("art", art);
 			String artistId = art.getArtistId();
@@ -228,15 +251,14 @@ public class ControllerServlet extends HttpServlet {
 			if (req.getParameter("logIn").equals("¬ход")) {
 				resp.sendRedirect("login.jsp");
 			} else if (req.getParameter("logIn").equals("ќтмена")) {
-				resp.sendRedirect("main.jsp");			
+				resp.sendRedirect("/Chaos/ControllerServlet");			
 			} else if (req.getParameter("logIn").equals("¬ыйти")) {
 				HttpSession session = req.getSession();
 				session.removeAttribute("login");
 				session.removeAttribute("password");
 				session.removeAttribute("roleId");
 				// переходим на главную страницу (mainWithOutReg)
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("main.jsp");
-				requestDispatcher.forward(req, resp);
+				resp.sendRedirect("/Chaos/ControllerServlet");
 			} else if (req.getParameter("logIn").equals("¬ойти")) {
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
@@ -261,13 +283,11 @@ public class ControllerServlet extends HttpServlet {
 					if (hashCode.equals(adminHashCode)) {
 						session.setAttribute("roleId", new Integer(1));
 						// переходим на главную страницу (mainAdmin)
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("main.jsp");
-						requestDispatcher.forward(req, resp);
+						resp.sendRedirect("/Chaos/ControllerServlet");
 					} else {
 						session.setAttribute("roleId", new Integer(2));
 						// переходим на главную страницу (mainUser)
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("main.jsp");
-						requestDispatcher.forward(req, resp);
+						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
 			}
@@ -511,8 +531,10 @@ public class ControllerServlet extends HttpServlet {
 					Art art = artDao.read(artId);
 					artDao.delete(art);
 					req.getSession().removeAttribute("artId");
+					req.removeAttribute("artId");
+					req.removeAttribute("deleteArt");				
 					// переходим на главную страницу
-					resp.sendRedirect("main.jsp");
+					resp.sendRedirect("/Chaos/ControllerServlet");				
 				} else {
 					// возвращаемс€ на страницу арта (artAdmin)
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
