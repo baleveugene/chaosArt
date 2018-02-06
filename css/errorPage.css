@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+body {
+	font: 11pt Arial, Helvetica, sans-serif;
+	margin: 0;
+	background: -webkit-linear-gradient(right, #76b852, #8DC26F);
+}
+
+#error-page {
+	width: 360px;
+	padding: 8% 0 0;
+	margin: auto;
+}
+
+#form {
+	position: relative;
+	z-index: 1;
+	background: #FFFFFF;
+	padding: 30px;
+	text-align: center;
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+#link {
+	font-family: sans-serif;
+	background: #ffffff;
+	border: 0;
+	padding: 12px;
+	width: 40%;
+	font-size: 16px;
+	font-color: #494154;
+	font-style: italic;
+	font-weight: 600;
+	text-decoration: underline;
+	cursor: pointer;
+}

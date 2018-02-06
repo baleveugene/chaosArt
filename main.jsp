@@ -16,7 +16,6 @@
 	import="by.java.dokwork.domain.Art"
 	import="by.java.dokwork.domain.Category"
 	import="by.java.dokwork.domain.Artist"%>
-
 	<div id="header">
 		<div id="logo">
 			<a href="/Chaos"><img src='img/logo_2.png' height="70" alt="logo"></a>
@@ -54,7 +53,7 @@
 			%>
 	</div>
 	<div id="content">
-		<%
+			<%
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
 				out.println("<form name = \"addArt\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input id=\"button\" type=\"submit\" name = \"addArt\" value=\"Добавить Арт\">");
@@ -62,7 +61,7 @@
 			}			
 			List<Art> artList = (List<Art>)session.getAttribute("artList");
 			if (request.getParameter("categoryId") != null) {			
-				out.println("<h2>" + request.getParameter("categoryName") + "</h2>");
+				out.println("<h2>" + session.getAttribute("categoryName") + "</h2>");
 			}
 			for (Art art : artList) {
 				out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + art.getId() + "\"><img src= \""

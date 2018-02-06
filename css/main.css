@@ -6,11 +6,13 @@ body {
 }
 
 #header {
+	position: relative;
+	z-index: 2;
 	margin-top: 0;
 	background-image: url(img/back_for_Chaos.jpg);
 	background-position: center center;
 	padding: 5px;
-	height: 20%;
+	height: auto;
 }
 
 #logo {
@@ -48,8 +50,8 @@ a {
 
 #sidebar {
 	float: left;
-	width: 15%;
 	height: 80%;
+	width: 15%;
 	padding: 10px;
 	background: #EAEBCA;
 }

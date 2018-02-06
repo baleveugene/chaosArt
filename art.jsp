@@ -28,8 +28,7 @@
 				<a href="/Chaos/ControllerServlet">Home</a>
 			</div>
 			<div id="rightTabs">
-				<form name="newAccount" ACTION="/Chaos/ControllerServlet"
-					METHOD="POST">
+				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
 					<% if (session.getAttribute("roleId") != null) { 
 					out.println("<input id=\"button\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
 					} else {
@@ -44,7 +43,7 @@
 	<div id="content">
 		<div id="art">
 			<%
-			Art art = (Art)request.getAttribute("art");
+			Art art = (Art)session.getAttribute("art");
 			out.println("<img src= \"" +art.getImage() + "\" height=55% >");	
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
 				out.println("<div id=\"buttons\">");
@@ -60,10 +59,11 @@
 			<h3>Комментарии</h3>
 			<table>
 			<%
-			List<Comment> commentList = (List<Comment>)request.getAttribute("commentList");
-			List<User> userList = (List<User>)request.getAttribute("userList");
-			for (Comment c : commentList) {
-				User u = userList.get(c.getUserId());
+			List<Comment> commentList = (List<Comment>)session.getAttribute("commentList");
+			List<User> userList = (List<User>)session.getAttribute("userList");
+			int i = 0;
+			for (Comment c : commentList) {		
+				User u = userList.get(i++);
 				out.println("<tr>");
 				out.println("<td id=\"td1\">" + u.getName() + "</td>");
 				out.println("<td>" + c.getText() + "</td>");
@@ -72,7 +72,7 @@
 			%>
 			</table>
 			<%
-			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals(1) || session.getAttribute("roleId").equals(1))) {
+			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals(1) || session.getAttribute("roleId").equals(2))) {
 				out.println("<div id=\"form\">");
 				out.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println(
@@ -86,10 +86,10 @@
 		</div>
 	</div>
 	<div id="sidebar">
-		<% Artist artist = (Artist)request.getAttribute("artist");%>
-		<h2>Еще работы от<%=artist.getName()%></h2>
+		<% Artist artist = (Artist)session.getAttribute("artist");%>
+		<h2>Еще работы от <%=artist.getName()%></h2>
 		<%
-		List<Art> artList = (List<Art>)request.getAttribute("artList");
+		List<Art> artList = (List<Art>)session.getAttribute("artList");
 		for (Art a : artList) {
 			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
 					+ a.getImage() + "\"height=\"120\"></a>");

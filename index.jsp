@@ -45,7 +45,6 @@
     	}					
 </style>			
 <body>
-
 <img src="img/logo.jpg" alt="logo">
 <div id="tabs">
 	<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
