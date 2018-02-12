@@ -1,0 +1,41 @@
+apply plugin: 'java'
+apply plugin: 'war' 
+apply plugin: 'com.bmuschko.tomcat'
+apply plugin: 'co.riiid.gradle'
+ 
+repositories {
+    jcenter()
+}
+ 
+dependencies {   
+    testCompile 'junit:junit:4.12' 
+    providedCompile "javax.servlet:javax.servlet-api:3.1.0"         
+}
+ 
+
+dependencies {
+    def tomcatVersion = '7.0.59' 
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+}
+
+github {
+    owner = 'baleveugene'
+    repo = 'chaosArt'
+    token = '2c23aae13b1bb3354547286e01f22dd175e37666'
+    tagName = '0.1.0'
+    targetCommitish = 'gradle-Chaos'
+    name = 'v0.1.0'
+    body = ""
+}
+
+buildscript {
+     repositories {
+        jcenter()
+    }
+  dependencies {
+    classpath 'co.riiid:gradle-github-plugin:0.4.2'
+    classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
+}
+}
