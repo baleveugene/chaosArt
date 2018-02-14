@@ -1,4 +1,4 @@
-package by.java.dokwork.domain;
+package by.chaosart.domain;
 
 public class User {
 

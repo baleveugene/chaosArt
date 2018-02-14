@@ -1,4 +1,4 @@
-package by.java.dokwork.dao;
+package by.chaosart.dao;
 
 public class PersistException extends Exception {
 

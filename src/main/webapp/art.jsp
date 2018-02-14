@@ -13,10 +13,10 @@
 <body>
 	<%@ page 
 	import="java.util.List" 
-	import="by.java.dokwork.domain.Art"
-	import="by.java.dokwork.domain.Artist"
-	import="by.java.dokwork.domain.Comment"
-	import="by.java.dokwork.domain.User"%>
+	import="by.chaosart.domain.Art"
+	import="by.chaosart.domain.Artist"
+	import="by.chaosart.domain.Comment"
+	import="by.chaosart.domain.User"%>
 
 	<div id="header">
 			<a href="/Chaos"><img src='img/logo_2.png' height="70" alt="logo"></a>

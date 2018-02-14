@@ -13,9 +13,9 @@
 <body>
 	<%@ page 
 	import="java.util.List" 
-	import="by.java.dokwork.domain.Art"
-	import="by.java.dokwork.domain.Category"
-	import="by.java.dokwork.domain.Artist"%>
+	import="by.chaosart.domain.Art"
+	import="by.chaosart.domain.Category"
+	import="by.chaosart.domain.Artist"%>
 	<%
 	String message = (String)request.getAttribute("message");  
 	if(message!=null){

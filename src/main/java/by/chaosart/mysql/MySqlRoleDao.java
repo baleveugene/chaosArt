@@ -1,12 +1,13 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import by.java.dokwork.dao.PersistException;
-import by.java.dokwork.domain.*;
+
+import by.chaosart.dao.PersistException;
+import by.chaosart.domain.*;
 
 public class MySqlRoleDao {
 
@@ -69,29 +70,29 @@ public class MySqlRoleDao {
 	}
 	
 	protected String getSelectQuery() {
-		return "SELECT ID, ROLE_NAME FROM ChaosArt_DB.ROLE ";
+		return "SELECT ID, ROLE_NAME FROM ROLE ";
 	}
 
 	
 	protected String getCreateQuery() {
-		return "INSERT INTO ChaosArt_DB.ROLE (ROLE_NAME) \n"
+		return "INSERT INTO ROLE (ROLE_NAME) \n"
 				+ "VALUES (?);";
 	}
 
 	protected String getUpdateQuery() {
-		return "UPDATE ChaosArt_DB.ROLE \n"
+		return "UPDATE ROLE \n"
 				+ "SET ROLE_NAME = ? WHERE id = ?;";
 	}
 
 	protected String getDeleteQuery() {
-		return "DELETE FROM ChaosArt_DB.ROLE WHERE id= ?;";
+		return "DELETE FROM ROLE WHERE id= ?;";
 	}
 
 	public Role create(Role role) throws PersistException {
 		Role persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// Добавляем запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		try {
 			prepareStatementForInsert(statementCreate, role);
 			statementCreate.executeUpdate();

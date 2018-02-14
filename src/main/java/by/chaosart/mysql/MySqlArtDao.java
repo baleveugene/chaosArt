@@ -1,4 +1,4 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import by.java.dokwork.dao.PersistException;
-import by.java.dokwork.domain.*;
+import by.chaosart.dao.PersistException;
+import by.chaosart.domain.*;
 
 public class MySqlArtDao {
 
@@ -89,30 +89,30 @@ public class MySqlArtDao {
 	}
 	
 	protected String getSelectQuery() {
-		return "SELECT ID, ART_NAME, IMAGE, ARTIST_ID, CATEGORY_ID, DATE_CREATE, ORIGINAL_URL FROM ChaosArt_DB.ART ";
+		return "SELECT ID, ART_NAME, IMAGE, ARTIST_ID, CATEGORY_ID, DATE_CREATE, ORIGINAL_URL FROM ART ";
 	}
 
 	
 	protected String getCreateQuery() {
-		return "INSERT INTO ChaosArt_DB.ART (ART_NAME, IMAGE, ARTIST_ID, CATEGORY_ID, DATE_CREATE, ORIGINAL_URL) \n"
+		return "INSERT INTO ART (ART_NAME, IMAGE, ARTIST_ID, CATEGORY_ID, DATE_CREATE, ORIGINAL_URL) \n"
 				+ "VALUES (?, ?, ?, ?, ?, ?);";
 	}
 
 	protected String getUpdateQuery() {
-		return "UPDATE ChaosArt_DB.ART \n"
+		return "UPDATE ART \n"
 				+ "SET ART_NAME = ?, IMAGE = ?, ARTIST_ID = ?, CATEGORY_ID = ?, DATE_CREATE = ?, ORIGINAL_URL = ? \n"
 				+ "WHERE id = ?;";
 	}
 
 	protected String getDeleteQuery() {
-		return "DELETE FROM ChaosArt_DB.ART WHERE id= ?;";
+		return "DELETE FROM ART WHERE id= ?;";
 	}
 
 	public Art create(Art art) throws PersistException {
 		Art persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// Добавляем запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		try {
 			prepareStatementForInsert(statementCreate, art);
 			statementCreate.executeUpdate();

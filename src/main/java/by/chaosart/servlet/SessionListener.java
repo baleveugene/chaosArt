@@ -1,16 +1,16 @@
-package by.java.dokwork.servlet;
+package by.chaosart.servlet;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import by.java.dokwork.dao.DaoFactory;
-import by.java.dokwork.mysql.MySqlArtDao;
-import by.java.dokwork.mysql.MySqlArtistDao;
-import by.java.dokwork.mysql.MySqlCategoryDao;
-import by.java.dokwork.mysql.MySqlCommentDao;
-import by.java.dokwork.mysql.MySqlDaoFactory;
-import by.java.dokwork.mysql.MySqlUserDao;
+import by.chaosart.dao.DaoFactory;
+import by.chaosart.mysql.MySqlArtDao;
+import by.chaosart.mysql.MySqlArtistDao;
+import by.chaosart.mysql.MySqlCategoryDao;
+import by.chaosart.mysql.MySqlCommentDao;
+import by.chaosart.mysql.MySqlDaoFactory;
+import by.chaosart.mysql.MySqlUserDao;
 
 public class SessionListener implements HttpSessionListener {
 

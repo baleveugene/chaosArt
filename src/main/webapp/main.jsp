@@ -13,9 +13,9 @@
 <body>
 	<%@ page 
 	import="java.util.List" 
-	import="by.java.dokwork.domain.Art"
-	import="by.java.dokwork.domain.Category"
-	import="by.java.dokwork.domain.Artist"%>
+	import="by.chaosart.domain.Art"
+	import="by.chaosart.domain.Category"
+	import="by.chaosart.domain.Artist"%>
 	<div id="header">	
 			<a href="/Chaos"><img src='img/logo_2.png' height="70" alt="logo"></a>	
 		<div id="rightsideofheader">

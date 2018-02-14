@@ -1,12 +1,13 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import by.java.dokwork.dao.PersistException;
-import by.java.dokwork.domain.*;
+
+import by.chaosart.dao.PersistException;
+import by.chaosart.domain.*;
 
 public class MySqlUserDao {
 
@@ -72,30 +73,30 @@ public class MySqlUserDao {
 	}
 	
 	protected String getSelectQuery() {
-		return "SELECT ID, ROLE_ID, FIRST_NAME, SECOND_NAME, LOGIN, USER_PASSWORD FROM ChaosArt_DB.USERS ";
+		return "SELECT ID, ROLE_ID, FIRST_NAME, SECOND_NAME, LOGIN, USER_PASSWORD FROM USERS ";
 	}
 
 	
 	protected String getCreateQuery() {
-		return "INSERT INTO ChaosArt_DB.USERS (ROLE_ID, FIRST_NAME, SECOND_NAME, LOGIN, USER_PASSWORD) \n"
+		return "INSERT INTO USERS (ROLE_ID, FIRST_NAME, SECOND_NAME, LOGIN, USER_PASSWORD) \n"
 				+ "VALUES (?, ?, ?, ?, ?);";
 	}
 
 	protected String getUpdateQuery() {
-		return "UPDATE ChaosArt_DB.USERS \n"
+		return "UPDATE USERS \n"
 				+ "SET ROLE_ID = ?, FIRST_NAME = ? \n"
 				+ "WHERE id = ?;";
 	}
 
 	protected String getDeleteQuery() {
-		return "DELETE FROM ChaosArt_DB.USERS WHERE id= ?;";
+		return "DELETE FROM USERS WHERE id= ?;";
 	}
 
 	public User create(User user) throws PersistException {
 		User persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// Добавляем запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		try {
 			prepareStatementForInsert(statementCreate, user);
 			statementCreate.executeUpdate();

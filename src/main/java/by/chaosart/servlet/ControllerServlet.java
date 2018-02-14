@@ -1,4 +1,4 @@
-package by.java.dokwork.servlet;
+package by.chaosart.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,18 +14,18 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import by.java.dokwork.dao.DaoFactory;
-import by.java.dokwork.domain.Art;
-import by.java.dokwork.domain.Artist;
-import by.java.dokwork.domain.Category;
-import by.java.dokwork.domain.Comment;
-import by.java.dokwork.domain.User;
-import by.java.dokwork.mysql.MySqlArtDao;
-import by.java.dokwork.mysql.MySqlArtistDao;
-import by.java.dokwork.mysql.MySqlCategoryDao;
-import by.java.dokwork.mysql.MySqlCommentDao;
-import by.java.dokwork.mysql.MySqlDaoFactory;
-import by.java.dokwork.mysql.MySqlUserDao;
+import by.chaosart.dao.DaoFactory;
+import by.chaosart.domain.Art;
+import by.chaosart.domain.Artist;
+import by.chaosart.domain.Category;
+import by.chaosart.domain.Comment;
+import by.chaosart.domain.User;
+import by.chaosart.mysql.MySqlArtDao;
+import by.chaosart.mysql.MySqlArtistDao;
+import by.chaosart.mysql.MySqlCategoryDao;
+import by.chaosart.mysql.MySqlCommentDao;
+import by.chaosart.mysql.MySqlDaoFactory;
+import by.chaosart.mysql.MySqlUserDao;
 
 public class ControllerServlet extends HttpServlet {
 
@@ -44,44 +44,44 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			if (req.getSession().getAttribute("errorPage") != null) {
 				exceptionPageProcessing(req, resp);
-				// Главная страница
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			} else if (!en.hasMoreElements() || req.getParameter("Chaos") != null) {
 				mainPageProcessing(req, resp);
-				// Страница конкретного арта
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("artId") != null) {
 				artPageProcessing(req, resp);
-				// Главная страница с артами конкретной категории
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("categoryId") != null) {
 				mainPageProcessing(req, resp);
-				// Форма Регистрации
+				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("newAccount") != null) {
 				regFormProcessing(req, resp);
-				// Форма Login
+				// пїЅпїЅпїЅпїЅпїЅ Login
 			} else if (req.getParameter("logIn") != null) {
 				loginFormProcessing(req, resp);
-				// Обработка формы добавления новой категории
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("addCategory") != null) {
 				addNewCategory(req, resp);
-				// Обработка формы добавления нового арта
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("addArt") != null) {
 				addNewArt(req, resp);
-				// Обработка формы изменения арта
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("updateArt") != null) {
 				updateArt(req, resp);
-				// Обработка формы удаления арта
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("deleteArt") != null) {
 				deleteArt(req, resp);
-				// Обработка формы добавления нового комментария
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			} else if (req.getParameter("newComment") != null) {
 				addComment(req, resp);
 			}
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			exceptionPageProcessing(req, resp); // страница исключений
+			exceptionPageProcessing(req, resp); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 	}
 
-	// Переход на главную страницу, исходя из роли пользователя
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public void mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
@@ -115,7 +115,7 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Переход на страницу конкретного арта, исходя из роли пользователя
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public void artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
@@ -152,7 +152,7 @@ public class ControllerServlet extends HttpServlet {
 			req.getSession().setAttribute("userList", userList);
 			List<Art> artList = artDao.getAll(artistId);
 			req.getSession().setAttribute("artList", artList);
-			// Переходим на страницу art.jsp
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ art.jsp
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("art.jsp");
 			requestDispatcher.forward(req, resp);
 		} catch (Exception e) {
@@ -162,43 +162,43 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Регистрации
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public void regFormProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		try {
-			if (req.getParameter("newAccount").equals("Регистрация")) {
+			if (req.getParameter("newAccount").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 				requestDispatcher.forward(req, resp);			
-			} else if (req.getParameter("newAccount").equals("Отмена")) {
+			} else if (req.getParameter("newAccount").equals("пїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				resp.sendRedirect("/Chaos/ControllerServlet");		
-			} else if (req.getParameter("newAccount").equals("Создать")) {
+			} else if (req.getParameter("newAccount").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				String name = req.getParameter("name");
 				String surname = req.getParameter("surname");
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
 				String password2 = req.getParameter("password2");
-				// Проверка валидности введенных данных
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				if (name.isEmpty() || login.isEmpty() || password.isEmpty() || password2.isEmpty()) {
-					String message = "Необходимо заполнить все обязательные поля";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 					requestDispatcher.forward(req, resp);
-				} else if (!name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					String message = "Проверьте правильность заполнения полей Имя и Фамилия."
-							+ "Введенные параметры должны состоять из букв латинского или русского алфавита,"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
+				} else if (!name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[пїЅ-пїЅ]{1}[пїЅ-пїЅ]{0,20}$)")) {
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ."
+							+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,"
+							+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅ 21)";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 					requestDispatcher.forward(req, resp);					
-				} else if (login.matches("^[*№;%:#&\'\"!)(\\.,]+") || password.matches("^[*№;%:#&\'\"!)(\\.,]+")) {
-					String message = "Проверьте правильность заполнения полей Логин и Пароль."
-							+ "(поля не должны содержать символов *, №, ?, %, ;, |, /, \\, (, ), &, !)";
+				} else if (login.matches("^[*пїЅ;%:#&\'\"!)(\\.,]+") || password.matches("^[*пїЅ;%:#&\'\"!)(\\.,]+")) {
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ."
+							+ "(пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ *, пїЅ, ?, %, ;, |, /, \\, (, ), &, !)";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 					requestDispatcher.forward(req, resp);				
 				} else if (!password.equals(password2)) {
-					String message = "Пароли должны совпадать!";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 					requestDispatcher.forward(req, resp);
@@ -208,12 +208,12 @@ public class ControllerServlet extends HttpServlet {
 					String adminHashCode = String.valueOf(adminPassword.hashCode());
 					User user = userDao.readByLogin(login);
 					if (user.getLogin() != null) {
-						String message = "Пользователь с таким логином уже существует.";
+						String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 						req.setAttribute("message", message);
 						RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
 						requestDispatcher.forward(req, resp);					
 					} else {
-						// устанавливаем параметры нового пользователя и создаем запись в БД
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ
 						if (hashCode.equals(adminHashCode)) {
 							user.setRoleId(1);
 						} else {
@@ -224,11 +224,11 @@ public class ControllerServlet extends HttpServlet {
 						user.setLogin(login);
 						user.setPassword(hashCode);
 						user = userDao.create(user);
-						// Создаем сессию и записываем в нее параметры пользователя
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 						HttpSession session = req.getSession();
 						session.setAttribute("userId", user.getId());
 						session.setAttribute("roleId", user.getRoleId());
-						// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainAdmin пїЅпїЅпїЅ mainUser пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ)
 						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
@@ -240,34 +240,34 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Входа
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	public void loginFormProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		try {
-			if (req.getParameter("logIn").equals("Вход")) {
+			if (req.getParameter("logIn").equals("пїЅпїЅпїЅпїЅ")) {
 				resp.sendRedirect("login.jsp");
-			} else if (req.getParameter("logIn").equals("Отмена")) {
+			} else if (req.getParameter("logIn").equals("пїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				resp.sendRedirect("/Chaos/ControllerServlet");			
-			} else if (req.getParameter("logIn").equals("Выйти")) {
+			} else if (req.getParameter("logIn").equals("пїЅпїЅпїЅпїЅпїЅ")) {
 				HttpSession session = req.getSession();
 				session.removeAttribute("login");
 				session.removeAttribute("password");
 				session.removeAttribute("roleId");
-				// переходим на главную страницу (mainWithOutReg)
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainWithOutReg)
 				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (req.getParameter("logIn").equals("Войти")) {
+			} else if (req.getParameter("logIn").equals("пїЅпїЅпїЅпїЅпїЅ")) {
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
 				String hashCode = String.valueOf(password.hashCode());
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() == null) {
-					String message = "Проверьте правильность написания логина.";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
 					requestDispatcher.forward(req, resp);				
 				} else if (user.getPassword() != null && !hashCode.equals(user.getPassword())) {
-					String message = "Проверьте правильность написания пароля.";				
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.";				
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
 					requestDispatcher.forward(req, resp);				
@@ -279,11 +279,11 @@ public class ControllerServlet extends HttpServlet {
 					session.setAttribute("userId", userId);
 					if (hashCode.equals(adminHashCode)) {
 						session.setAttribute("roleId", new Integer(1));
-						// переходим на главную страницу (mainAdmin)
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainAdmin)
 						resp.sendRedirect("/Chaos/ControllerServlet");
 					} else {
 						session.setAttribute("roleId", new Integer(2));
-						// переходим на главную страницу (mainUser)
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainUser)
 						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
@@ -295,44 +295,44 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Добавления новой категории
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public void addNewCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		try {		
-			if (req.getParameter("addCategory").equals("Добавить категорию")) {
+			if (req.getParameter("addCategory").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				// addCategory
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("addCategory.jsp");
 				requestDispatcher.forward(req, resp);
-			} else if (req.getParameter("addCategory").equals("Отмена")) {
-				// переходим на главную страницу (mainAdmin)
+			} else if (req.getParameter("addCategory").equals("пїЅпїЅпїЅпїЅпїЅпїЅ")) {
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainAdmin)
 				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (req.getParameter("addCategory").equals("Создать")) {
+			} else if (req.getParameter("addCategory").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				String categoryName = req.getParameter("category");
-				// Валидация введенных данных
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				if (categoryName.isEmpty()) {
-					String message = "Название категории не может быть пустым.";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addCategory.jsp");
 					requestDispatcher.forward(req, resp);
-				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {				
-					String message = "Проверьте правильность заполнения поля Название категории."+"\n"
-							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
+				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[пїЅ-пїЅ]{1}[пїЅ-пїЅ]{0,20}$)")) {				
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ."+"\n"
+							+ "(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,"+"\n"
+							+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅ 21)";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addCategory.jsp");
 					requestDispatcher.forward(req, resp);
 				} else {
 					Category category = categoryDao.readByName(categoryName);
 					if (category.getName() != null) {
-						String message = "Данная категория уже существует.";
+						String message = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 						req.setAttribute("message", message);
 						RequestDispatcher requestDispatcher = req.getRequestDispatcher("addCategory.jsp");
 						requestDispatcher.forward(req, resp);
 					} else {
-						// устанавливаем параметры категории, записываем ее в БД
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅ
 						category.setName(categoryName);
 						categoryDao.create(category);
-						// переходим на главную страницу (mainAdmin)
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainAdmin)
 						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
@@ -344,57 +344,57 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Добавления нового арта
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	public void addNewArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
 		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		try {
-			if (req.getParameter("addArt").equals("Добавить Арт")) {
+			if (req.getParameter("addArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ")) {
 				// addArt
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 				requestDispatcher.forward(req, resp);
-			} else if (req.getParameter("addArt").equals("Отмена")) {
-				// переходим на главную страницу (mainAdmin)
+			} else if (req.getParameter("addArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅ")) {
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (mainAdmin)
 				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (req.getParameter("addArt").equals("Создать")) {
+			} else if (req.getParameter("addArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				String artName = req.getParameter("artName");
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalURL = req.getParameter("originalURL");
-				// Валидация пользовательского ввода
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (artName.isEmpty() || artistName.isEmpty() || categoryName.isEmpty() || originalURL.isEmpty()) {				
-					String message = "Все поля обязательны к заполнению.";
+					String message = "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 					requestDispatcher.forward(req, resp);
 				} else if (!artName.matches(".+\\.(jpg|png|jpeg|bmp|tif|gif)")) {
-					String message = "Проверьте правильность заполнения поля Название арта.";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 					requestDispatcher.forward(req, resp);
-				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					String message = "Проверьте правильность заполнения поля Название категории."+"\n"
-							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
+				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[пїЅ-пїЅ]{1}[пїЅ-пїЅ]{0,20}$)")) {
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ."+"\n"
+							+ "(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,"+"\n"
+							+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅ 21)";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 					requestDispatcher.forward(req, resp);
 				} else if (!originalURL.matches("^(?i)http://.*$")) {				
-					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 					requestDispatcher.forward(req, resp);
 				} else {
 					Art art = artDao.readByName(artName);
 					if (art.getName() != null) {										
-						String message = "Арт с таким названием уже существует.";
+						String message = "пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 						req.setAttribute("message", message);
 						RequestDispatcher requestDispatcher = req.getRequestDispatcher("addArt.jsp");
 						requestDispatcher.forward(req, resp);
 					} else {
-						// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем
-						// его
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+						// пїЅпїЅпїЅ
 						Artist artist = artistDao.readByName(artistName);
 						if (artist.getName() == null) {
 							artist.setName(artistName);
@@ -403,8 +403,8 @@ public class ControllerServlet extends HttpServlet {
 						} else {
 							art.setArtistId(artist.getId());
 						}
-						// Получаем и устанавливаем id категории арта, если такой категории еще нет,
-						// создаем ее
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ,
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 						Category cat = categoryDao.readByName(categoryName);
 						if (cat.getName() == null) {
 							cat.setName(categoryName);
@@ -413,12 +413,12 @@ public class ControllerServlet extends HttpServlet {
 						} else {
 							art.setCategoryId(cat.getId());
 						}
-						// Устанавливаем параметры арта, записываем его в БД
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅ
 						art.setName(artName);
 						art.setImage("img/content/" + artName);
 						art.setOriginalUrl(originalURL);
 						art = artDao.create(art);
-						// переходим на страницу созданного арта
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 						RequestDispatcher requestDispatcher = req
 								.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
 						requestDispatcher.forward(req, resp);
@@ -432,7 +432,7 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Изменения арта
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	public void updateArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
@@ -445,21 +445,21 @@ public class ControllerServlet extends HttpServlet {
 			req.getSession().setAttribute("art", art);
 			req.getSession().setAttribute("artist", artist);
 			req.getSession().setAttribute("category", category);
-			if (req.getParameter("updateArt").equals("Изменить")) {			
+			if (req.getParameter("updateArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {			
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("updateArt.jsp");
 				requestDispatcher.forward(req, resp);
-			} else if (req.getParameter("updateArt").equals("Отмена")) {
-				// возвращаемся на страницу арта (artAdmin)
+			} else if (req.getParameter("updateArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅ")) {
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (artAdmin)
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
 				requestDispatcher.forward(req, resp);
-			} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
+			} else if (req.getParameter("updateArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ")) {
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalUrl = req.getParameter("originalURL");
 				
 				if (!artistName.isEmpty()) {
-					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем
-					// его
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+					// пїЅпїЅпїЅ
 					artist = artistDao.readByName(artistName);
 					if (artist.getName() == null) {
 						artist.setName(artistName);
@@ -470,9 +470,9 @@ public class ControllerServlet extends HttpServlet {
 					}
 				}
 				if (!categoryName.isEmpty()){
-						if (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					// Получаем и устанавливаем id категории арта, если такой категории еще нет,
-					// создаем ее
+						if (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[пїЅ-пїЅ]{1}[пїЅ-пїЅ]{0,20}$)")) {
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ,
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 					Category cat = categoryDao.readByName(categoryName);
 					if (cat.getName() == null) {
 						cat.setName(categoryName);
@@ -482,9 +482,9 @@ public class ControllerServlet extends HttpServlet {
 						art.setCategoryId(cat.getId());
 					}
 				} else {
-					String message = "Проверьте правильность заполнения поля Название категории"+"\n"
-							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"+"\n"
+							+ "(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,"+"\n"
+							+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅ 21)";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("updateArt.jsp");
 					requestDispatcher.forward(req, resp);
@@ -494,14 +494,14 @@ public class ControllerServlet extends HttpServlet {
 				if(originalUrl.matches("^(?i)http://\\w+\\.(com|ru|by|ua|edu|gov|net|org).*$")){
 					art.setOriginalUrl(originalUrl);
 				} else {				
-					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
+					String message = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
 					req.setAttribute("message", message);
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("updateArt.jsp");
 					requestDispatcher.forward(req, resp);
 				}
 				}
 				artDao.update(art);
-				// переходим на обновленную страницу арта (artAdmin)
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (artAdmin)
 				RequestDispatcher requestDispatcher = req
 						.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
 				requestDispatcher.forward(req, resp);
@@ -513,16 +513,16 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Удаления арта
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	public void deleteArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
-			if (req.getParameter("deleteArt").equals("Удалить")) {
+			if (req.getParameter("deleteArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				// deleteArt
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("deleteArt.jsp");
 				requestDispatcher.forward(req, resp);
-			} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
+			} else if (req.getParameter("deleteArt").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ")) {
 				String yes = req.getParameter("yes");
 				if (yes != null) {
 					Art art = artDao.read(artId);
@@ -530,10 +530,10 @@ public class ControllerServlet extends HttpServlet {
 					req.getSession().removeAttribute("artId");
 					req.removeAttribute("artId");
 					req.removeAttribute("deleteArt");				
-					// переходим на главную страницу
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 					resp.sendRedirect("/Chaos/ControllerServlet");				
 				} else {
-					// возвращаемся на страницу арта (artAdmin)
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (artAdmin)
 					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
 					requestDispatcher.forward(req, resp);
 				}
@@ -545,11 +545,11 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 
-	// Форма Добавления комментария
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public void addComment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
 		try {
-			if (req.getParameter("newComment").equals("Добавить комментарий")) {
+			if (req.getParameter("newComment").equals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
 				Integer userId = (Integer) req.getSession().getAttribute("userId");
 				String comment = req.getParameter("comment");
 				String artId = (String) req.getSession().getAttribute("artId");
@@ -573,8 +573,8 @@ public class ControllerServlet extends HttpServlet {
 	public void exceptionPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {		
 		try {
-			Exception e = (Exception) req.getSession().getAttribute("errorPage"); // получаем исключение из сессии
-			req.getSession().removeAttribute("errorPage"); // обнуляем исключение в сессии
+			Exception e = (Exception) req.getSession().getAttribute("errorPage"); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			req.getSession().removeAttribute("errorPage"); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			e.printStackTrace();
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("errorPage.jsp");
 			requestDispatcher.forward(req, resp);

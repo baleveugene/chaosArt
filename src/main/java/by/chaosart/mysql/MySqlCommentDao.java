@@ -1,33 +1,34 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import by.java.dokwork.dao.PersistException;
-import by.java.dokwork.domain.*;
 
-public class MySqlCategoryDao {
+import by.chaosart.dao.PersistException;
+import by.chaosart.domain.*;
+
+public class MySqlCommentDao {
 
 	private Connection connection;
 	private PreparedStatement statementCreate;
 	private PreparedStatement statementUpdate;
 	private PreparedStatement statementSelectAll;
-	private PreparedStatement statementSelectID;
-	private PreparedStatement statementSelectName;
+	private PreparedStatement statementSelectArtId;
+	private PreparedStatement statementSelectId;
 	private PreparedStatement statementDelete;
 	
-	protected MySqlCategoryDao(Connection connection) throws PersistException {
+	protected MySqlCommentDao(Connection connection) throws PersistException {
 		this.connection = connection;
 		try {
 			statementCreate = connection.prepareStatement(getCreateQuery(), PreparedStatement.RETURN_GENERATED_KEYS);
 			statementUpdate = connection.prepareStatement(getUpdateQuery());
 			statementSelectAll = connection.prepareStatement(getSelectQuery());
-			statementSelectID = connection.prepareStatement(getSelectQuery()
+			statementSelectArtId = connection.prepareStatement(getSelectQuery()
+					+ "WHERE ART_ID = ?;");
+			statementSelectId = connection.prepareStatement(getSelectQuery()
 					+ "WHERE ID = ?;");
-			statementSelectName = connection.prepareStatement(getSelectQuery()
-					+ "WHERE CATEGORY_NAME = ?;");
 			statementDelete = connection.prepareStatement(getDeleteQuery());
 		} catch (Exception e) {
 			throw new PersistException("Unable to create prepareStatement.", e);
@@ -57,12 +58,12 @@ public class MySqlCategoryDao {
 			e = ex;
 		}
 		try {
-			statementSelectID.close();
+			statementSelectArtId.close();
 		} catch (Exception ex) {
 			e = ex;
 		}
 		try {
-			statementSelectName.close();
+			statementSelectId.close();
 		} catch (Exception ex) {
 			e = ex;
 		}
@@ -77,39 +78,40 @@ public class MySqlCategoryDao {
 	}
 	
 	protected String getSelectQuery() {
-		return "SELECT ID, CATEGORY_NAME FROM ChaosArt_DB.CATEGORY ";
+		return "SELECT ID, USER_ID, ART_ID, COMMENT_TEXT FROM COMMENTS ";
 	}
 
 	
 	protected String getCreateQuery() {
-		return "INSERT INTO ChaosArt_DB.CATEGORY (CATEGORY_NAME) \n"
-				+ "VALUES (?);";
+		return "INSERT INTO COMMENTS (USER_ID, ART_ID, COMMENT_TEXT) \n"
+				+ "VALUES (?, ?, ?);";
 	}
 
 	protected String getUpdateQuery() {
-		return "UPDATE ChaosArt_DB.CATEGORY \n"
-				+ "SET CATEGORY_NAME = ? WHERE id = ?;";
+		return "UPDATE COMMENTS \n"
+				+ "SET USER_ID = ?, ART_ID  = ?, COMMENT_TEXT = ? \n"
+				+ "WHERE id = ?;";
 	}
 
 	protected String getDeleteQuery() {
-		return "DELETE FROM ChaosArt_DB.CATEGORY WHERE id= ?;";
+		return "DELETE FROM COMMENTS WHERE id= ?;";
 	}
 
-	public Category create(Category category) throws PersistException {
-		Category persistInstance;
+	public Comment create(Comment comment) throws PersistException {
+		Comment persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// Добавляем запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		try {
-			prepareStatementForInsert(statementCreate, category);
+			prepareStatementForInsert(statementCreate, comment);
 			statementCreate.executeUpdate();
 			generatedId = statementCreate.getGeneratedKeys();
 			if(generatedId.next()){
 				int id = generatedId.getInt(1);
-				statementSelectID.setInt(1, id);
+				statementSelectId.setInt(1, id);
 			} 
-			selectedById = statementSelectID.executeQuery();
-			List<Category> list = parseResultSet(selectedById);
+			selectedById = statementSelectId.executeQuery();
+			List<Comment> list = parseResultSet(selectedById);
 			persistInstance = list.iterator().next();
 		} catch (Exception e) {
 			throw new PersistException("Unable to record new data to DB.", e);
@@ -136,56 +138,29 @@ public class MySqlCategoryDao {
 		return persistInstance;
 	}
 		
-	public Category read(String key) throws PersistException {
-		List<Category> list;
+	public Comment read(String key) throws PersistException {
+		List<Comment> list;
 		ResultSet selectedById = null;
 		try {
-			statementSelectID.setString(1, key);
-			selectedById = statementSelectID.executeQuery();
+			statementSelectId.setString(1, key);
+			selectedById = statementSelectId.executeQuery();
 			list = parseResultSet(selectedById);
 		} catch (Exception e) {
 			throw new PersistException("Record with PK = " + key
 					+ " not found.", e);
 		} finally{
 			try {
-				if(selectedById!=null){
-				selectedById.close();
-				}
+			selectedById.close();
 		} catch (Exception e){
 			throw new PersistException("Unable to close resourses. ", e);
 		}
-		}
-		return list.iterator().next();
-	}
-	
-	public Category readByName(String categoryName) throws PersistException {
-		List<Category> list;
-		ResultSet selectedById = null;
-		try {
-			statementSelectName.setString(1, categoryName);
-			selectedById = statementSelectName.executeQuery();
-			list = parseResultSet(selectedById);
-		} catch (Exception e) {
-			throw new PersistException("Record with name = " + categoryName
-					+ " not found.", e);
-		} finally{
-			try {
-				if(selectedById!=null){
-				selectedById.close();
-				}
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
-		}
-		if(list.isEmpty()){
-			return new Category();
 		}
 		return list.iterator().next();
 	}
 
-	public void update(Category category) throws PersistException {
+	public void update(Comment comment) throws PersistException {
 		try {
-			prepareStatementForUpdate(statementUpdate, category);
+			prepareStatementForUpdate(statementUpdate, comment);
 			int count = statementUpdate.executeUpdate();
 			if (count != 1) {
 				throw new PersistException(
@@ -197,9 +172,9 @@ public class MySqlCategoryDao {
 	}
 	
 
-	public void delete(Category category) throws PersistException {
+	public void delete(Comment comment) throws PersistException {
 		try {
-			statementDelete.setObject(1, category.getId());
+			statementDelete.setObject(1, comment.getId());
 			int count = statementDelete.executeUpdate();
 			if (count != 1) {
 				throw new PersistException(
@@ -211,8 +186,8 @@ public class MySqlCategoryDao {
 	}
 
 
-	public List<Category> getAll() throws PersistException {
-		List<Category> list;
+	public List<Comment> getAll() throws PersistException {
+		List<Comment> list;
 		ResultSet selectedAll = null;
 		try {
 			selectedAll = statementSelectAll.executeQuery();
@@ -221,7 +196,26 @@ public class MySqlCategoryDao {
 			throw new PersistException("Unable to read data from DB.", e);
 		}finally{
 			try {
-				if(selectedAll!=null){
+				selectedAll.close();
+		} catch (Exception e){
+			throw new PersistException("Unable to close resourses. ", e);
+		}
+		}
+		return list;
+	}
+	
+	public List<Comment> getAll(String artId) throws PersistException {
+		List<Comment> list;
+		ResultSet selectedAll = null;
+		try {
+			statementSelectArtId.setString(1, artId);
+			selectedAll = statementSelectArtId.executeQuery();
+			list = parseResultSet(selectedAll);
+		} catch (Exception e) {
+			throw new PersistException("Unable to read data from DB.", e);
+		}finally{
+			try {
+				if(selectedAll != null){
 				selectedAll.close();
 				}
 		} catch (Exception e){
@@ -231,15 +225,17 @@ public class MySqlCategoryDao {
 		return list;
 	}
 	
-	protected List<Category> parseResultSet(ResultSet rs)
+	protected List<Comment> parseResultSet(ResultSet rs)
 			throws PersistException {
-		LinkedList<Category> result = new LinkedList<Category>();
+		LinkedList<Comment> result = new LinkedList<Comment>();
 		try {
 			while (rs.next()) {
-				Category category = new Category();
-				category.setId(rs.getString("ID"));
-				category.setName(rs.getString("CATEGORY_NAME"));
-				result.add(category);
+				Comment comment = new Comment();
+				comment.setId(rs.getString("ID"));
+				comment.setUserId(rs.getInt("USER_ID"));
+				comment.setArtId(rs.getString("ART_ID"));
+				comment.setText(rs.getString("COMMENT_TEXT"));
+				result.add(comment);
 			}
 		} catch (Exception e) {
 			throw new PersistException("Unable to set values to object", e);
@@ -248,19 +244,23 @@ public class MySqlCategoryDao {
 	}
 
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Category object) throws PersistException {
+			Comment object) throws PersistException {
 		try {
-			statement.setString(1, object.getName());
-			statement.setString(2, object.getId());
+			statement.setInt(1, object.getUserId());
+			statement.setString(2, object.getArtId());
+			statement.setString(3, object.getText());
+			statement.setString(4, object.getId());
 		} catch (Exception e) {
 			throw new PersistException("Unable to set values to object", e);
 		}
 	}
 
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			Category object) throws PersistException {
+			Comment object) throws PersistException {
 		try {
-			statement.setString(1, object.getName());
+			statement.setInt(1, object.getUserId());
+			statement.setString(2, object.getArtId());
+			statement.setString(3, object.getText());
 		} catch (Exception e) {
 			throw new PersistException("Unable to set values to object", e);
 		}

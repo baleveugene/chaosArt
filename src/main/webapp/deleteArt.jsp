@@ -12,7 +12,7 @@
 </head>
 <body>
 	<%@ page  
-	import="by.java.dokwork.domain.Art"%>
+	import="by.chaosart.domain.Art"%>
 	<div id="deleteArt-page">
 		<div id="form">
 			<div id="content">

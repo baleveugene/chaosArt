@@ -1,22 +1,25 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import by.java.dokwork.dao.*;
+import by.chaosart.dao.*;
+import by.chaosart.mysql.MySqlArtDao;
+import by.chaosart.mysql.MySqlArtistDao;
+import by.chaosart.mysql.MySqlCategoryDao;
+import by.chaosart.mysql.MySqlCommentDao;
+import by.chaosart.mysql.MySqlRoleDao;
+import by.chaosart.mysql.MySqlUserDao;
 
-public class MySqlDaoFactory implements DaoFactory{
+public class MySqlDaoFactoryTest implements DaoFactory{
 
 	private Connection connection;
 	private static final String PATH_TO_PROPERTIES = "config.properties";
 
-	public MySqlDaoFactory() throws PersistException {
-
-		
+	public MySqlDaoFactoryTest() throws PersistException {	
 		InputStream fis = null;
-
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			fis = classLoader.getResourceAsStream(PATH_TO_PROPERTIES);
@@ -24,7 +27,7 @@ public class MySqlDaoFactory implements DaoFactory{
 			prop.load(fis);
 			String user = prop.getProperty("user");
 			String password = prop.getProperty("password");
-			String url = prop.getProperty("url");
+			String url = prop.getProperty("urlTest");
 			String driver = prop.getProperty("driver");
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);

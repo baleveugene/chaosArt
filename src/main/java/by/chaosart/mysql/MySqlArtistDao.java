@@ -1,4 +1,4 @@
-package by.java.dokwork.mysql;
+package by.chaosart.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import by.java.dokwork.dao.PersistException;
-import by.java.dokwork.domain.*;
+import by.chaosart.dao.PersistException;
+import by.chaosart.domain.*;
 
 public class MySqlArtistDao {
 
@@ -78,29 +78,29 @@ public class MySqlArtistDao {
 	}
 	
 	protected String getSelectQuery() {
-		return "SELECT ID, ARTIST_NAME FROM ChaosArt_DB.ARTIST ";
+		return "SELECT ID, ARTIST_NAME FROM ARTIST ";
 	}
 
 	
 	protected String getCreateQuery() {
-		return "INSERT INTO ChaosArt_DB.ARTIST (ARTIST_NAME) \n"
+		return "INSERT INTO ARTIST (ARTIST_NAME) \n"
 				+ "VALUES (?);";
 	}
 
 	protected String getUpdateQuery() {
-		return "UPDATE ChaosArt_DB.ARTIST \n"
+		return "UPDATE ARTIST \n"
 				+ "SET ARTIST_NAME = ? WHERE id = ?;";
 	}
 
 	protected String getDeleteQuery() {
-		return "DELETE FROM ChaosArt_DB.ARTIST WHERE id= ?;";
+		return "DELETE FROM ARTIST WHERE id= ?;";
 	}
 
 	public Artist create(Artist artist) throws PersistException {
 		Artist persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// Добавляем запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		try {
 			prepareStatementForInsert(statementCreate, artist);
 			statementCreate.executeUpdate();
