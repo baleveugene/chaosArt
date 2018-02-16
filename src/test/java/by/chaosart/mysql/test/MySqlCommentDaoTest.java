@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Comment;
@@ -48,7 +49,7 @@ public class MySqlCommentDaoTest {
 		/* Проверяем метод create(Comment Comment) */
 		Comment actualComment = commentDao.create(expectedComment);	
 		String[] actualArray = {actualComment.getUserId(), actualComment.getArtId(), actualComment.getText()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 		
 	@Test
@@ -58,7 +59,7 @@ public class MySqlCommentDaoTest {
 		/* Проверяем метод read(String id) */
 		Comment actualComment = commentDao.read("1");
 		String[] actualArray = {actualComment.getUserId(), actualComment.getArtId(), actualComment.getText()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 
 	@Test
@@ -68,7 +69,7 @@ public class MySqlCommentDaoTest {
 		/* Проверяем метод readByText(String name) */
 		Comment actualComment = commentDao.readByText("CommentTest1");
 		String[] actualArray = {actualComment.getUserId(), actualComment.getArtId(), actualComment.getText()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 	
 	@Test
@@ -88,7 +89,7 @@ public class MySqlCommentDaoTest {
 		commentDao.update(expectedComment);
 		Comment actualComment = commentDao.read("1");
 		String[] actualArray = {actualComment.getUserId(), actualComment.getArtId(), actualComment.getText()};
-		assertArrayEquals(expectedArray, actualArray);		
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);		
 	}
 	
 	@Test
@@ -96,7 +97,7 @@ public class MySqlCommentDaoTest {
 		Integer expectedLengh = 2;
 		List<Comment> commentList = commentDao.getAll();
 		Integer actualLengh = commentList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
 	@Test
@@ -104,10 +105,10 @@ public class MySqlCommentDaoTest {
 		Integer expectedLengh = 2;
 		List<Comment> commentList = commentDao.getAll("1");
 		Integer actualLengh = commentList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/

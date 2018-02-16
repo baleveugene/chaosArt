@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Art;
@@ -54,7 +55,7 @@ public class MySqlArtDaoTest {
 		Art actualArt = artDao.create(expectedArt);	
 		String[] actualArray = {actualArt.getArtistId(), actualArt.getCategoryId(), 
 				actualArt.getImage(), actualArt.getName(), actualArt.getOriginalUrl()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 		
 	@Test
@@ -66,7 +67,7 @@ public class MySqlArtDaoTest {
 		Art actualArt = artDao.read("1");
 		String[] actualArray = {actualArt.getArtistId(), actualArt.getCategoryId(), 
 				actualArt.getImage(), actualArt.getName(), actualArt.getOriginalUrl()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 
 	@Test
@@ -78,7 +79,7 @@ public class MySqlArtDaoTest {
 		Art actualArt = artDao.readByName("ArtTest1");
 		String[] actualArray = {actualArt.getArtistId(), actualArt.getCategoryId(), 
 				actualArt.getImage(), actualArt.getName(), actualArt.getOriginalUrl()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 	
 	@Test
@@ -100,7 +101,7 @@ public class MySqlArtDaoTest {
 		Art actualArt = artDao.read("1");
 		String[] actualArray = {actualArt.getArtistId(), actualArt.getCategoryId(), 
 				actualArt.getImage(), actualArt.getName(), actualArt.getOriginalUrl()};
-		assertArrayEquals(expectedArray, actualArray);		
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);		
 	}
 	
 	@Test
@@ -108,7 +109,7 @@ public class MySqlArtDaoTest {
 		Integer expectedLengh = 2;
 		List<Art> artList = artDao.getAll();
 		Integer actualLengh = artList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
 	@Test
@@ -116,7 +117,7 @@ public class MySqlArtDaoTest {
 		Integer expectedLengh = 2;
 		List<Art> artList = artDao.getAll("1");
 		Integer actualLengh = artList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
 	@Test
@@ -124,10 +125,10 @@ public class MySqlArtDaoTest {
 		Integer expectedLengh = 2;
 		List<Art> artList = artDao.getAllOfCat("1");
 		Integer actualLengh = artList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/

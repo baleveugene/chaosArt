@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Artist;
@@ -42,7 +43,7 @@ public class MySqlArtistDaoTest {
 		Artist expectedArtist = createArtist(1);
 		/* Проверяем метод create(Artist artist) */
 		Artist actualArtist = artistDao.create(expectedArtist);	
-		assertEquals(expectedArtist.getName(), actualArtist.getName());
+		AssertJUnit.assertEquals(expectedArtist.getName(), actualArtist.getName());
 	}
 		
 	@Test
@@ -50,7 +51,7 @@ public class MySqlArtistDaoTest {
 		Artist expectedArtist = createArtist(0);
 		/* Проверяем метод read(String id) */
 		Artist actualArtist = artistDao.read("1");
-		assertEquals(expectedArtist.getName(), actualArtist.getName());
+		AssertJUnit.assertEquals(expectedArtist.getName(), actualArtist.getName());
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class MySqlArtistDaoTest {
 		Artist expectedArtist = createArtist(0);
 		/* Проверяем метод readByName(String name) */
 		Artist actualArtist = artistDao.readByName("ArtistTest1");
-		assertEquals(expectedArtist.getName(), actualArtist.getName());
+		AssertJUnit.assertEquals(expectedArtist.getName(), actualArtist.getName());
 	}
 	
 	@Test
@@ -76,7 +77,7 @@ public class MySqlArtistDaoTest {
 		expectedArtist.setId("1");
 		artistDao.update(expectedArtist);
 		Artist actualArtist = artistDao.read("1");
-		assertEquals(expectedArtist.getName(), actualArtist.getName());		
+		AssertJUnit.assertEquals(expectedArtist.getName(), actualArtist.getName());		
 	}
 	
 	@Test
@@ -84,10 +85,10 @@ public class MySqlArtistDaoTest {
 		Integer expectedLengh = 2;
 		List<Artist> artistList = artistDao.getAll();
 		Integer actualLengh = artistList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/

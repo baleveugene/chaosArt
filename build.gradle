@@ -10,6 +10,12 @@ repositories {
     jcenter()
 }
 
+test {
+     useTestNG {
+         suites 'src/test/resources/testng.xml'
+     }
+ }
+
 sourceSets{
         	main{
             	resources {
@@ -27,7 +33,8 @@ sourceSets{
  }
  
 dependencies {   
-    testCompile 'junit:junit:4.12' 
+    testCompile 'org.testng:testng:6.13.1'
+ //   testCompile 'junit:junit:4.12' 
     providedCompile "javax.servlet:javax.servlet-api:3.1.0" 
     providedCompile "mysql:mysql-connector-java:5.1.44"
 }

@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Role;
@@ -42,7 +43,7 @@ public class MySqlRoleDaoTest {
 		Role expectedRole = createRole(1);
 		/* Проверяем метод create(Role Role) */
 		Role actualRole = roleDao.create(expectedRole);	
-		assertEquals(expectedRole.getName(), actualRole.getName());
+		AssertJUnit.assertEquals(expectedRole.getName(), actualRole.getName());
 	}
 		
 	@Test
@@ -50,7 +51,7 @@ public class MySqlRoleDaoTest {
 		Role expectedRole = createRole(0);
 		/* Проверяем метод read(String id) */
 		Role actualRole = roleDao.read("1");
-		assertEquals(expectedRole.getName(), actualRole.getName());
+		AssertJUnit.assertEquals(expectedRole.getName(), actualRole.getName());
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class MySqlRoleDaoTest {
 		Role expectedRole = createRole(0);
 		/* Проверяем метод readByName(String name) */
 		Role actualRole = roleDao.readByName("RoleTest1");
-		assertEquals(expectedRole.getName(), actualRole.getName());
+		AssertJUnit.assertEquals(expectedRole.getName(), actualRole.getName());
 	}
 	
 	@Test
@@ -76,7 +77,7 @@ public class MySqlRoleDaoTest {
 		expectedRole.setId(1);
 		roleDao.update(expectedRole);
 		Role actualRole = roleDao.read("1");
-		assertEquals(expectedRole.getName(), actualRole.getName());		
+		AssertJUnit.assertEquals(expectedRole.getName(), actualRole.getName());		
 	}
 	
 	@Test
@@ -84,10 +85,10 @@ public class MySqlRoleDaoTest {
 		Integer expectedLengh = 2;
 		List<Role> roleList = roleDao.getAll();
 		Integer actualLengh = roleList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/

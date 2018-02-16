@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Category;
@@ -42,7 +43,7 @@ public class MySqlCategoryDaoTest {
 		Category expectedCategory = createCategory(1);
 		/* Проверяем метод create(Category category) */
 		Category actualCategory = categoryDao.create(expectedCategory);	
-		assertEquals(expectedCategory.getName(), actualCategory.getName());
+		AssertJUnit.assertEquals(expectedCategory.getName(), actualCategory.getName());
 	}
 		
 	@Test
@@ -50,7 +51,7 @@ public class MySqlCategoryDaoTest {
 		Category expectedCategory = createCategory(0);
 		/* Проверяем метод read(String id) */
 		Category actualCategory = categoryDao.read("1");
-		assertEquals(expectedCategory.getName(), actualCategory.getName());
+		AssertJUnit.assertEquals(expectedCategory.getName(), actualCategory.getName());
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class MySqlCategoryDaoTest {
 		Category expectedCategory = createCategory(0);
 		/* Проверяем метод readByName(String name) */
 		Category actualCategory = categoryDao.readByName("CategoryTest1");
-		assertEquals(expectedCategory.getName(), actualCategory.getName());
+		AssertJUnit.assertEquals(expectedCategory.getName(), actualCategory.getName());
 	}
 	
 	@Test
@@ -76,7 +77,7 @@ public class MySqlCategoryDaoTest {
 		expectedCategory.setId("1");
 		categoryDao.update(expectedCategory);
 		Category actualCategory = categoryDao.read("1");
-		assertEquals(expectedCategory.getName(), actualCategory.getName());		
+		AssertJUnit.assertEquals(expectedCategory.getName(), actualCategory.getName());		
 	}
 	
 	@Test
@@ -84,10 +85,10 @@ public class MySqlCategoryDaoTest {
 		Integer expectedLengh = 2;
 		List<Category> categoryList = categoryDao.getAll();
 		Integer actualLengh = categoryList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/

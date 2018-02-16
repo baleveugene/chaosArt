@@ -1,13 +1,14 @@
 package by.chaosart.mysql.test;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.User;
@@ -52,7 +53,7 @@ public class MySqlUserDaoTest {
 		User actualUser = userDao.create(expectedUser);
 		String[] actualArray = {actualUser.getRoleId(), actualUser.getName(), 
 				actualUser.getLogin(), actualUser.getPassword()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 		
 	@Test
@@ -64,7 +65,7 @@ public class MySqlUserDaoTest {
 		User actualUser = userDao.read("1");
 		String[] actualArray = {actualUser.getRoleId(), actualUser.getName(), 
 				actualUser.getLogin(), actualUser.getPassword()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 
 	@Test
@@ -76,7 +77,7 @@ public class MySqlUserDaoTest {
 		User actualUser = userDao.readByLogin("LoginTest1");
 		String[] actualArray = {actualUser.getRoleId(), actualUser.getName(), 
 				actualUser.getLogin(), actualUser.getPassword()};
-		assertArrayEquals(expectedArray, actualArray);
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);
 	}
 	
 	@Test
@@ -98,7 +99,7 @@ public class MySqlUserDaoTest {
 		User actualUser = userDao.read("1");
 		String[] actualArray = {actualUser.getRoleId(), actualUser.getName(), 
 				actualUser.getLogin(), actualUser.getPassword()};
-		assertArrayEquals(expectedArray, actualArray);	
+		AssertJUnit.assertArrayEquals(expectedArray, actualArray);	
 	}
 	
 	@Test
@@ -106,10 +107,10 @@ public class MySqlUserDaoTest {
 		Integer expectedLengh = 2;
 		List<User> userList = userDao.getAll();
 		Integer actualLengh = userList.size();
-		assertEquals(expectedLengh, actualLengh);
+		AssertJUnit.assertEquals(expectedLengh, actualLengh);
 	}
 	
-	@After
+	@AfterMethod
 	public void restore() throws PersistException {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/
