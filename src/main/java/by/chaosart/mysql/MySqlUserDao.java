@@ -84,7 +84,7 @@ public class MySqlUserDao {
 
 	protected String getUpdateQuery() {
 		return "UPDATE USERS \n"
-				+ "SET ROLE_ID = ?, FIRST_NAME = ? \n"
+				+ "SET ROLE_ID = ?, FIRST_NAME = ?, SECOND_NAME = ?, LOGIN = ?, USER_PASSWORD = ? \n"
 				+ "WHERE id = ?;";
 	}
 
@@ -96,7 +96,6 @@ public class MySqlUserDao {
 		User persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// ��������� ������
 		try {
 			prepareStatementForInsert(statementCreate, user);
 			statementCreate.executeUpdate();
@@ -133,15 +132,15 @@ public class MySqlUserDao {
 		return persistInstance;
 	}
 		
-	public User read(int i) throws PersistException {
+	public User read(String id) throws PersistException {
 		List<User> list;
 		ResultSet selectedById = null;
 		try {
-			statementSelectID.setInt(1, i);
+			statementSelectID.setString(1, id);
 			selectedById = statementSelectID.executeQuery();
 			list = parseResultSet(selectedById);
 		} catch (Exception e) {
-			throw new PersistException("Record with PK = " + i
+			throw new PersistException("Record with PK = " + id
 					+ " not found.", e);
 		} finally{
 			try {
@@ -234,8 +233,8 @@ public class MySqlUserDao {
 		try {
 			while (rs.next()) {
 				User user = new User();
-				user.setId(rs.getInt("ID"));
-				user.setRoleId(rs.getInt("ROLE_ID"));
+				user.setId(rs.getString("ID"));
+				user.setRoleId(rs.getString("ROLE_ID"));
 				user.setName(rs.getString("FIRST_NAME"));
 				user.setSurname(rs.getString("SECOND_NAME"));
 				user.setLogin(rs.getString("LOGIN"));
@@ -251,12 +250,12 @@ public class MySqlUserDao {
 	protected void prepareStatementForUpdate(PreparedStatement statement,
 			User object) throws PersistException {
 		try {
-			statement.setInt(1, object.getRoleId());
+			statement.setString(1, object.getRoleId());
 			statement.setString(2, object.getName());
 			statement.setString(3, object.getSurname());
 			statement.setString(4, object.getLogin());
 			statement.setString(5, object.getPassword());
-			statement.setInt(6, object.getId());
+			statement.setString(6, object.getId());
 		} catch (Exception e) {
 			throw new PersistException("Unable to set values to object", e);
 		}
@@ -265,7 +264,7 @@ public class MySqlUserDao {
 	protected void prepareStatementForInsert(PreparedStatement statement,
 			User object) throws PersistException {
 		try {
-			statement.setInt(1, object.getRoleId());
+			statement.setString(1, object.getRoleId());
 			statement.setString(2, object.getName());
 			statement.setString(3, object.getSurname());
 			statement.setString(4, object.getLogin());

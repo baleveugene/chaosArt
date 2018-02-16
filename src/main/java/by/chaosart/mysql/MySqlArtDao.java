@@ -112,7 +112,6 @@ public class MySqlArtDao {
 		Art persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// ��������� ������
 		try {
 			prepareStatementForInsert(statementCreate, art);
 			statementCreate.executeUpdate();

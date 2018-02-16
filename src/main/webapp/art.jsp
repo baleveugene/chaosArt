@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -42,7 +42,7 @@
 		<div id="art">
 			<%
 			Art art = (Art)session.getAttribute("art");
-			out.println("<img src= \"" +art.getImage() + "\" height=\"65%\">");	
+			out.println("<img src= \"" +art.getImage() + "\" height=\"400\">");	
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
 				out.println("<div id=\"buttons\">");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
@@ -89,8 +89,8 @@
 		<%
 		List<Art> artList = (List<Art>)session.getAttribute("artList");
 		for (Art a : artList) {
-			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src= \""
-					+ a.getImage() + "\"height=\"120\"></a>");
+			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src=\""
+					+ a.getImage() + "\" height=\"120\"></a>");
 			}
 		%>
 	</div>

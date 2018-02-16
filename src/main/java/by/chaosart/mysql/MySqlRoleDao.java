@@ -16,6 +16,7 @@ public class MySqlRoleDao {
 	private PreparedStatement statementUpdate;
 	private PreparedStatement statementSelectAll;
 	private PreparedStatement statementSelectID;
+	private PreparedStatement statementSelectName;
 	private PreparedStatement statementDelete;
 	
 	protected MySqlRoleDao(Connection connection) throws PersistException {
@@ -26,6 +27,8 @@ public class MySqlRoleDao {
 			statementSelectAll = connection.prepareStatement(getSelectQuery());
 			statementSelectID = connection.prepareStatement(getSelectQuery()
 					+ "WHERE ID = ?;");
+			statementSelectName = connection.prepareStatement(getSelectQuery()
+					+ "WHERE ROLE_NAME = ?;");
 			statementDelete = connection.prepareStatement(getDeleteQuery());
 		} catch (Exception e) {
 			throw new PersistException("Unable to create prepareStatement.", e);
@@ -56,6 +59,11 @@ public class MySqlRoleDao {
 		}
 		try {
 			statementSelectID.close();
+		} catch (Exception ex) {
+			e = ex;
+		}
+		try {
+			statementSelectName.close();
 		} catch (Exception ex) {
 			e = ex;
 		}
@@ -145,6 +153,29 @@ public class MySqlRoleDao {
 		} catch (Exception e){
 			throw new PersistException("Unable to close resourses. ", e);
 		}
+		}
+		return list.iterator().next();
+	}
+	
+	public Role readByName(String name) throws PersistException {
+		List<Role> list;
+		ResultSet selectedByName = null;
+		try {
+			statementSelectName.setString(1, name);
+			selectedByName = statementSelectName.executeQuery();
+			list = parseResultSet(selectedByName);
+		} catch (Exception e) {
+			throw new PersistException("Record with name = " + name
+					+ " not found.", e);
+		} finally{
+			try {
+			selectedByName.close();
+		} catch (Exception e){
+			throw new PersistException("Unable to close resourses. ", e);
+		}
+		}
+		if(list.isEmpty()){
+			return new Role();
 		}
 		return list.iterator().next();
 	}

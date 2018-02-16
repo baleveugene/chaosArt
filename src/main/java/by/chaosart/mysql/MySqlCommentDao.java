@@ -17,6 +17,7 @@ public class MySqlCommentDao {
 	private PreparedStatement statementSelectAll;
 	private PreparedStatement statementSelectArtId;
 	private PreparedStatement statementSelectId;
+	private PreparedStatement statementSelectText;
 	private PreparedStatement statementDelete;
 	
 	protected MySqlCommentDao(Connection connection) throws PersistException {
@@ -29,6 +30,8 @@ public class MySqlCommentDao {
 					+ "WHERE ART_ID = ?;");
 			statementSelectId = connection.prepareStatement(getSelectQuery()
 					+ "WHERE ID = ?;");
+			statementSelectText = connection.prepareStatement(getSelectQuery()
+					+ "WHERE COMMENT_TEXT = ?;");
 			statementDelete = connection.prepareStatement(getDeleteQuery());
 		} catch (Exception e) {
 			throw new PersistException("Unable to create prepareStatement.", e);
@@ -68,6 +71,11 @@ public class MySqlCommentDao {
 			e = ex;
 		}
 		try {
+			statementSelectText.close();
+		} catch (Exception ex) {
+			e = ex;
+		}
+		try {
 			statementDelete.close();
 		} catch (Exception ex) {
 			e = ex;
@@ -101,7 +109,6 @@ public class MySqlCommentDao {
 		Comment persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// ��������� ������
 		try {
 			prepareStatementForInsert(statementCreate, comment);
 			statementCreate.executeUpdate();
@@ -154,6 +161,31 @@ public class MySqlCommentDao {
 		} catch (Exception e){
 			throw new PersistException("Unable to close resourses. ", e);
 		}
+		}
+		return list.iterator().next();
+	}
+	
+	public Comment readByText(String text) throws PersistException {
+		List<Comment> list;
+		ResultSet selectedByText = null;
+		try {
+			statementSelectText.setString(1, text);
+			selectedByText = statementSelectText.executeQuery();
+			list = parseResultSet(selectedByText);
+		} catch (Exception e) {
+			throw new PersistException("Record with comment = " + text
+					+ " not found.", e);
+		} finally{
+			try {
+				if(selectedByText!=null){
+				selectedByText.close();
+				}
+		} catch (Exception e){
+			throw new PersistException("Unable to close resourses. ", e);
+		}
+		}
+		if(list.isEmpty()){
+			return new Comment();
 		}
 		return list.iterator().next();
 	}
@@ -232,7 +264,7 @@ public class MySqlCommentDao {
 			while (rs.next()) {
 				Comment comment = new Comment();
 				comment.setId(rs.getString("ID"));
-				comment.setUserId(rs.getInt("USER_ID"));
+				comment.setUserId(rs.getString("USER_ID"));
 				comment.setArtId(rs.getString("ART_ID"));
 				comment.setText(rs.getString("COMMENT_TEXT"));
 				result.add(comment);
@@ -246,7 +278,7 @@ public class MySqlCommentDao {
 	protected void prepareStatementForUpdate(PreparedStatement statement,
 			Comment object) throws PersistException {
 		try {
-			statement.setInt(1, object.getUserId());
+			statement.setString(1, object.getUserId());
 			statement.setString(2, object.getArtId());
 			statement.setString(3, object.getText());
 			statement.setString(4, object.getId());
@@ -258,7 +290,7 @@ public class MySqlCommentDao {
 	protected void prepareStatementForInsert(PreparedStatement statement,
 			Comment object) throws PersistException {
 		try {
-			statement.setInt(1, object.getUserId());
+			statement.setString(1, object.getUserId());
 			statement.setString(2, object.getArtId());
 			statement.setString(3, object.getText());
 		} catch (Exception e) {

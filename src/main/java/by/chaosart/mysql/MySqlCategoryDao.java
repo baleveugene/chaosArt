@@ -100,7 +100,6 @@ public class MySqlCategoryDao {
 		Category persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// ��������� ������
 		try {
 			prepareStatementForInsert(statementCreate, category);
 			statementCreate.executeUpdate();

@@ -3,7 +3,7 @@ package by.chaosart.domain;
 public class Comment {
 
 	private String id;
-	private Integer userId;
+	private String userId;
 	private String artId;
 	private String text;
 	
@@ -13,11 +13,11 @@ public class Comment {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUserId(String userId2) {
+		this.userId = userId2;
 	}
 	public String getArtId() {
 		return artId;

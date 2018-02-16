@@ -1,9 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8"/>
 <title>ХаосArt</title>
 <link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg">
 <style>
@@ -11,7 +12,7 @@
 </style>
 </head>
 <body>
-	<%@ page 
+	<%@ page
 	import="java.util.List" 
 	import="by.chaosart.domain.Art"
 	import="by.chaosart.domain.Category"

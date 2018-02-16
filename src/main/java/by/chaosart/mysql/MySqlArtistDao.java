@@ -100,7 +100,6 @@ public class MySqlArtistDao {
 		Artist persistInstance;
 		ResultSet generatedId = null;
 		ResultSet selectedById = null;
-		// ��������� ������
 		try {
 			prepareStatementForInsert(statementCreate, artist);
 			statementCreate.executeUpdate();

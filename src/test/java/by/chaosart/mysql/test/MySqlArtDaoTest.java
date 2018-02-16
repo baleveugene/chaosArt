@@ -2,6 +2,8 @@ package by.chaosart.mysql.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -10,15 +12,15 @@ import org.junit.Test;
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.Art;
 import by.chaosart.mysql.MySqlArtDao;
-import by.chaosart.mysql.MySqlDaoFactoryTest;
+import by.chaosart.mysql.MySqlDaoFactory;
 
 public class MySqlArtDaoTest {
 	
-	static MySqlArtDao artDao;
+	private static MySqlArtDao artDao;
 	
 	@BeforeClass
     public static void setUp() throws PersistException {
-		MySqlDaoFactoryTest factory = new MySqlDaoFactoryTest();
+		MySqlDaoFactory factory = new MySqlDaoFactory();
 		artDao = factory.getMySqlArtDao();
 	}
 	
@@ -29,11 +31,11 @@ public class MySqlArtDaoTest {
 	
 	public Art createArt(int artId){
 		/* Входные параметры */
-		String[] artistId = {"1", "2", "3"};
-		String[] categoryId = {"1", "2", "3"};
+		String[] artistId = {"1", "1", "1"};
+		String[] categoryId = {"1", "1", "1"};
 		String[] image = {"1.jpg", "2.jpg", "3.jpj"};
 		String[] name = {"ArtTest1", "ArtTest2", "ArtTest3"};
-		String[] originalUrl = {"https://www.deviantart.com", "https://www.dev.by", "https://www.d.ru"};
+		String[] originalUrl = {"https://ArtTest1.com", "https://ArtTest2.com", "https://ArtTest3.com"};
 		Art expectedArt = new Art();
 		expectedArt.setArtistId(artistId[artId]);
 		expectedArt.setCategoryId(categoryId[artId]);
@@ -96,14 +98,37 @@ public class MySqlArtDaoTest {
 		expectedArt.setId("1");
 		artDao.update(expectedArt);
 		Art actualArt = artDao.read("1");
-		String[] actualArrayUpdate = {actualArt.getArtistId(), actualArt.getCategoryId(), 
+		String[] actualArray = {actualArt.getArtistId(), actualArt.getCategoryId(), 
 				actualArt.getImage(), actualArt.getName(), actualArt.getOriginalUrl()};
-		assertArrayEquals(expectedArray, actualArrayUpdate);		
+		assertArrayEquals(expectedArray, actualArray);		
+	}
+	
+	@Test
+	public void getAllTest() throws PersistException {
+		Integer expectedLengh = 2;
+		List<Art> artList = artDao.getAll();
+		Integer actualLengh = artList.size();
+		assertEquals(expectedLengh, actualLengh);
+	}
+	
+	@Test
+	public void getAllByArtistIdTest() throws PersistException {
+		Integer expectedLengh = 2;
+		List<Art> artList = artDao.getAll("1");
+		Integer actualLengh = artList.size();
+		assertEquals(expectedLengh, actualLengh);
+	}
+	
+	@Test
+	public void getAllOfCatTest() throws PersistException {
+		Integer expectedLengh = 2;
+		List<Art> artList = artDao.getAllOfCat("1");
+		Integer actualLengh = artList.size();
+		assertEquals(expectedLengh, actualLengh);
 	}
 	
 	@After
 	public void restore() throws PersistException {
-		try {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/
 			if(!artDao.read("1").getName().equals("ArtTest1")){
@@ -111,22 +136,19 @@ public class MySqlArtDaoTest {
 				expectedArt.setId("1");
 				artDao.update(expectedArt);
 			}
+			/* Возвращаем в исходное положение запись в БД (удаляем запись), 
+			 * в случае ее создания в процессе тестирования метода create()*/
+			if(artDao.readByName("ArtTest2").getName()!=null){
+				Art expectedArt = artDao.readByName("ArtTest2"); 
+				artDao.delete(expectedArt);
+			}			
 			/* Возвращаем в исходное положение запись в БД (создаем запись), 
 			 * в случае ее удаления в процессе тестирования метода delete()*/
 			if(artDao.readByName("ArtTest3").getName()==null){
 				Art expectedArt = createArt(2); 
 				artDao.create(expectedArt);
-			}
-			/* Возвращаем в исходное положение запись в БД (удаляем запись), 
-			 * в случае ее создания в процессе тестирования метода create()*/
-			if(artDao.readByName("ArtTest2")!=null){
-				Art expectedArt = artDao.readByName("ArtTest2"); 
-				artDao.delete(expectedArt);
-			}		
-		} catch (Exception e) {
-				e.getLocalizedMessage();
-			} 
-	}
+			}			
+		}
 	
 	@AfterClass
 		public static void close() throws PersistException{

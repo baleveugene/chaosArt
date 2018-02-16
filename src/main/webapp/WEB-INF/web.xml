@@ -13,7 +13,7 @@
     <description></description>
     <display-name>ControllerServlet</display-name>
     <servlet-name>ControllerServlet</servlet-name>
-    <servlet-class>by.java.dokwork.servlet.ControllerServlet</servlet-class>
+    <servlet-class>by.chaosart.servlet.ControllerServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ControllerServlet</servlet-name>
@@ -23,6 +23,6 @@
     <session-timeout>20</session-timeout>
   </session-config>
   <listener>
-    <listener-class>by.java.dokwork.servlet.SessionListener</listener-class>
+    <listener-class>by.chaosart.servlet.SessionListener</listener-class>
   </listener>
 </web-app>

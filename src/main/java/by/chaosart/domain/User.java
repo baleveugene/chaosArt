@@ -2,8 +2,8 @@ package by.chaosart.domain;
 
 public class User {
 
-	private Integer id;
-	private Integer roleId;
+	private String id;
+	private String roleId;
 	private String name;
 	private String surname;
 	private String login;
@@ -15,16 +15,16 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public Integer getRoleId() {
+	public String getRoleId() {
 		return roleId;
 	}
-	public void setRoleId(Integer roleId) {
+	public void setRoleId(String roleId) {
 		this.roleId = roleId;
 	}
 	public String getName() {
