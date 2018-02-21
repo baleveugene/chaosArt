@@ -14,15 +14,12 @@ import by.chaosart.mysql.MySqlRoleDao;
 import by.chaosart.mysql.MySqlUserDao;
 
 public class MySqlDaoFactory implements DaoFactory{
-
+	
 	private Connection connection;
 	private static final String PATH_TO_PROPERTIES = "config.properties";
 
-	public MySqlDaoFactory() throws PersistException {
-
-		
+	public MySqlDaoFactory() throws PersistException {	
 		InputStream fis = null;
-
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			fis = classLoader.getResourceAsStream(PATH_TO_PROPERTIES);

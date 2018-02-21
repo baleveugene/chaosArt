@@ -21,7 +21,8 @@ public class MySqlArtDao {
 	private PreparedStatement statementSelectId;
 	private PreparedStatement statementDelete;
 	
-	protected MySqlArtDao(Connection connection) throws PersistException {
+	
+	public MySqlArtDao(Connection connection) throws PersistException {
 		this.connection = connection;
 		try {
 			statementCreate = connection.prepareStatement(getCreateQuery(), PreparedStatement.RETURN_GENERATED_KEYS);

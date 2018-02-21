@@ -20,8 +20,7 @@ sourceSets{
         	main{
             	resources {
                 	srcDirs = [
-                 		'src/main/resources',
-                    	'src/main/webapp/WEB-INF/classes'] 
+                 		'src/main/resources'] 
         		}
         		}
         	test{
@@ -34,13 +33,15 @@ sourceSets{
  
 dependencies {   
     testCompile 'org.testng:testng:6.13.1'
- //   testCompile 'junit:junit:4.12' 
     providedCompile "javax.servlet:javax.servlet-api:3.1.0" 
     providedCompile "mysql:mysql-connector-java:5.1.44"
+    compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
+    compile 'org.springframework:spring-core:3.2.2.RELEASE'
+    compile 'org.springframework:spring-web:3.2.2.RELEASE'
 }
  
 dependencies {
-    def tomcatVersion = '7.0.59' 
+    def tomcatVersion = '7.0.37' 
     tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"

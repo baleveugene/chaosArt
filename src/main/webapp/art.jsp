@@ -43,7 +43,7 @@
 			<%
 			Art art = (Art)session.getAttribute("art");
 			out.println("<img src= \"" +art.getImage() + "\" height=\"400\">");	
-			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
+			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
 				out.println("<div id=\"buttons\">");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input id=\"button\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
@@ -70,7 +70,7 @@
 			%>
 			</table>
 			<%
-			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals(1) || session.getAttribute("roleId").equals(2))) {
+			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals("1") || session.getAttribute("roleId").equals("2"))) {
 				out.println("<div id=\"form\">");
 				out.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println(

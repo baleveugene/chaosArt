@@ -6,11 +6,15 @@ import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import by.chaosart.dao.DaoFactory;
 import by.chaosart.domain.Art;
@@ -27,6 +31,23 @@ import by.chaosart.mysql.MySqlUserDao;
 
 public class ControllerServlet extends HttpServlet {
 
+	@Autowired	
+	MySqlArtDao artDao;
+	@Autowired
+	MySqlArtistDao artistDao;
+	@Autowired
+	MySqlCategoryDao categoryDao;
+	@Autowired
+	MySqlCommentDao commentDao;
+	@Autowired
+	MySqlUserDao userDao;
+	
+	public void init(ServletConfig config) throws ServletException {
+	    super.init(config);
+	    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+	      config.getServletContext());
+	  }
+	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		processing(req, resp);	
 	}
@@ -82,17 +103,7 @@ public class ControllerServlet extends HttpServlet {
 	// Переход на главную страницу, исходя из роли пользователя
 	public void mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
-		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		try {
-			if(categoryDao==null||artDao==null){
-				DaoFactory factory = new MySqlDaoFactory();
-				artDao = factory.getMySqlArtDao();
-				categoryDao = factory.getMySqlCategoryDao();
-				HttpSession session = req.getSession();
-				session.setAttribute("artDao", artDao);
-				session.setAttribute("categoryDao", categoryDao);
-			}	
 			List<Category> categoryList = categoryDao.getAll();
 			req.getSession().setAttribute("categoryList", categoryList);			
 			List<Art> artList = artDao.getAll();
@@ -116,25 +127,9 @@ public class ControllerServlet extends HttpServlet {
 	// Переход на страницу конкретного арта, исходя из роли пользователя
 	public void artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
-		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
-		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		String artId = req.getParameter("artId");
 		req.getSession().setAttribute("artId", artId);
 		try {
-			if(artDao==null||artistDao==null||commentDao==null||userDao==null){
-				DaoFactory factory = new MySqlDaoFactory();
-				artDao = factory.getMySqlArtDao();		
-				artistDao = factory.getMySqlArtistDao();
-				commentDao = factory.getMySqlCommentDao();
-				userDao = factory.getMySqlUserDao();
-				HttpSession session = req.getSession();
-				session.setAttribute("artDao", artDao);
-				session.setAttribute("artistDao", artistDao);
-				session.setAttribute("commentDao", commentDao);
-				session.setAttribute("userDao", userDao);
-			}	
 			Art art = artDao.read(artId);
 			req.getSession().setAttribute("art", art);
 			String artistId = art.getArtistId();
@@ -163,7 +158,6 @@ public class ControllerServlet extends HttpServlet {
 	// Форма Регистрации
 	public void regFormProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		try {
 			if (req.getParameter("newAccount").equals("Регистрация")) {
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("registration.jsp");
@@ -241,7 +235,6 @@ public class ControllerServlet extends HttpServlet {
 	// Форма Входа
 	public void loginFormProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		MySqlUserDao userDao = (MySqlUserDao) req.getSession().getAttribute("userDao");
 		try {
 			if (req.getParameter("logIn").equals("Вход")) {
 				resp.sendRedirect("login.jsp");
@@ -295,7 +288,6 @@ public class ControllerServlet extends HttpServlet {
 
 	// Форма Добавления новой категории
 	public void addNewCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		try {		
 			if (req.getParameter("addCategory").equals("Добавить категорию")) {
 				// addCategory
@@ -344,9 +336,6 @@ public class ControllerServlet extends HttpServlet {
 
 	// Форма Добавления нового арта
 	public void addNewArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
-		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		try {
 			if (req.getParameter("addArt").equals("Добавить Арт")) {
 				// addArt
@@ -430,9 +419,6 @@ public class ControllerServlet extends HttpServlet {
 
 	// Форма Изменения арта
 	public void updateArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
-		MySqlArtistDao artistDao = (MySqlArtistDao) req.getSession().getAttribute("artistDao");
-		MySqlCategoryDao categoryDao = (MySqlCategoryDao) req.getSession().getAttribute("categoryDao");
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			Art art = artDao.read(artId);
@@ -510,7 +496,6 @@ public class ControllerServlet extends HttpServlet {
 
 	// Форма Удаления арта
 	public void deleteArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlArtDao artDao = (MySqlArtDao) req.getSession().getAttribute("artDao");
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			if (req.getParameter("deleteArt").equals("Удалить")) {
@@ -542,7 +527,6 @@ public class ControllerServlet extends HttpServlet {
 
 	// Форма Добавления комментария
 	public void addComment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MySqlCommentDao commentDao = (MySqlCommentDao) req.getSession().getAttribute("commentDao");
 		try {
 			if (req.getParameter("newComment").equals("Добавить комментарий")) {
 				String userId = (String) req.getSession().getAttribute("userId");

@@ -4,6 +4,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.springframework.stereotype.Repository;
+
 import by.chaosart.dao.DaoFactory;
 import by.chaosart.mysql.MySqlArtDao;
 import by.chaosart.mysql.MySqlArtistDao;
@@ -29,12 +31,6 @@ public class SessionListener implements HttpSessionListener {
 			artistDao = factory.getMySqlArtistDao();
 			commentDao = factory.getMySqlCommentDao();
 			userDao = factory.getMySqlUserDao();		
-			HttpSession session = ev.getSession();
-			session.setAttribute("artDao", artDao);
-			session.setAttribute("artistDao", artistDao);
-			session.setAttribute("commentDao", commentDao);
-			session.setAttribute("userDao", userDao);
-			session.setAttribute("categoryDao", categoryDao); 
     	} catch (Exception e) {
     		ev.getSession().setAttribute("errorPage", e);    		
 		}

@@ -44,7 +44,7 @@
 				out.println("<p><a id=\"link\" href=\"/Chaos/ControllerServlet?categoryId=" + c.getId() + "\">"
 						+ c.getName() + "</a></p>");
 			}			
-			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
+			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input id=\"button\" type=\"submit\" name=\"addCategory\" value=\"Добавить категорию\">");
 				out.println("</form>");
@@ -53,7 +53,7 @@
 	</div>
 	<div id="content">
 			<%
-			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals(1)) {
+			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input id=\"button\" type=\"submit\" name=\"addArt\" value=\"Добавить Арт\">");
 				out.println("</form>");
