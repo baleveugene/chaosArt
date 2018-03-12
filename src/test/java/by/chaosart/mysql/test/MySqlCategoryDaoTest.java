@@ -11,6 +11,7 @@ import org.testng.AssertJUnit;
 import java.util.List;
 
 import by.chaosart.dao.PersistException;
+import by.chaosart.domain.Artist;
 import by.chaosart.domain.Category;
 import by.chaosart.mysql.MySqlCategoryDao;
 import by.chaosart.mysql.MySqlDaoFactory;
@@ -72,9 +73,9 @@ public class MySqlCategoryDaoTest {
 	
 	@Test
 	public void updateTest() throws PersistException {
-		Category expectedCategory = createCategory(1);
+		Category expectedCategory = categoryDao.read("1");
+		expectedCategory.setName("CategoryTest2");
 		/* Проверяем метод update(Category cat) */	 
-		expectedCategory.setId("1");
 		categoryDao.update(expectedCategory);
 		Category actualCategory = categoryDao.read("1");
 		AssertJUnit.assertEquals(expectedCategory.getName(), actualCategory.getName());		
@@ -93,8 +94,8 @@ public class MySqlCategoryDaoTest {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/
 			if(!categoryDao.read("1").getName().equals("CategoryTest1")){
-				Category expectedCategory = createCategory(0); 
-				expectedCategory.setId("1");
+				Category expectedCategory = categoryDao.read("1");
+				expectedCategory.setName("CategoryTest1");
 				categoryDao.update(expectedCategory);
 			}
 			/* Возвращаем в исходное положение запись в БД (удаляем запись), 

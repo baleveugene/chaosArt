@@ -1,78 +1,51 @@
 package by.chaosart.mysql;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.Properties;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
-import by.chaosart.dao.*;
-import by.chaosart.mysql.MySqlArtDao;
-import by.chaosart.mysql.MySqlArtistDao;
-import by.chaosart.mysql.MySqlCategoryDao;
-import by.chaosart.mysql.MySqlCommentDao;
-import by.chaosart.mysql.MySqlRoleDao;
-import by.chaosart.mysql.MySqlUserDao;
+import by.chaosart.dao.DaoFactory;
+import by.chaosart.dao.PersistException;
 
 public class MySqlDaoFactory implements DaoFactory{
-	
-	private Connection connection;
-	private static final String PATH_TO_PROPERTIES = "config.properties";
 
-	public MySqlDaoFactory() throws PersistException {	
-		InputStream fis = null;
+	private Session session;
+
+	public MySqlDaoFactory() throws PersistException {
 		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			fis = classLoader.getResourceAsStream(PATH_TO_PROPERTIES);
-			Properties prop = new Properties();
-			prop.load(fis);
-			String user = prop.getProperty("user");
-			String password = prop.getProperty("password");
-			String url = prop.getProperty("url");
-			String driver = prop.getProperty("driver");
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, user, password);
+			SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+			session = sessionFactory.openSession();
 		} catch (Exception e) {
-			throw new PersistException("Fail " + PATH_TO_PROPERTIES
-					+ " not found.", e);
-		} finally {
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-			} catch (Exception e) {
-				throw new PersistException(
-						"Unable to close resource. ", e);
-			}
+			throw new PersistException("Плохо дело", e);
 		}
 	}
 
 	
 	public MySqlArtDao getMySqlArtDao() throws PersistException {
-		return new MySqlArtDao(connection);
+		return new MySqlArtDao(session);
 	}
 
 	
 	public MySqlArtistDao getMySqlArtistDao() throws PersistException {
-		return new MySqlArtistDao(connection);
+		return new MySqlArtistDao(session);
 	}
 
 	
 	public MySqlCommentDao getMySqlCommentDao() throws PersistException {
-		return new MySqlCommentDao(connection);
+		return new MySqlCommentDao(session);
 	}
 
 	
 	public MySqlRoleDao getMySqlRoleDao() throws PersistException {
-		return new MySqlRoleDao(connection);
+		return new MySqlRoleDao(session);
 	}
 
 	
 	public MySqlCategoryDao getMySqlCategoryDao() throws PersistException {
-		return new MySqlCategoryDao(connection);
+		return new MySqlCategoryDao(session);
 	}
 
 
 	public MySqlUserDao getMySqlUserDao() throws PersistException {
-		return new MySqlUserDao(connection);
+		return new MySqlUserDao(session);
 	}	
 }

@@ -1,193 +1,79 @@
 package by.chaosart.mysql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.LinkedList;
+import java.io.Serializable;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.*;
 
 public class MySqlRoleDao {
 
-	private Connection connection;
-	private PreparedStatement statementCreate;
-	private PreparedStatement statementUpdate;
-	private PreparedStatement statementSelectAll;
-	private PreparedStatement statementSelectID;
-	private PreparedStatement statementSelectName;
-	private PreparedStatement statementDelete;
+	private Session session;
 	
-	protected MySqlRoleDao(Connection connection) throws PersistException {
-		this.connection = connection;
-		try {
-			statementCreate = connection.prepareStatement(getCreateQuery(), PreparedStatement.RETURN_GENERATED_KEYS);
-			statementUpdate = connection.prepareStatement(getUpdateQuery());
-			statementSelectAll = connection.prepareStatement(getSelectQuery());
-			statementSelectID = connection.prepareStatement(getSelectQuery()
-					+ "WHERE ID = ?;");
-			statementSelectName = connection.prepareStatement(getSelectQuery()
-					+ "WHERE ROLE_NAME = ?;");
-			statementDelete = connection.prepareStatement(getDeleteQuery());
-		} catch (Exception e) {
-			throw new PersistException("Unable to create prepareStatement.", e);
-		}
+	public MySqlRoleDao(Session session) throws PersistException {
+		this.session = session;
 	}
 
 	public void close() throws PersistException {
-		Exception e = null;
 		try {
-			connection.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementCreate.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementUpdate.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectAll.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectID.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectName.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementDelete.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		if (e != null) {
+			session.close();
+		} catch (Exception e) {
 			throw new PersistException("Unable to close resourses. ", e);
-		}
+		}	
 	}
 	
-	protected String getSelectQuery() {
-		return "SELECT ID, ROLE_NAME FROM ROLE ";
-	}
-
-	
-	protected String getCreateQuery() {
-		return "INSERT INTO ROLE (ROLE_NAME) \n"
-				+ "VALUES (?);";
-	}
-
-	protected String getUpdateQuery() {
-		return "UPDATE ROLE \n"
-				+ "SET ROLE_NAME = ? WHERE id = ?;";
-	}
-
-	protected String getDeleteQuery() {
-		return "DELETE FROM ROLE WHERE id= ?;";
-	}
-
 	public Role create(Role role) throws PersistException {
 		Role persistInstance;
-		ResultSet generatedId = null;
-		ResultSet selectedById = null;
-		// ��������� ������
 		try {
-			prepareStatementForInsert(statementCreate, role);
-			statementCreate.executeUpdate();
-			generatedId = statementCreate.getGeneratedKeys();
-			if(generatedId.next()){
-				int id = generatedId.getInt(1);
-				statementSelectID.setInt(1, id);
-			} 
-			selectedById = statementSelectID.executeQuery();
-			List<Role> list = parseResultSet(selectedById);
-			persistInstance = list.iterator().next();
+			Serializable generatedId = session.save(role);
+			persistInstance = session.get(Role.class, generatedId);
 		} catch (Exception e) {
 			throw new PersistException("Unable to record new data to DB.", e);
-		} finally {
-			Exception e = null; 
-			try{
-				if(generatedId != null){
-				generatedId.close();
-				}
-			} catch (Exception ex){
-				e = ex;
-				}	
-			try{
-				if(selectedById != null){
-				selectedById.close();
-				}
-			} catch (Exception ex){
-				e = ex;
-			}
-			if (e != null) {
-				throw new PersistException("Unable to close resourses. ", e);
-			}
-				}
+		} 
 		return persistInstance;
 	}
 		
-	public Role read(String key) throws PersistException {
-		List<Role> list;
-		ResultSet selectedById = null;
+	public Role read(String id) throws PersistException {
+		Role persistInstance;
 		try {
-			statementSelectID.setString(1, key);
-			selectedById = statementSelectID.executeQuery();
-			list = parseResultSet(selectedById);
+			persistInstance = session.get(Role.class, id);
 		} catch (Exception e) {
-			throw new PersistException("Record with PK = " + key
+			throw new PersistException("Record with PK = " + id
 					+ " not found.", e);
-		} finally{
-			try {
-			selectedById.close();
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
-		}
-		return list.iterator().next();
+		} 	
+		return persistInstance;
 	}
 	
 	public Role readByName(String name) throws PersistException {
-		List<Role> list;
-		ResultSet selectedByName = null;
+		Role persistInstance = new Role();
 		try {
-			statementSelectName.setString(1, name);
-			selectedByName = statementSelectName.executeQuery();
-			list = parseResultSet(selectedByName);
+			Criteria criteria = session.createCriteria(Role.class)
+                    .add(Restrictions.eq("name", name));
+			if(!criteria.list().isEmpty()){
+				persistInstance = (Role) criteria.list().listIterator().next();
+			}	
 		} catch (Exception e) {
-			throw new PersistException("Record with name = " + name
+			throw new PersistException("Record with PK = " + name
 					+ " not found.", e);
-		} finally{
-			try {
-			selectedByName.close();
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
 		}
-		}
-		if(list.isEmpty()){
-			return new Role();
-		}
-		return list.iterator().next();
+		return persistInstance;
 	}
 
 	public void update(Role role) throws PersistException {
 		try {
-			prepareStatementForUpdate(statementUpdate, role);
-			int count = statementUpdate.executeUpdate();
-			if (count != 1) {
-				throw new PersistException(
-						"On update modify more then 1 record: " + count);
-			}
+			Transaction trans = session.beginTransaction();
+			session.update(role);
+			trans.commit();				
 		} catch (Exception e) {
 			throw new PersistException("Unable to update record.", e);
 		}
@@ -196,12 +82,9 @@ public class MySqlRoleDao {
 
 	public void delete(Role role) throws PersistException {
 		try {
-			statementDelete.setObject(1, role.getId());
-			int count = statementDelete.executeUpdate();
-			if (count != 1) {
-				throw new PersistException(
-						"On delete modify more then 1 record: " + count);
-			}
+			Transaction trans = session.beginTransaction();
+			session.delete(role);
+			trans.commit();		
 		} catch (Exception e) {
 			throw new PersistException("Unable to delete record.", e);
 		}
@@ -210,54 +93,11 @@ public class MySqlRoleDao {
 
 	public List<Role> getAll() throws PersistException {
 		List<Role> list;
-		ResultSet selectedAll = null;
 		try {
-			selectedAll = statementSelectAll.executeQuery();
-			list = parseResultSet(selectedAll);
+			list = session.createCriteria(Role.class).list();
 		} catch (Exception e) {
 			throw new PersistException("Unable to read data from DB.", e);
-		}finally{
-			try {
-				selectedAll.close();
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
 		}
 		return list;
-	}
-	
-	protected List<Role> parseResultSet(ResultSet rs)
-			throws PersistException {
-		LinkedList<Role> result = new LinkedList<Role>();
-		try {
-			while (rs.next()) {
-				Role role = new Role();
-				role.setId(rs.getInt("ID"));
-				role.setName(rs.getString("ROLE_NAME"));
-				result.add(role);
-			}
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
-		return result;
-	}
-
-	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Role object) throws PersistException {
-		try {
-			statement.setString(1, object.getName());
-			statement.setInt(2, object.getId());
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
-	}
-
-	protected void prepareStatementForInsert(PreparedStatement statement,
-			Role object) throws PersistException {
-		try {
-			statement.setString(1, object.getName());
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
 	}
 }

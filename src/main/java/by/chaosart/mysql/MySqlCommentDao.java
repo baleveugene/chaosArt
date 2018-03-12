@@ -1,203 +1,81 @@
 package by.chaosart.mysql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.LinkedList;
+import java.io.Serializable;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import by.chaosart.dao.PersistException;
 import by.chaosart.domain.*;
 
 public class MySqlCommentDao {
 
-	private Connection connection;
-	private PreparedStatement statementCreate;
-	private PreparedStatement statementUpdate;
-	private PreparedStatement statementSelectAll;
-	private PreparedStatement statementSelectArtId;
-	private PreparedStatement statementSelectId;
-	private PreparedStatement statementSelectText;
-	private PreparedStatement statementDelete;
+	private Session session;
 	
-	protected MySqlCommentDao(Connection connection) throws PersistException {
-		this.connection = connection;
-		try {
-			statementCreate = connection.prepareStatement(getCreateQuery(), PreparedStatement.RETURN_GENERATED_KEYS);
-			statementUpdate = connection.prepareStatement(getUpdateQuery());
-			statementSelectAll = connection.prepareStatement(getSelectQuery());
-			statementSelectArtId = connection.prepareStatement(getSelectQuery()
-					+ "WHERE ART_ID = ?;");
-			statementSelectId = connection.prepareStatement(getSelectQuery()
-					+ "WHERE ID = ?;");
-			statementSelectText = connection.prepareStatement(getSelectQuery()
-					+ "WHERE COMMENT_TEXT = ?;");
-			statementDelete = connection.prepareStatement(getDeleteQuery());
-		} catch (Exception e) {
-			throw new PersistException("Unable to create prepareStatement.", e);
-		}
+	public MySqlCommentDao(Session session) throws PersistException {
+		this.session = session;
 	}
 
 	public void close() throws PersistException {
-		Exception e = null;
 		try {
-			connection.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementCreate.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementUpdate.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectAll.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectArtId.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectId.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementSelectText.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		try {
-			statementDelete.close();
-		} catch (Exception ex) {
-			e = ex;
-		}
-		if (e != null) {
+			session.close();
+		} catch (Exception e) {
 			throw new PersistException("Unable to close resourses. ", e);
-		}
-	}
-	
-	protected String getSelectQuery() {
-		return "SELECT ID, USER_ID, ART_ID, COMMENT_TEXT FROM COMMENTS ";
-	}
-
-	
-	protected String getCreateQuery() {
-		return "INSERT INTO COMMENTS (USER_ID, ART_ID, COMMENT_TEXT) \n"
-				+ "VALUES (?, ?, ?);";
-	}
-
-	protected String getUpdateQuery() {
-		return "UPDATE COMMENTS \n"
-				+ "SET USER_ID = ?, ART_ID  = ?, COMMENT_TEXT = ? \n"
-				+ "WHERE id = ?;";
-	}
-
-	protected String getDeleteQuery() {
-		return "DELETE FROM COMMENTS WHERE id= ?;";
+		}	
 	}
 
 	public Comment create(Comment comment) throws PersistException {
 		Comment persistInstance;
-		ResultSet generatedId = null;
-		ResultSet selectedById = null;
 		try {
-			prepareStatementForInsert(statementCreate, comment);
-			statementCreate.executeUpdate();
-			generatedId = statementCreate.getGeneratedKeys();
-			if(generatedId.next()){
-				int id = generatedId.getInt(1);
-				statementSelectId.setInt(1, id);
-			} 
-			selectedById = statementSelectId.executeQuery();
-			List<Comment> list = parseResultSet(selectedById);
-			persistInstance = list.iterator().next();
+			Transaction trans = session.beginTransaction();	
+			Serializable generatedId = session.save(comment);
+			persistInstance = session.get(Comment.class, generatedId);
+			trans.commit();
 		} catch (Exception e) {
 			throw new PersistException("Unable to record new data to DB.", e);
-		} finally {
-			Exception e = null; 
-			try{
-				if(generatedId != null){
-				generatedId.close();
-				}
-			} catch (Exception ex){
-				e = ex;
-				}	
-			try{
-				if(selectedById != null){
-				selectedById.close();
-				}
-			} catch (Exception ex){
-				e = ex;
-			}
-			if (e != null) {
-				throw new PersistException("Unable to close resourses. ", e);
-			}
-				}
+		} 
 		return persistInstance;
 	}
 		
-	public Comment read(String key) throws PersistException {
-		List<Comment> list;
-		ResultSet selectedById = null;
+	public Comment read(String id) throws PersistException {
+		Comment persistInstance;
 		try {
-			statementSelectId.setString(1, key);
-			selectedById = statementSelectId.executeQuery();
-			list = parseResultSet(selectedById);
+			persistInstance = session.get(Comment.class, id);
 		} catch (Exception e) {
-			throw new PersistException("Record with PK = " + key
+			throw new PersistException("Record with PK = " + id
 					+ " not found.", e);
-		} finally{
-			try {
-			selectedById.close();
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
-		}
-		return list.iterator().next();
-	}
-	
-	public Comment readByText(String text) throws PersistException {
-		List<Comment> list;
-		ResultSet selectedByText = null;
-		try {
-			statementSelectText.setString(1, text);
-			selectedByText = statementSelectText.executeQuery();
-			list = parseResultSet(selectedByText);
-		} catch (Exception e) {
-			throw new PersistException("Record with comment = " + text
-					+ " not found.", e);
-		} finally{
-			try {
-				if(selectedByText!=null){
-				selectedByText.close();
-				}
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
-		}
-		if(list.isEmpty()){
-			return new Comment();
-		}
-		return list.iterator().next();
+		} 	
+		return persistInstance;
 	}
 
+	public Comment readByText(String text) throws PersistException {
+		Comment persistInstance = new Comment();
+		try {
+			Criteria criteria = session.createCriteria(Comment.class)
+                    .add(Restrictions.eq("text", text));
+			if(!criteria.list().isEmpty()){
+				persistInstance = (Comment) criteria.list().listIterator().next();
+			}	
+		} catch (Exception e) {
+			throw new PersistException("Record with PK = " + text
+					+ " not found.", e);
+		}
+		return persistInstance;
+	}
+	
 	public void update(Comment comment) throws PersistException {
 		try {
-			prepareStatementForUpdate(statementUpdate, comment);
-			int count = statementUpdate.executeUpdate();
-			if (count != 1) {
-				throw new PersistException(
-						"On update modify more then 1 record: " + count);
-			}
+			Transaction trans = session.beginTransaction();
+			session.update(comment);
+			trans.commit();
 		} catch (Exception e) {
 			throw new PersistException("Unable to update record.", e);
 		}
@@ -206,12 +84,9 @@ public class MySqlCommentDao {
 
 	public void delete(Comment comment) throws PersistException {
 		try {
-			statementDelete.setObject(1, comment.getId());
-			int count = statementDelete.executeUpdate();
-			if (count != 1) {
-				throw new PersistException(
-						"On delete modify more then 1 record: " + count);
-			}
+			Transaction trans = session.beginTransaction();
+			session.delete(comment);
+			trans.commit();
 		} catch (Exception e) {
 			throw new PersistException("Unable to delete record.", e);
 		}
@@ -220,81 +95,23 @@ public class MySqlCommentDao {
 
 	public List<Comment> getAll() throws PersistException {
 		List<Comment> list;
-		ResultSet selectedAll = null;
 		try {
-			selectedAll = statementSelectAll.executeQuery();
-			list = parseResultSet(selectedAll);
+			list = session.createCriteria(Comment.class).list();
 		} catch (Exception e) {
 			throw new PersistException("Unable to read data from DB.", e);
-		}finally{
-			try {
-				selectedAll.close();
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
 		}
 		return list;
 	}
 	
-	public List<Comment> getAll(String artId) throws PersistException {
+	public List<Comment> getAll(Art artComment) throws PersistException {
 		List<Comment> list;
-		ResultSet selectedAll = null;
 		try {
-			statementSelectArtId.setString(1, artId);
-			selectedAll = statementSelectArtId.executeQuery();
-			list = parseResultSet(selectedAll);
+			Criteria criteria = session.createCriteria(Comment.class)
+                    .add(Restrictions.eq("artComment", artComment));
+			list = criteria.list();
 		} catch (Exception e) {
 			throw new PersistException("Unable to read data from DB.", e);
-		}finally{
-			try {
-				if(selectedAll != null){
-				selectedAll.close();
-				}
-		} catch (Exception e){
-			throw new PersistException("Unable to close resourses. ", e);
-		}
 		}
 		return list;
-	}
-	
-	protected List<Comment> parseResultSet(ResultSet rs)
-			throws PersistException {
-		LinkedList<Comment> result = new LinkedList<Comment>();
-		try {
-			while (rs.next()) {
-				Comment comment = new Comment();
-				comment.setId(rs.getString("ID"));
-				comment.setUserId(rs.getString("USER_ID"));
-				comment.setArtId(rs.getString("ART_ID"));
-				comment.setText(rs.getString("COMMENT_TEXT"));
-				result.add(comment);
-			}
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
-		return result;
-	}
-
-	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Comment object) throws PersistException {
-		try {
-			statement.setString(1, object.getUserId());
-			statement.setString(2, object.getArtId());
-			statement.setString(3, object.getText());
-			statement.setString(4, object.getId());
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
-	}
-
-	protected void prepareStatementForInsert(PreparedStatement statement,
-			Comment object) throws PersistException {
-		try {
-			statement.setString(1, object.getUserId());
-			statement.setString(2, object.getArtId());
-			statement.setString(3, object.getText());
-		} catch (Exception e) {
-			throw new PersistException("Unable to set values to object", e);
-		}
 	}
 }

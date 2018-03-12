@@ -58,14 +58,16 @@
 			<table>
 			<%
 			List<Comment> commentList = (List<Comment>)session.getAttribute("commentList");
-			List<User> userList = (List<User>)session.getAttribute("userList");
-			int i = 0;
-			for (Comment c : commentList) {		
-				User u = userList.get(i++);
-				out.println("<tr>");
-				out.println("<td id=\"td1\">" + u.getName() + "</td>");
-				out.println("<td>" + c.getText() + "</td>");
-				out.println("</tr>");
+			if(commentList!=null){
+				List<User> userList = (List<User>)session.getAttribute("userList");
+				int i = 0;
+				for (Comment c : commentList) {		
+					User u = userList.get(i++);
+					out.println("<tr>");
+					out.println("<td id=\"td1\">" + u.getName() + "</td>");
+					out.println("<td>" + c.getText() + "</td>");
+					out.println("</tr>");
+				}
 			}
 			%>
 			</table>
@@ -88,10 +90,12 @@
 		<h2>Еще работы от <%=artist.getName()%></h2>
 		<%
 		List<Art> artList = (List<Art>)session.getAttribute("artList");
+		if(artList!=null) {
 		for (Art a : artList) {
 			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src=\""
 					+ a.getImage() + "\" height=\"120\"></a>");
 			}
+		}
 		%>
 	</div>
 	<div id="footer">&copy; Balev</div>

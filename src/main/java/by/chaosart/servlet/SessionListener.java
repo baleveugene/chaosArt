@@ -1,12 +1,8 @@
 package by.chaosart.servlet;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.springframework.stereotype.Repository;
-
-import by.chaosart.dao.DaoFactory;
 import by.chaosart.mysql.MySqlArtDao;
 import by.chaosart.mysql.MySqlArtistDao;
 import by.chaosart.mysql.MySqlCategoryDao;
@@ -25,7 +21,7 @@ public class SessionListener implements HttpSessionListener {
 	
     public void sessionCreated(HttpSessionEvent ev) {
     	try {   		
-			DaoFactory factory = new MySqlDaoFactory();
+    		MySqlDaoFactory factory = new MySqlDaoFactory();
 			artDao = factory.getMySqlArtDao();
 			categoryDao = factory.getMySqlCategoryDao();			
 			artistDao = factory.getMySqlArtistDao();

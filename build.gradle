@@ -34,10 +34,14 @@ sourceSets{
 dependencies {   
     testCompile 'org.testng:testng:6.13.1'
     providedCompile "javax.servlet:javax.servlet-api:3.1.0" 
-    providedCompile "mysql:mysql-connector-java:5.1.44"
+    compile "mysql:mysql-connector-java:5.1.44"
     compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
     compile 'org.springframework:spring-core:3.2.2.RELEASE'
     compile 'org.springframework:spring-web:3.2.2.RELEASE'
+    compile 'org.hibernate:hibernate-core:5.0.1.Final'
+    compile 'org.hibernate:hibernate-entitymanager:5.0.1.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.0.1.Final'
+    
 }
  
 dependencies {

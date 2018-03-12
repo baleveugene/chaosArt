@@ -11,9 +11,10 @@ import org.testng.AssertJUnit;
 import java.util.List;
 
 import by.chaosart.dao.PersistException;
+import by.chaosart.domain.Category;
 import by.chaosart.domain.Role;
-import by.chaosart.mysql.MySqlRoleDao;
 import by.chaosart.mysql.MySqlDaoFactory;
+import by.chaosart.mysql.MySqlRoleDao;
 
 public class MySqlRoleDaoTest {
 	
@@ -72,9 +73,9 @@ public class MySqlRoleDaoTest {
 	
 	@Test
 	public void updateTest() throws PersistException {
-		Role expectedRole = createRole(1);
+		Role expectedRole = roleDao.read("1");
+		expectedRole.setName("RoleTest2");
 		/* Проверяем метод update(Role Role) */	 
-		expectedRole.setId(1);
 		roleDao.update(expectedRole);
 		Role actualRole = roleDao.read("1");
 		AssertJUnit.assertEquals(expectedRole.getName(), actualRole.getName());		
@@ -93,8 +94,8 @@ public class MySqlRoleDaoTest {
 			/* Возвращаем в исходное положение запись в БД с id=1, 
 			 * в случае ее изменения в процессе тестирования метода update()*/
 			if(!roleDao.read("1").getName().equals("RoleTest1")){
-				Role expectedRole = createRole(0); 
-				expectedRole.setId(1);
+				Role expectedRole = roleDao.read("1");
+				expectedRole.setName("RoleTest1");
 				roleDao.update(expectedRole);
 			}
 			/* Возвращаем в исходное положение запись в БД (удаляем запись), 

@@ -16,17 +16,17 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import by.chaosart.dao.DaoFactory;
 import by.chaosart.domain.Art;
 import by.chaosart.domain.Artist;
 import by.chaosart.domain.Category;
 import by.chaosart.domain.Comment;
+import by.chaosart.domain.Role;
 import by.chaosart.domain.User;
 import by.chaosart.mysql.MySqlArtDao;
 import by.chaosart.mysql.MySqlArtistDao;
 import by.chaosart.mysql.MySqlCategoryDao;
 import by.chaosart.mysql.MySqlCommentDao;
-import by.chaosart.mysql.MySqlDaoFactory;
+import by.chaosart.mysql.MySqlRoleDao;
 import by.chaosart.mysql.MySqlUserDao;
 
 public class ControllerServlet extends HttpServlet {
@@ -41,6 +41,8 @@ public class ControllerServlet extends HttpServlet {
 	MySqlCommentDao commentDao;
 	@Autowired
 	MySqlUserDao userDao;
+	@Autowired
+	MySqlRoleDao roleDao;
 	
 	public void init(ServletConfig config) throws ServletException {
 	    super.init(config);
@@ -112,7 +114,7 @@ public class ControllerServlet extends HttpServlet {
 				String categoryId = req.getParameter("categoryId");
 				String categoryName = categoryDao.read(categoryId).getName();
 				req.getSession().setAttribute("categoryName", categoryName);
-				artList = artDao.getAllOfCat(categoryId);
+				artList = artDao.getAllOfCat(categoryDao.read(categoryId));
 				req.getSession().setAttribute("artList", artList);
 			}
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("main.jsp");
@@ -132,18 +134,19 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			Art art = artDao.read(artId);
 			req.getSession().setAttribute("art", art);
-			String artistId = art.getArtistId();
-			Artist artist = artistDao.read(artistId);
+			Artist artist = art.getArtist();
 			req.getSession().setAttribute("artist", artist);
-			List<Comment> commentList = commentDao.getAll(artId);
+			List<Comment> commentList = commentDao.getAll(art);
 			req.getSession().setAttribute("commentList", commentList);
 			List<User> userList = new ArrayList<User>();
-			for (Comment c : commentList) {
-				User u = userDao.read(c.getUserId());
-				userList.add(u);			
+			if(commentList!=null) {			
+				for (Comment c : commentList) {
+					User u = c.getUser();
+					userList.add(u);			
+				}
 			}
 			req.getSession().setAttribute("userList", userList);
-			List<Art> artList = artDao.getAll(artistId);
+			List<Art> artList = artist.getArts();
 			req.getSession().setAttribute("artList", artList);
 			// Переходим на страницу art.jsp
 			RequestDispatcher requestDispatcher = req.getRequestDispatcher("art.jsp");
@@ -206,20 +209,23 @@ public class ControllerServlet extends HttpServlet {
 						requestDispatcher.forward(req, resp);					
 					} else {
 						// устанавливаем параметры нового пользователя и создаем запись в БД
+						Role role = new Role();
 						if (hashCode.equals(adminHashCode)) {
-							user.setRoleId("1");
+							role = roleDao.read("1");
+							user.setRole(role);
 						} else {
-							user.setRoleId("2");
+							role = roleDao.read("2");
+							user.setRole(role);
 						}
 						user.setName(name);
 						user.setSurname(surname);
 						user.setLogin(login);
 						user.setPassword(hashCode);
 						user = userDao.create(user);
-						// Создаем сессию и записываем в нее параметры пользователя
+						// Записываем в сессию параметры пользователя
 						HttpSession session = req.getSession();
 						session.setAttribute("userId", user.getId());
-						session.setAttribute("roleId", user.getRoleId());
+						session.setAttribute("roleId", user.getRole().getId());
 						// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
 						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
@@ -385,18 +391,18 @@ public class ControllerServlet extends HttpServlet {
 						if (artist.getName() == null) {
 							artist.setName(artistName);
 							artist = artistDao.create(artist);
-							art.setArtistId(artist.getId());
+							art.setArtist(artist);
 						} else {
-							art.setArtistId(artist.getId());
+							art.setArtist(artist);
 						}
 						// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
 						Category cat = categoryDao.readByName(categoryName);
 						if (cat.getName() == null) {
 							cat.setName(categoryName);
 							cat = categoryDao.create(cat);
-							art.setCategoryId(cat.getId());
+							art.setCategory(cat);
 						} else {
-							art.setCategoryId(cat.getId());
+							art.setCategory(cat);
 						}
 						// Устанавливаем параметры арта, записываем его в БД
 						art.setName(artName);
@@ -422,8 +428,8 @@ public class ControllerServlet extends HttpServlet {
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			Art art = artDao.read(artId);
-			Artist artist = artistDao.read(art.getArtistId());
-			Category category = categoryDao.read(art.getCategoryId());
+			Artist artist = art.getArtist();
+			Category category = art.getCategory();
 			req.getSession().setAttribute("art", art);
 			req.getSession().setAttribute("artist", artist);
 			req.getSession().setAttribute("category", category);
@@ -445,9 +451,9 @@ public class ControllerServlet extends HttpServlet {
 					if (artist.getName() == null) {
 						artist.setName(artistName);
 						artist = artistDao.create(artist);
-						art.setArtistId(artist.getId());
+						art.setArtist(artist);
 					} else {
-						art.setArtistId(artist.getId());
+						art.setArtist(artist);
 					}
 				}
 				if (!categoryName.isEmpty()){
@@ -458,9 +464,9 @@ public class ControllerServlet extends HttpServlet {
 					if (cat.getName() == null) {
 						cat.setName(categoryName);
 						cat = categoryDao.create(cat);
-						art.setCategoryId(cat.getId());
+						art.setCategory(cat);
 					} else {
-						art.setCategoryId(cat.getId());
+						art.setCategory(cat);
 					}
 				} else {
 					String message = "Проверьте правильность заполнения поля Название категории"+"\n"
@@ -472,8 +478,8 @@ public class ControllerServlet extends HttpServlet {
 				}
 				}
 				if (!originalUrl.isEmpty()){
-				if(originalUrl.matches("^(?i)http://\\w+\\.(com|ru|by|ua|edu|gov|net|org).*$")){
-					art.setOriginalUrl(originalUrl);
+					if(originalUrl.matches("^(?i)http://\\w+\\.(com|ru|by|ua|edu|gov|net|org).*$")){
+						art.setOriginalUrl(originalUrl);
 				} else {				
 					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
 					req.setAttribute("message", message);
@@ -505,7 +511,7 @@ public class ControllerServlet extends HttpServlet {
 			} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
 				String yes = req.getParameter("yes");
 				if (yes != null) {
-					Art art = artDao.read(artId);
+					Art art = artDao.read(artId);				
 					artDao.delete(art);
 					req.getSession().removeAttribute("artId");
 					req.removeAttribute("artId");
@@ -535,12 +541,12 @@ public class ControllerServlet extends HttpServlet {
 				Comment com = new Comment();
 				if (!comment.isEmpty()) {
 					com.setText(comment);
-					com.setUserId(userId);
-					com.setArtId(artId);
+					com.setUser(userDao.read(userId));
+					com.setArt(artDao.read(artId));
 					commentDao.create(com);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
-					requestDispatcher.forward(req, resp);
 				}
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+				requestDispatcher.forward(req, resp);
 			}
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
