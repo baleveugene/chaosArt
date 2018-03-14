@@ -3,6 +3,7 @@ package by.chaosart.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -191,62 +192,72 @@ public class ControllerServlet extends HttpServlet {
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
 				String password2 = req.getParameter("password2");
-				// Проверка валидности введенных данных
-				if (name.isEmpty() || login.isEmpty() || password.isEmpty() || password2.isEmpty()) {
-					String message = "Необходимо заполнить все обязательные поля";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-					requestDispatcher.forward(req, resp);
-				} else if (!name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					String message = "Проверьте правильность заполнения полей Имя и Фамилия."
-							+ "Введенные параметры должны состоять из букв латинского или русского алфавита,"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-					requestDispatcher.forward(req, resp);					
-				} else if (login.matches("^[*№;%:#&\'\"!)(\\.,]+") || password.matches("^[*№;%:#&\'\"!)(\\.,]+")) {
-					String message = "Проверьте правильность заполнения полей Логин и Пароль."
-							+ "(поля не должны содержать символов *, №, ?, %, ;, |, /, \\, (, ), &, !)";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-					requestDispatcher.forward(req, resp);				
-				} else if (!password.equals(password2)) {
-					String message = "Пароли должны совпадать!";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-					requestDispatcher.forward(req, resp);
-				} else {
-					String hashCode = String.valueOf(password.hashCode());
-					String adminPassword = "Admin";
-					String adminHashCode = String.valueOf(adminPassword.hashCode());
-					User user = userDao.readByLogin(login);
-					if (user.getLogin() != null) {
-						String message = "Пользователь с таким логином уже существует.";
-						req.setAttribute("message", message);
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-						requestDispatcher.forward(req, resp);					
-					} else {
-						// устанавливаем параметры нового пользователя и создаем запись в БД
-						Role role = new Role();
-						if (hashCode.equals(adminHashCode)) {
-							role = roleDao.read("1");
-							user.setRole(role);
-						} else {
-							role = roleDao.read("2");
-							user.setRole(role);
-						}
-						user.setName(name);
-						user.setSurname(surname);
-						user.setLogin(login);
-						user.setPassword(hashCode);
-						user = userDao.create(user);
-						// Записываем в сессию параметры пользователя
-						HttpSession session = req.getSession();
-						session.setAttribute("userId", user.getId());
-						session.setAttribute("roleId", user.getRole().getId());
-						// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
-						resp.sendRedirect("/Chaos/ControllerServlet");
+				/* Проверка валидности введенных данных */
+				/* Проверка заполнения обязательных полей */
+				Map<String, String> paramMap = new HashMap<String, String>();
+				paramMap.put("Имя", name);
+				paramMap.put("Логин", login);
+				paramMap.put("Пароль", password);
+				paramMap.put("Повторите пароль", password2);
+				ArrayList<String> messageList = new ArrayList<String>();
+				for(Iterator<String> i = paramMap.keySet().iterator(); i.hasNext();){
+					String param = i.next();
+					String value = paramMap.get(param);
+					if(value.isEmpty()){
+						messageList.add("Поле \""+param+"\"является обязательным к заполнению!");
 					}
+				}
+				/* Проверка корректности введенных данных полей Имя и Фамилия */
+				if (!name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					messageList.add("Проверьте правильность заполнения полей Имя и Фамилия."
+							+ "Введенные параметры должны состоять из букв латинского или русского алфавита,"
+							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21");
+				}
+				/* Проверка корректности введенных данных поля Логин */
+				if (login.matches("^[*№;%:#&\'\"!)(\\.,]+") || password.matches("^[*№;%:#&\'\"!)(\\.,]+")) {
+					messageList.add("Проверьте правильность заполнения полей Логин и Пароль."
+							+ "(поля не должны содержать символов *, №, ?, %, ;, |, /, \\, (, ), &, !)");
+				}
+				/* Проверка совпадения паролей */
+				if (!password.equals(password2)) {
+					messageList.add("Пароли должны совпадать!");
+				} 
+				/* Проверка уникальности логина */
+				String hashCode = String.valueOf(password.hashCode());
+				String adminPassword = "Admin";
+				String adminHashCode = String.valueOf(adminPassword.hashCode());
+				User user = userDao.readByLogin(login);
+				if (user.getLogin() != null) {
+					messageList.add("Пользователь с таким логином уже существует.");
+				}
+				/* В случае наличия невалидных введенных данных пользователь возвращается 
+				 * на страницу регистрации с сообщениями о допущенных ошибках */
+				if (!messageList.isEmpty()){
+					req.setAttribute("messageList", messageList);
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
+					requestDispatcher.forward(req, resp); 										
+				} else {
+					/* В случае успешной валидации введенных данных 
+					 * устанавливаем параметры нового пользователя и создаем запись в БД */				  					 
+					Role role = new Role();
+					if (hashCode.equals(adminHashCode)) {
+						role = roleDao.read("1");
+						user.setRole(role);
+					} else {
+						role = roleDao.read("2");
+						user.setRole(role);
+					}
+					user.setName(name);
+					user.setSurname(surname);
+					user.setLogin(login);
+					user.setPassword(hashCode);
+					user = userDao.create(user);
+					// Записываем в сессию параметры пользователя
+					HttpSession session = req.getSession();
+					session.setAttribute("userId", user.getId());
+					session.setAttribute("roleId", user.getRole().getId());
+					// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
+					resp.sendRedirect("/Chaos/ControllerServlet");
 				}
 			}
 		} catch (Exception e) {
@@ -374,65 +385,75 @@ public class ControllerServlet extends HttpServlet {
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalURL = req.getParameter("originalURL");
-				// Валидация пользовательского ввода
-				if (artName.isEmpty() || artistName.isEmpty() || categoryName.isEmpty() || originalURL.isEmpty()) {				
-					String message = "Все поля обязательны к заполнению.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-					requestDispatcher.forward(req, resp);
-				} else if (!artName.matches(".+\\.(jpg|png|jpeg|bmp|tif|gif)")) {
-					String message = "Проверьте правильность заполнения поля Название арта.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-					requestDispatcher.forward(req, resp);
-				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					String message = "Проверьте правильность заполнения поля Название категории."+"\n"
-							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
-							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-					requestDispatcher.forward(req, resp);
-				} else if (!originalURL.matches("^(?i)http[s ]://.*$")) {				
-					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-					requestDispatcher.forward(req, resp);
-				} else {
-					Art art = artDao.readByName(artName);
-					if (art.getName() != null) {										
-						String message = "Арт с таким названием уже существует.";
-						req.setAttribute("message", message);
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-						requestDispatcher.forward(req, resp);
-					} else {
-						// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его	
-						Artist artist = artistDao.readByName(artistName);
-						if (artist.getName() == null) {
-							artist.setName(artistName);
-							artist = artistDao.create(artist);
-							art.setArtist(artist);
-						} else {
-							art.setArtist(artist);
-						}
-						// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
-						Category cat = categoryDao.readByName(categoryName);
-						if (cat.getName() == null) {
-							cat.setName(categoryName);
-							cat = categoryDao.create(cat);
-							art.setCategory(cat);
-						} else {
-							art.setCategory(cat);
-						}
-						// Устанавливаем параметры арта, записываем его в БД
-						art.setName(artName);
-						art.setImage("img/content/" + artName);
-						art.setOriginalUrl(originalURL);
-						art = artDao.create(art);
-						// переходим на страницу созданного арта
-						RequestDispatcher requestDispatcher = req
-								.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
-						requestDispatcher.forward(req, resp);
+				/* Проверка валидности введенных данных */
+				/* Проверка заполнения обязательных полей */
+				Map<String, String> paramMap = new HashMap<String, String>();
+				paramMap.put("Название арта", artName);
+				paramMap.put("Имя художника", artistName);
+				paramMap.put("Название категории", categoryName);
+				paramMap.put("Ссылка на оригинал", originalURL);
+				ArrayList<String> messageList = new ArrayList<String>();
+				for(Iterator<String> i = paramMap.keySet().iterator(); i.hasNext();){
+					String param = i.next();
+					String value = paramMap.get(param);
+					if(value.isEmpty()){
+						messageList.add("Поле \""+param+"\"является обязательным к заполнению!");
 					}
+				}
+				/* Проверка поля Название арта */
+				if (!artName.matches(".+\\.(jpg|png|jpeg|bmp|tif|gif)")) {
+					messageList.add("Проверьте правильность заполнения поля Название арта.");
+				}
+				/* Проверка поля Название категории */
+				if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					messageList.add("Проверьте правильность заполнения поля Название категории."+"\n"
+							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
+							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)");
+				}
+				/* Проверка поля Ссылка на оригинал */
+				if (!originalURL.matches("^(?i)http[s ]://.*$")) {				
+					messageList.add("Проверьте правильность заполнения поля Ссылка на оригинал.");			
+				}
+				/* Проверка на уникальность добавляемого арта */
+				Art art = artDao.readByName(artName);
+				if (art.getName() != null) {										
+					messageList.add("Арт с таким названием уже существует.");
+				}		
+				/* В случае наличия невалидных введенных данных пользователь возвращается 
+				 * на страницу добавления арта с сообщениями о допущенных ошибках */
+				if (!messageList.isEmpty()){
+					req.setAttribute("messageList", messageList);
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
+					requestDispatcher.forward(req, resp);; 										
+				} else {
+					/* В случае успешной валидации введенных данных 
+					 * получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его */												
+					Artist artist = artistDao.readByName(artistName);
+					if (artist.getName() == null) {
+						artist.setName(artistName);
+						artist = artistDao.create(artist);
+						art.setArtist(artist);
+					} else {
+						art.setArtist(artist);
+					}
+					// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
+					Category cat = categoryDao.readByName(categoryName);
+					if (cat.getName() == null) {
+						cat.setName(categoryName);
+						cat = categoryDao.create(cat);
+						art.setCategory(cat);
+					} else {
+						art.setCategory(cat);
+					}
+					// Устанавливаем параметры арта, записываем его в БД
+					art.setName(artName);
+					art.setImage("img/content/" + artName);
+					art.setOriginalUrl(originalURL);
+					art = artDao.create(art);
+					// переходим на страницу созданного арта
+					RequestDispatcher requestDispatcher = req
+							.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
+					requestDispatcher.forward(req, resp);
 				}
 			}
 		} catch (Exception e) {
@@ -477,17 +498,17 @@ public class ControllerServlet extends HttpServlet {
 				}
 				if (!categoryName.isEmpty()){
 					if (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-						// Получаем и устанавливаем id категории арта, если такой категории еще нет,
-						// создаем ее
-					Category cat = categoryDao.readByName(categoryName);
-					if (cat.getName() == null) {
-						cat.setName(categoryName);
-						cat = categoryDao.create(cat);
-						art.setCategory(cat);
+						/* Получаем и устанавливаем id категории арта, если такой категории еще нет,
+						 *создаем ее */
+						Category cat = categoryDao.readByName(categoryName);
+						if (cat.getName() == null) {
+							cat.setName(categoryName);
+							cat = categoryDao.create(cat);
+							art.setCategory(cat);
+						} else {
+							art.setCategory(cat);
+						}
 					} else {
-						art.setCategory(cat);
-					}
-				} else {
 					String message = "Проверьте правильность заполнения поля Название категории"+"\n"
 							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
 							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
@@ -497,7 +518,7 @@ public class ControllerServlet extends HttpServlet {
 				}
 				}
 				if (!originalUrl.isEmpty()){
-					if(originalUrl.matches("^(?i)http://\\.*$")){
+					if(originalUrl.matches("^(?i)http[s ]://\\.*$")){
 						art.setOriginalUrl(originalUrl);
 				} else {				
 					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";

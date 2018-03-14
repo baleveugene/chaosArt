@@ -9,10 +9,14 @@
 <link rel="stylesheet" type="text/css" href="css/main.css"/>
 </head>
 <body>
+	<%@ page 
+	import="java.util.ArrayList" %>
 	<%
-	String message = (String)request.getAttribute("message");  
-	if(message!=null){
-	out.println("<h3>"+message+"</h3>");
+	ArrayList<String> messageList = (ArrayList<String>)request.getAttribute("messageList");  
+	if(messageList!=null){
+		for(String message: messageList) {
+			out.println("<h3>"+message+"</h3>");
+		}
 	}
 	%> 
 	<div id="registration-page">
@@ -22,7 +26,7 @@
 				<input type="text" name = "surname" placeholder="Фамилия"/>
 				<input type="text" name = "login" placeholder="Логин (обязательное поле)"/>
 				<input type="password" name = "password" placeholder="Пароль (обязательное поле)"/>
-				<input type="password" name = "password2" placeholder="Повторите пароль"/>
+				<input type="password" name = "password2" placeholder="Повторите пароль (обязательное поле)"/>
 				<input id="button1" type="submit" name = "newAccount" value="Создать">
 				<input id="button1" type="submit" name ="logIn" value="Отмена">
 				</form>
