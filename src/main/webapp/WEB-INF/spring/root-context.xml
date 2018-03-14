@@ -13,8 +13,7 @@
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="MySqlDaoFactory" class="by.chaosart.mysql.MySqlDaoFactory">
-    </bean>
-    
+    </bean> 
 	<bean name="artDao" class="by.chaosart.mysql.MySqlArtDao"
 	factory-bean="MySqlDaoFactory" factory-method="getMySqlArtDao">
     </bean>
@@ -32,6 +31,5 @@
     </bean>
  	<bean id="userDao" class="by.chaosart.mysql.MySqlUserDao"
  	factory-bean="MySqlDaoFactory" factory-method="getMySqlUserDao">
-    </bean>
-		
+    </bean>		
 </beans>

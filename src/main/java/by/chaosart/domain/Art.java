@@ -44,7 +44,7 @@ public class Art implements Serializable {
     @JoinColumn (name="CATEGORY_ID") 
 	private Category category;
 	
-	@OneToMany (mappedBy="artComment", fetch=FetchType.LAZY, orphanRemoval=true)
+	@OneToMany (mappedBy="artComment", fetch=FetchType.LAZY, orphanRemoval=true, cascade=CascadeType.REMOVE)
     private List<Comment> comments;
 	
 	@Column(name = "ORIGINAL_URL", unique = false, nullable = false, length = 64) 
