@@ -69,9 +69,13 @@ public class ControllerServlet extends HttpServlet {
 			/*Если в сессии возникло исключение, переходим на страницу исключения*/
 			if (req.getSession().getAttribute("errorPage") != null) {
 				exceptionPageProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/errorPage.jsp");
+				requestDispatcher.forward(req, resp);
 			/*Если в запросе нет параметров, переходим на главную страницу*/
 			} else if(reqParam.keySet().isEmpty()){
 				mainPageProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+				requestDispatcher.forward(req, resp);
 			} else {			
 				/*Проверяем параметры запроса и обрабатываем его соответствующим методом*/
 				for(Iterator<String> i = reqParam.keySet().iterator(); i.hasNext();){
@@ -81,26 +85,40 @@ public class ControllerServlet extends HttpServlet {
 						switch(param){
 							case("Chaos"):
 								mainPageProcessing(req, resp);
+								RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+								requestDispatcher.forward(req, resp);
 								break;
 							case("artId"):
-								artPageProcessing(req, resp);
+								artPageProcessing(req, resp);							
+								requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
+								requestDispatcher.forward(req, resp);
 								break;
 							case("categoryId"):
 								mainPageProcessing(req, resp);
+								requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+								requestDispatcher.forward(req, resp);
 								break;
 							case("newAccount"):
 								if (req.getParameter("newAccount").equals("Регистрация")) {
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
 									requestDispatcher.forward(req, resp);	
 								} else if (req.getParameter("newAccount").equals("Отмена")) {
 									resp.sendRedirect("/Chaos/ControllerServlet");		
 								} else if (req.getParameter("newAccount").equals("Создать")) {
-								regFormProcessing(req, resp);
+									regFormProcessing(req, resp);
+									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
+									if (!messageList.isEmpty()){
+										requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
+										requestDispatcher.forward(req, resp);
+									} else {
+										// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
+										resp.sendRedirect("/Chaos/ControllerServlet");
+									}
 								}
 								break;
 							case("logIn"):
 								if (req.getParameter("logIn").equals("Вход")) {
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("logIn").equals("Отмена")) {
 									resp.sendRedirect("/Chaos/ControllerServlet");			
@@ -112,67 +130,116 @@ public class ControllerServlet extends HttpServlet {
 									// переходим на главную страницу (mainWithOutReg)
 									resp.sendRedirect("/Chaos/ControllerServlet");
 								} else if (req.getParameter("logIn").equals("Войти")) {
-								loginFormProcessing(req, resp);
+									loginFormProcessing(req, resp);
+									String message = (String) req.getAttribute("message");
+									if(message!=null){
+										requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
+										requestDispatcher.forward(req, resp);
+									} else {
+										resp.sendRedirect("/Chaos/ControllerServlet");
+									}
 								}
 								break;
 							case("addCategory"):
 								if (req.getParameter("addCategory").equals("Добавить категорию")) {
 									// addCategory
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("addCategory").equals("Отмена")) {
 									// переходим на главную страницу (mainAdmin)
 									resp.sendRedirect("/Chaos/ControllerServlet");
 								} else if (req.getParameter("addCategory").equals("Создать")) {
-								addNewCategory(req, resp);
+									addNewCategory(req, resp);
+									String message = (String) req.getAttribute("message");
+									if(message!=null){
+										requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
+										requestDispatcher.forward(req, resp);
+									} else {
+										resp.sendRedirect("/Chaos/ControllerServlet");
+									}
 								}
 								break;
 							case("addArt"):
 								if (req.getParameter("addArt").equals("Добавить Арт")) {
 									// addArt
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("addArt").equals("Отмена")) {
 									// переходим на главную страницу (mainAdmin)
 									resp.sendRedirect("/Chaos/ControllerServlet");
 								} else if (req.getParameter("addArt").equals("Создать")) {
-								addNewArt(req, resp);
-								}
+									addNewArt(req, resp);
+									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
+									if (!messageList.isEmpty()){
+										requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
+										requestDispatcher.forward(req, resp);
+									} else {								
+										// переходим на страницу созданного арта
+										String artId = (String) req.getAttribute("artId");
+										requestDispatcher = req
+												.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+										requestDispatcher.forward(req, resp);
+									}
+								}							
 								break;
 							case("updateArt"):
 								if (req.getParameter("updateArt").equals("Изменить")) {			
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("updateArt").equals("Отмена")) {
 									// возвращаемся на страницу арта (artAdmin)
 									String artId = (String) req.getSession().getAttribute("artId");
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
-								updateArt(req, resp);
+									updateArt(req, resp);
+									String message = (String) req.getAttribute("message");
+									if(message!=null){
+										requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
+										requestDispatcher.forward(req, resp);
+									} else {
+										String artId = (String) req.getSession().getAttribute("artId");
+										// переходим на обновленную страницу арта (artAdmin)
+										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+										requestDispatcher.forward(req, resp);
+									}								
 								}
 								break;
 							case("deleteArt"):
 								if (req.getParameter("deleteArt").equals("Удалить")) {
 									// deleteArt
-									RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/deleteArt.jsp");
+									requestDispatcher = req.getRequestDispatcher("jsp/deleteArt.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
-								deleteArt(req, resp);
+									String yes = req.getParameter("yes");
+									if (yes != null) {
+										deleteArt(req, resp);
+										resp.sendRedirect("/Chaos/ControllerServlet");
+									} else {
+										String artId = (String) req.getSession().getAttribute("artId");
+										// возвращаемся на страницу арта (artAdmin)
+										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+										requestDispatcher.forward(req, resp);
+									}					
 								}
 								break;
 							case("newComment"):
-								addComment(req, resp);
+								if (req.getParameter("newComment").equals("Добавить комментарий")) {
+									String artId = (String) req.getSession().getAttribute("artId");
+									addComment(req, resp);
+									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+									requestDispatcher.forward(req, resp);
+								}							
 								break;
 							default:
 								continue;
 							}		
-					} return;
+						} 
+					return;
+					}
 				}
-			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
-			exceptionPageProcessing(req, resp); // страница исключений
+			req.getSession().setAttribute("errorPage", e);		
 		}
 	}
 
@@ -191,12 +258,8 @@ public class ControllerServlet extends HttpServlet {
 				artList = artDao.getAllOfCat(categoryDao.read(categoryId));
 				req.getSession().setAttribute("artList", artList);
 			}
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
-			requestDispatcher.forward(req, resp);
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
@@ -221,21 +284,16 @@ public class ControllerServlet extends HttpServlet {
 			}
 			req.getSession().setAttribute("userList", userList);
 			List<Art> artList = artist.getArts();
-			req.getSession().setAttribute("artList", artList);
-			// Переходим на страницу art.jsp
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
-			requestDispatcher.forward(req, resp);
+			req.getSession().setAttribute("artList", artList);			
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
 	// Форма Регистрации
 	public void regFormProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		try {
+			try {
 				String name = req.getParameter("name");
 				String surname = req.getParameter("surname");
 				String login = req.getParameter("login");
@@ -282,9 +340,7 @@ public class ControllerServlet extends HttpServlet {
 				/* В случае наличия невалидных введенных данных пользователь возвращается 
 				 * на страницу регистрации с сообщениями о допущенных ошибках */
 				if (!messageList.isEmpty()){
-					req.setAttribute("messageList", messageList);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-					requestDispatcher.forward(req, resp); 										
+					req.setAttribute("messageList", messageList);									
 				} else {
 					/* В случае успешной валидации введенных данных 
 					 * устанавливаем параметры нового пользователя и создаем запись в БД */				  					 
@@ -304,14 +360,10 @@ public class ControllerServlet extends HttpServlet {
 					// Записываем в сессию параметры пользователя
 					HttpSession session = req.getSession();
 					session.setAttribute("userId", user.getId());
-					session.setAttribute("roleId", user.getRole().getId());
-					// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
-					resp.sendRedirect("/Chaos/ControllerServlet");
+					session.setAttribute("roleId", user.getRole().getId());				
 				}
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
@@ -325,14 +377,10 @@ public class ControllerServlet extends HttpServlet {
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() == null) {
 					String message = "Проверьте правильность написания логина.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
-					requestDispatcher.forward(req, resp);				
+					req.setAttribute("message", message);									
 				} else if (user.getPassword() != null && !hashCode.equals(user.getPassword())) {
 					String message = "Проверьте правильность написания пароля.";				
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
-					requestDispatcher.forward(req, resp);				
+					req.setAttribute("message", message);				
 				} else {
 					String userId = user.getId();
 					String adminPassword = "Admin";
@@ -341,57 +389,42 @@ public class ControllerServlet extends HttpServlet {
 					session.setAttribute("userId", userId);
 					if (hashCode.equals(adminHashCode)) {
 						session.setAttribute("roleId", new String("1"));
-						// переходим на главную страницу (mainAdmin)
-						resp.sendRedirect("/Chaos/ControllerServlet");
 					} else {
 						session.setAttribute("roleId", new String("2"));
-						// переходим на главную страницу (mainUser)
-						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
 	// Форма Добавления новой категории
-	public void addNewCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		try {				
+	public void addNewCategory(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+			try {				
 				String categoryName = req.getParameter("category");
 				// Валидация введенных данных
 				if (categoryName.isEmpty()) {
 					String message = "Название категории не может быть пустым.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-					requestDispatcher.forward(req, resp);
+					req.setAttribute("message", message);			
 				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {				
 					String message = "Проверьте правильность заполнения поля Название категории."+"\n"
 							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
 							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
 					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-					requestDispatcher.forward(req, resp);
 				} else {
 					Category category = categoryDao.readByName(categoryName);
 					if (category.getName() != null) {
 						String message = "Данная категория уже существует.";
 						req.setAttribute("message", message);
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-						requestDispatcher.forward(req, resp);
 					} else {
 						// устанавливаем параметры категории, записываем ее в БД
 						category.setName(categoryName);
 						categoryDao.create(category);
-						// переходим на главную страницу (mainAdmin)
-						resp.sendRedirect("/Chaos/ControllerServlet");
 					}
 				}
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
@@ -439,9 +472,7 @@ public class ControllerServlet extends HttpServlet {
 				/* В случае наличия невалидных введенных данных пользователь возвращается 
 				 * на страницу добавления арта с сообщениями о допущенных ошибках */
 				if (!messageList.isEmpty()){
-					req.setAttribute("messageList", messageList);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-					requestDispatcher.forward(req, resp);; 										
+					req.setAttribute("messageList", messageList);													
 				} else {
 					/* В случае успешной валидации введенных данных 
 					 * получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его */												
@@ -467,33 +498,27 @@ public class ControllerServlet extends HttpServlet {
 					art.setImage("img/content/" + artName);
 					art.setOriginalUrl(originalURL);
 					art = artDao.create(art);
-					// переходим на страницу созданного арта
-					RequestDispatcher requestDispatcher = req
-							.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
-					requestDispatcher.forward(req, resp);
+					req.setAttribute("artId", art.getId());
 				}		
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
 	// Форма Изменения арта
-	public void updateArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String artId = (String) req.getSession().getAttribute("artId");
-		try {
-			Art art = artDao.read(artId);
-			Artist artist = art.getArtist();
-			Category category = art.getCategory();
-			req.getSession().setAttribute("art", art);
-			req.getSession().setAttribute("artist", artist);
-			req.getSession().setAttribute("category", category);
-			
+	public void updateArt(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+			String artId = (String) req.getSession().getAttribute("artId");
+			try {
+				Art art = artDao.read(artId);
+				Artist artist = art.getArtist();
+				Category category = art.getCategory();
+				req.getSession().setAttribute("art", art);
+				req.getSession().setAttribute("artist", artist);
+				req.getSession().setAttribute("category", category);
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
-				String originalUrl = req.getParameter("originalURL");
-				
+				String originalUrl = req.getParameter("originalURL");			
 				if (!artistName.isEmpty()) {
 					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его
 					artist = artistDao.readByName(artistName);
@@ -518,65 +543,45 @@ public class ControllerServlet extends HttpServlet {
 							art.setCategory(cat);
 						}
 					} else {
-					String message = "Проверьте правильность заполнения поля Название категории"+"\n"
+						String message = "Проверьте правильность заполнения поля Название категории"+"\n"
 							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
 							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
-					requestDispatcher.forward(req, resp);
-				}
+						req.setAttribute("message", message);					
+					}
 				}
 				if (!originalUrl.isEmpty()){
 					if(originalUrl.matches("^(?i)http[s ]://\\.*$")){
 						art.setOriginalUrl(originalUrl);
-				} else {				
-					String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
-					req.setAttribute("message", message);
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
-					requestDispatcher.forward(req, resp);
+					} else {				
+						String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
+						req.setAttribute("message", message);
+					}
 				}
-				}
-				artDao.update(art);
-				// переходим на обновленную страницу арта (artAdmin)
-				RequestDispatcher requestDispatcher = req
-						.getRequestDispatcher("/ControllerServlet?artId=" + art.getId());
-				requestDispatcher.forward(req, resp);
+				artDao.update(art);				
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 
 	// Форма Удаления арта
-	public void deleteArt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String artId = (String) req.getSession().getAttribute("artId");
-		try {		
-				String yes = req.getParameter("yes");
-				if (yes != null) {
-					Art art = artDao.read(artId);				
-					artDao.delete(art);
-					req.getSession().removeAttribute("artId");
-					req.removeAttribute("artId");
-					req.removeAttribute("deleteArt");				
-					// переходим на главную страницу
-					resp.sendRedirect("/Chaos/ControllerServlet");				
-				} else {
-					// возвращаемся на страницу арта (artAdmin)
-					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
-					requestDispatcher.forward(req, resp);
-				}
-		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
+	public void deleteArt(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+			String artId = (String) req.getSession().getAttribute("artId");	
+			try {		
+				Art art = artDao.read(artId);				
+				artDao.delete(art);
+				req.getSession().removeAttribute("artId");
+				req.removeAttribute("artId");
+				req.removeAttribute("deleteArt");				
+			} catch (Exception e) {
+				req.getSession().setAttribute("errorPage", e);
+			}
 		}
-	}
 
 	// Форма Добавления комментария
-	public void addComment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		try {
-			if (req.getParameter("newComment").equals("Добавить комментарий")) {
+	public void addComment(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+			try {			
 				String userId = (String) req.getSession().getAttribute("userId");
 				String comment = req.getParameter("comment");
 				String artId = (String) req.getSession().getAttribute("artId");
@@ -586,16 +591,11 @@ public class ControllerServlet extends HttpServlet {
 					com.setUser(userDao.read(userId));
 					com.setArt(artDao.read(artId));
 					commentDao.create(com);
-				}
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
-				requestDispatcher.forward(req, resp);
+				}	
+			} catch (Exception e) {
+				req.getSession().setAttribute("errorPage", e);
 			}
-		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
-	}
 
 	public void exceptionPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {		
@@ -603,12 +603,8 @@ public class ControllerServlet extends HttpServlet {
 			Exception e = (Exception) req.getSession().getAttribute("errorPage"); // получаем исключение из сессии
 			req.getSession().removeAttribute("errorPage"); // обнуляем исключение в сессии
 			e.printStackTrace();
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/errorPage.jsp");
-			requestDispatcher.forward(req, resp);
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
-			RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet");
-			requestDispatcher.forward(req, resp);
 		}
 	}
 }
