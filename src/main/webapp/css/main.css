@@ -29,9 +29,12 @@ body {
 	margin: 10% 0;
 }
 
-#rightTabs {
+.rightTabs{
 	float: right;
 	margin: 3% 0;
+}
+.rightTabs div{
+	display: inline-block;
 }
 
 a {
@@ -69,7 +72,7 @@ a {
 
 #buttonMain {
 	width: auto;
-	display: inline-block;
+	
 	font-family: sans-serif;
 	text-transform: uppercase;
 	outline: 0;
@@ -179,6 +182,13 @@ textarea {
 	padding: 12px;
 	box-sizing: border-box;
 	font-size: 14px;
+}
+
+.buttons{
+	float: center;
+}
+.buttons div{
+	display: inline-block;
 }
 
 #buttonArt {

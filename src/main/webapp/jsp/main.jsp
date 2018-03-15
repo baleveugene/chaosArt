@@ -22,21 +22,25 @@
 				<a href="/Chaos">К Порядку</a> 
 				<a href="/Chaos/ControllerServlet">Главная</a>
 			</div>
-			<div id="rightTabs">			
+			<div class="rightTabs">			
 					<% 	if (session.getAttribute("roleId") != null) { 					
 						out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 						out.println("<input type=\"hidden\" name=\"controlParam\" value=\"logIn\">");	
 						out.println("<input id=\"buttonMain\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
 						out.println("</form>");
 						} else {
+							out.println("<div>");
 							out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 							out.println("<input type=\"hidden\" name=\"controlParam\" value=\"newAccount\">");
 							out.println("<input id=\"buttonMain\" type=\"submit\" name=\"newAccount\" value=\"Регистрация\">");
 							out.println("</form>");
+							out.println("</div>");
+							out.println("<div>");
 							out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 							out.println("<input type=\"hidden\" name=\"controlParam\" value=\"logIn\">");
 							out.println("<input id=\"buttonMain\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
 							out.println("</form>");
+							out.println("</div>");
 						}
 					%>
 			</div>

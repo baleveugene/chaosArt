@@ -2,7 +2,6 @@ package by.chaosart.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,166 +62,151 @@ public class ControllerServlet extends HttpServlet {
 
 	public void processing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
-		req.setCharacterEncoding("utf-8");	
+		req.setCharacterEncoding("utf-8");
+		String controlParam = req.getParameter("controlParam");
 		try {
 			/*Если в сессии возникло исключение, переходим на страницу исключения*/
 			if (req.getSession().getAttribute("errorPage") != null) {
 				exceptionPageProcessing(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/errorPage.jsp");
 				requestDispatcher.forward(req, resp);		
-			} else {			
+			} else if(controlParam==null){			
 				/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
-				String controlParam = req.getParameter("controlParam");
-					if(controlParam!=null){		
-						switch(controlParam){		
-						case("art"):
-							artPageProcessing(req, resp);							
-							RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
-							requestDispatcher.forward(req, resp);
-							break;
-						case("newAccount"):
-								if (req.getParameter("newAccount").equals("Регистрация")) {
-									requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-									requestDispatcher.forward(req, resp);	
-								} else if (req.getParameter("newAccount").equals("Отмена")) {
-									resp.sendRedirect("/Chaos/ControllerServlet");		
-								} else if (req.getParameter("newAccount").equals("Создать")) {
-									regFormProcessing(req, resp);
-									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
-									if (messageList!=null){
-										requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-										requestDispatcher.forward(req, resp);
-									} else {
-										// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
-										resp.sendRedirect("/Chaos/ControllerServlet");
-									}
-								}
-								break;
-							case("logIn"):
-								if (req.getParameter("logIn").equals("Вход")) {
-									requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("logIn").equals("Отмена")) {
-									resp.sendRedirect("/Chaos/ControllerServlet");			
-								} else if (req.getParameter("logIn").equals("Выйти")) {
-									HttpSession session = req.getSession();
-									session.removeAttribute("login");
-									session.removeAttribute("password");
-									session.removeAttribute("roleId");
-									// переходим на главную страницу (mainWithOutReg)
-									resp.sendRedirect("/Chaos/ControllerServlet");
-								} else if (req.getParameter("logIn").equals("Войти")) {
-									loginFormProcessing(req, resp);
-									String message = (String) req.getAttribute("message");
-									if(message!=null){
-										requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
-										requestDispatcher.forward(req, resp);
-									} else {
-										resp.sendRedirect("/Chaos/ControllerServlet");
-									}
-								}
-								break;
-							case("addCategory"):
-								if (req.getParameter("addCategory").equals("Добавить категорию")) {
-									// addCategory
-									requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("addCategory").equals("Отмена")) {
-									// переходим на главную страницу (mainAdmin)
-									resp.sendRedirect("/Chaos/ControllerServlet");
-								} else if (req.getParameter("addCategory").equals("Создать")) {
-									addNewCategory(req, resp);
-									String message = (String) req.getAttribute("message");
-									if(message!=null){
-										requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-										requestDispatcher.forward(req, resp);
-									} else {
-										resp.sendRedirect("/Chaos/ControllerServlet");
-									}
-								}
-								break;
-							case("addArt"):
-								if (req.getParameter("addArt").equals("Добавить Арт")) {
-									// addArt
-									requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("addArt").equals("Отмена")) {
-									// переходим на главную страницу (mainAdmin)
-									resp.sendRedirect("/Chaos/ControllerServlet");
-								} else if (req.getParameter("addArt").equals("Создать")) {
-									addNewArt(req, resp);
-									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
-									if (messageList!=null){
-										requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-										requestDispatcher.forward(req, resp);
-									} else {								
-										// переходим на страницу созданного арта
-										String artId = (String) req.getAttribute("artId");
-										requestDispatcher = req
-												.getRequestDispatcher("/ControllerServlet?artId=" + artId+"&controlParam=art");
-										requestDispatcher.forward(req, resp);
-									}
-								}							
-								break;
-							case("updateArt"):
-								if (req.getParameter("updateArt").equals("Изменить")) {
-									updateArt(req, resp);
-									requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("updateArt").equals("Отмена")) {
-									// возвращаемся на страницу арта (artAdmin)
-									String artId = (String) req.getSession().getAttribute("artId");
-									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
-									updateArt(req, resp);
-									String message = (String) req.getAttribute("message");
-									if(message!=null){
-										requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
-										requestDispatcher.forward(req, resp);
-									} else {
-										String artId = (String) req.getSession().getAttribute("artId");
-										// переходим на обновленную страницу арта (artAdmin)
-										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
-										requestDispatcher.forward(req, resp);
-									}								
-								}
-								break;
-							case("deleteArt"):
-								if (req.getParameter("deleteArt").equals("Удалить")) {
-									// deleteArt
-									requestDispatcher = req.getRequestDispatcher("jsp/deleteArt.jsp");
-									requestDispatcher.forward(req, resp);
-								} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
-									String yes = req.getParameter("yes");
-									if (yes != null) {
-										deleteArt(req, resp);
-										resp.sendRedirect("/Chaos/ControllerServlet");
-									} else {
-										String artId = (String) req.getSession().getAttribute("artId");
-										// возвращаемся на страницу арта (artAdmin)
-										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
-										requestDispatcher.forward(req, resp);
-									}					
-								}
-								break;
-							case("newComment"):						
-									String artId = (String) req.getSession().getAttribute("artId");
-									addComment(req, resp);
-									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
-									requestDispatcher.forward(req, resp);							
-								break;
-							default:
-									mainPageProcessing(req, resp);
-									requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
-									requestDispatcher.forward(req, resp);
-								}
+				mainPageProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+				requestDispatcher.forward(req, resp);
+			} else if(controlParam=="art"){
+				artPageProcessing(req, resp);							
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
+				requestDispatcher.forward(req, resp);
+			} else if(controlParam=="newAccount"){
+				if (req.getParameter("newAccount").equals("Регистрация")) {
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
+					requestDispatcher.forward(req, resp);	
+				} else if (req.getParameter("newAccount").equals("Отмена")) {
+					resp.sendRedirect("/Chaos/ControllerServlet");		
+				} else if (req.getParameter("newAccount").equals("Создать")) {
+					regFormProcessing(req, resp);
+					ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
+					if (messageList!=null){
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
+						requestDispatcher.forward(req, resp);
 					} else {
-						mainPageProcessing(req, resp);
-						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+						// переходим на главную страницу (mainAdmin или mainUser в зависимости от роли)
+						resp.sendRedirect("/Chaos/ControllerServlet");
+					}
+				}
+			
+			} else if(controlParam=="logIn"){
+				if (req.getParameter("logIn").equals("Вход")) {
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("logIn").equals("Отмена")) {
+					resp.sendRedirect("/Chaos/ControllerServlet");			
+				} else if (req.getParameter("logIn").equals("Выйти")) {
+					HttpSession session = req.getSession();
+					session.removeAttribute("login");
+					session.removeAttribute("password");
+					session.removeAttribute("roleId");
+					// переходим на главную страницу (mainWithOutReg)
+					resp.sendRedirect("/Chaos/ControllerServlet");
+				} else if (req.getParameter("logIn").equals("Войти")) {
+					loginFormProcessing(req, resp);
+					String message = (String) req.getAttribute("message");
+					if(message!=null){
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
+						requestDispatcher.forward(req, resp);
+					} else {
+						resp.sendRedirect("/Chaos/ControllerServlet");
+					}
+				}
+			
+			} else if(controlParam=="addCategory"){
+				if (req.getParameter("addCategory").equals("Добавить категорию")) {
+					// addCategory
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("addCategory").equals("Отмена")) {
+					// переходим на главную страницу (mainAdmin)
+					resp.sendRedirect("/Chaos/ControllerServlet");
+				} else if (req.getParameter("addCategory").equals("Создать")) {
+					addNewCategory(req, resp);
+					String message = (String) req.getAttribute("message");
+					if(message!=null){
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
+						requestDispatcher.forward(req, resp);
+					} else {
+						resp.sendRedirect("/Chaos/ControllerServlet");
+					}
+				}
+			} else if(controlParam=="addArt"){
+				if (req.getParameter("addArt").equals("Добавить Арт")) {
+					// addArt
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("addArt").equals("Отмена")) {
+					// переходим на главную страницу (mainAdmin)
+					resp.sendRedirect("/Chaos/ControllerServlet");
+				} else if (req.getParameter("addArt").equals("Создать")) {
+					addNewArt(req, resp);
+					ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
+					if (messageList!=null){
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
+						requestDispatcher.forward(req, resp);
+					} else {								
+						// переходим на страницу созданного арта
+						String artId = (String) req.getAttribute("artId");
+						RequestDispatcher requestDispatcher = req
+								.getRequestDispatcher("/ControllerServlet?artId=" + artId+"&controlParam=art");
 						requestDispatcher.forward(req, resp);
 					}
-				} 
+				}				
+			} else if(controlParam=="updateArt"){
+				if (req.getParameter("updateArt").equals("Изменить")) {
+					updateArt(req, resp);
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("updateArt").equals("Отмена")) {
+					// возвращаемся на страницу арта (artAdmin)
+					String artId = (String) req.getSession().getAttribute("artId");
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
+					updateArt(req, resp);
+					String message = (String) req.getAttribute("message");
+					if(message!=null){
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
+						requestDispatcher.forward(req, resp);
+					} else {
+						String artId = (String) req.getSession().getAttribute("artId");
+						// переходим на обновленную страницу арта (artAdmin)
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+						requestDispatcher.forward(req, resp);
+					}								
+				}
+			} else if(controlParam=="deleteArt"){
+				if (req.getParameter("deleteArt").equals("Удалить")) {
+					// deleteArt
+					RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/deleteArt.jsp");
+					requestDispatcher.forward(req, resp);
+				} else if (req.getParameter("deleteArt").equals("Удалить арт")) {
+					String yes = req.getParameter("yes");
+					if (yes != null) {
+						deleteArt(req, resp);
+						resp.sendRedirect("/Chaos/ControllerServlet");
+					} else {
+						String artId = (String) req.getSession().getAttribute("artId");
+						// возвращаемся на страницу арта (artAdmin)
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+						requestDispatcher.forward(req, resp);
+					}					
+				}
+			} else if(controlParam=="newComment"){
+				String artId = (String) req.getSession().getAttribute("artId");
+				addComment(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+				requestDispatcher.forward(req, resp);
+			}		
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);		
 		}
