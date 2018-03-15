@@ -37,6 +37,7 @@
 				<input id="input1" type="text" name="category" placeholder="<%=category.getName()%>" />
 				<p id="message">Ссылка на оригинал:</p>
 				<input id="input1" type="text" name="originalURL" placeholder="<%=art.getOriginalUrl()%>"/> 
+				<input type="hidden" name="controlParam" value="updateArt"/>
 				<input id="button1" type="submit" name="updateArt" value="Изменить Арт"> 
 				<input id="button1" type="submit" name="updateArt" value="Отмена">
 			</form>

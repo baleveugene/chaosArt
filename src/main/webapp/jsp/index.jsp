@@ -12,9 +12,9 @@
 <img id="imgIndex" src="img/logo.jpg" alt="logo">
 <div id="tabs">
 	<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
-		<input id="buttonIndex" type="submit" name="Chaos" value="Оооо, да! Обожаю Хаос!">	
-		<input id="buttonIndex" type="submit" name="Chaos" value="Немного страшно, но я заинтригован.">
-		<input id="buttonIndex" type="submit" name="Chaos" value="Хочу сбежать, но все дороги ведут к Хаосу.">
+		<input id="buttonIndex" type="submit" name="controlParam" value="Оооо, да! Обожаю Хаос!">	
+		<input id="buttonIndex" type="submit" name="controlParam" value="Немного страшно, но я заинтригован.">
+		<input id="buttonIndex" type="submit" name="controlParam" value="Хочу сбежать, но все дороги ведут к Хаосу.">
 	</form>		
 </div>
 </body>

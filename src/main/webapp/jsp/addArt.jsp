@@ -27,6 +27,7 @@
 					<input type="text" name ="artistName" placeholder="Имя художника"/>
 					<input type="text" name ="category" placeholder="Название категории"/>
 					<input type="text" name ="originalURL" placeholder="Ссылка на оригинал"/>								
+					<input type="hidden" name="controlParam" value="addArt"/>
 					<input id="button1" type="submit" name ="addArt" value="Создать">
 					<input id="button1" type="submit" name ="addArt" value="Отмена">
 			</form>

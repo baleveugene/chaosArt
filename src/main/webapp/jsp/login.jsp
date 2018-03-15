@@ -20,12 +20,16 @@
 				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
 					<input type="text" name ="login" placeholder="Логин"/>			
 					<input type="password" name = "password" placeholder="Пароль"/>
+					<input type="hidden" name="controlParam" value="logIn"/>
 					<input id="button1" type="submit" name ="logIn" value="Войти">
 					<input id="button1" type="submit" name ="logIn" value="Отмена">
 				</form>
-				<p id="message">Еще не зарегистрированы?<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
+				<p id="message">Еще не зарегистрированы?
+				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
 					<input id="link1" type="submit" name = "newAccount" value="Регистрация">
-				</form></p>
+					<input type="hidden" name="controlParam" value="newAccount"/>
+				</form>
+				</p>
 			</div>
 	</div>
 </body>

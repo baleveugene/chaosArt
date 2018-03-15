@@ -63,42 +63,24 @@ public class ControllerServlet extends HttpServlet {
 
 	public void processing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
-		req.setCharacterEncoding("utf-8");
-		Map<String, String[]> reqParam = req.getParameterMap();	
+		req.setCharacterEncoding("utf-8");	
 		try {
 			/*Если в сессии возникло исключение, переходим на страницу исключения*/
 			if (req.getSession().getAttribute("errorPage") != null) {
 				exceptionPageProcessing(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/errorPage.jsp");
-				requestDispatcher.forward(req, resp);
-			/*Если в запросе нет параметров, переходим на главную страницу*/
-			} else if(reqParam.keySet().isEmpty()){
-				mainPageProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
-				requestDispatcher.forward(req, resp);
+				requestDispatcher.forward(req, resp);		
 			} else {			
-				/*Проверяем параметры запроса и обрабатываем его соответствующим методом*/
-				for(Iterator<String> i = reqParam.keySet().iterator(); i.hasNext();){
-					String param = i.next();
-					String[] value = reqParam.get(param);
-					if(value!=null){
-						switch(param){
-							case("Chaos"):
-								mainPageProcessing(req, resp);
-								RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
-								requestDispatcher.forward(req, resp);
-								break;
-							case("artId"):
-								artPageProcessing(req, resp);							
-								requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
-								requestDispatcher.forward(req, resp);
-								break;
-							case("categoryId"):
-								mainPageProcessing(req, resp);
-								requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
-								requestDispatcher.forward(req, resp);
-								break;
-							case("newAccount"):
+				/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
+				String controlParam = req.getParameter("controlParam");
+					if(controlParam!=null){		
+						switch(controlParam){		
+						case("art"):
+							artPageProcessing(req, resp);							
+							RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
+							requestDispatcher.forward(req, resp);
+							break;
+						case("newAccount"):
 								if (req.getParameter("newAccount").equals("Регистрация")) {
 									requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
 									requestDispatcher.forward(req, resp);	
@@ -107,7 +89,7 @@ public class ControllerServlet extends HttpServlet {
 								} else if (req.getParameter("newAccount").equals("Создать")) {
 									regFormProcessing(req, resp);
 									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
-									if (!messageList.isEmpty()){
+									if (messageList!=null){
 										requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
 										requestDispatcher.forward(req, resp);
 									} else {
@@ -170,26 +152,27 @@ public class ControllerServlet extends HttpServlet {
 								} else if (req.getParameter("addArt").equals("Создать")) {
 									addNewArt(req, resp);
 									ArrayList<String> messageList = (ArrayList<String>) req.getAttribute("messageList");
-									if (!messageList.isEmpty()){
+									if (messageList!=null){
 										requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
 										requestDispatcher.forward(req, resp);
 									} else {								
 										// переходим на страницу созданного арта
 										String artId = (String) req.getAttribute("artId");
 										requestDispatcher = req
-												.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+												.getRequestDispatcher("/ControllerServlet?artId=" + artId+"&controlParam=art");
 										requestDispatcher.forward(req, resp);
 									}
 								}							
 								break;
 							case("updateArt"):
-								if (req.getParameter("updateArt").equals("Изменить")) {			
+								if (req.getParameter("updateArt").equals("Изменить")) {
+									updateArt(req, resp);
 									requestDispatcher = req.getRequestDispatcher("jsp/updateArt.jsp");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("updateArt").equals("Отмена")) {
 									// возвращаемся на страницу арта (artAdmin)
 									String artId = (String) req.getSession().getAttribute("artId");
-									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
 									requestDispatcher.forward(req, resp);
 								} else if (req.getParameter("updateArt").equals("Изменить Арт")) {
 									updateArt(req, resp);
@@ -200,7 +183,7 @@ public class ControllerServlet extends HttpServlet {
 									} else {
 										String artId = (String) req.getSession().getAttribute("artId");
 										// переходим на обновленную страницу арта (artAdmin)
-										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
 										requestDispatcher.forward(req, resp);
 									}								
 								}
@@ -218,26 +201,28 @@ public class ControllerServlet extends HttpServlet {
 									} else {
 										String artId = (String) req.getSession().getAttribute("artId");
 										// возвращаемся на страницу арта (artAdmin)
-										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
+										requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
 										requestDispatcher.forward(req, resp);
 									}					
 								}
 								break;
-							case("newComment"):
-								if (req.getParameter("newComment").equals("Добавить комментарий")) {
+							case("newComment"):						
 									String artId = (String) req.getSession().getAttribute("artId");
 									addComment(req, resp);
-									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId=" + artId);
-									requestDispatcher.forward(req, resp);
-								}							
+									requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+									requestDispatcher.forward(req, resp);							
 								break;
 							default:
-								continue;
-							}		
-						} 
-					return;
+									mainPageProcessing(req, resp);
+									requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+									requestDispatcher.forward(req, resp);
+								}
+					} else {
+						mainPageProcessing(req, resp);
+						RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+						requestDispatcher.forward(req, resp);
 					}
-				}
+				} 
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);		
 		}
@@ -512,52 +497,55 @@ public class ControllerServlet extends HttpServlet {
 			try {
 				Art art = artDao.read(artId);
 				Artist artist = art.getArtist();
-				Category category = art.getCategory();
-				req.getSession().setAttribute("art", art);
-				req.getSession().setAttribute("artist", artist);
-				req.getSession().setAttribute("category", category);
-				String artistName = req.getParameter("artistName");
-				String categoryName = req.getParameter("category");
-				String originalUrl = req.getParameter("originalURL");			
-				if (!artistName.isEmpty()) {
+				Category category = art.getCategory();			
+				if (req.getParameter("updateArt").equals("Изменить")) {				
+					req.getSession().setAttribute("art", art);
+					req.getSession().setAttribute("artist", artist);
+					req.getSession().setAttribute("category", category);
+				} else {
+					String artistName = req.getParameter("artistName");			
+					String categoryName = req.getParameter("category");
+					String originalUrl = req.getParameter("originalURL");			
+					if (!artistName.isEmpty()) {
 					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его
-					artist = artistDao.readByName(artistName);
-					if (artist.getName() == null) {
-						artist.setName(artistName);
-						artist = artistDao.create(artist);
-						art.setArtist(artist);
-					} else {
-						art.setArtist(artist);
+						artist = artistDao.readByName(artistName);
+						if (artist.getName() == null) {
+							artist.setName(artistName);
+							artist = artistDao.create(artist);
+							art.setArtist(artist);
+						} else {
+							art.setArtist(artist);
+						}
 					}
-				}
-				if (!categoryName.isEmpty()){
-					if (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
+					if (!categoryName.isEmpty()){
+						if (categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
 						/* Получаем и устанавливаем id категории арта, если такой категории еще нет,
 						 *создаем ее */
-						Category cat = categoryDao.readByName(categoryName);
-						if (cat.getName() == null) {
-							cat.setName(categoryName);
-							cat = categoryDao.create(cat);
-							art.setCategory(cat);
+							Category cat = categoryDao.readByName(categoryName);
+							if (cat.getName() == null) {
+								cat.setName(categoryName);
+								cat = categoryDao.create(cat);
+								art.setCategory(cat);
+							} else {
+								art.setCategory(cat);
+							}
 						} else {
-							art.setCategory(cat);
-						}
-					} else {
-						String message = "Проверьте правильность заполнения поля Название категории"+"\n"
+							String message = "Проверьте правильность заполнения поля Название категории"+"\n"
 							+ "(название должно состоять из букв латинского или русского алфавита,"+"\n"
 							+ "начинаться с заглавной буквы и содержать количество символов в диапазоне от 1 до 21)";
-						req.setAttribute("message", message);					
+							req.setAttribute("message", message);					
+						}
 					}
-				}
-				if (!originalUrl.isEmpty()){
-					if(originalUrl.matches("^(?i)http[s ]://\\.*$")){
-						art.setOriginalUrl(originalUrl);
-					} else {				
-						String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
-						req.setAttribute("message", message);
+					if (!originalUrl.isEmpty()){
+						if(originalUrl.matches("^(?i)http[s ]://\\.*$")){
+							art.setOriginalUrl(originalUrl);
+						} else {				
+							String message = "Проверьте правильность заполнения поля Ссылка на оригинал.";
+							req.setAttribute("message", message);
+						}
 					}
-				}
-				artDao.update(art);				
+				artDao.update(art);
+				}				
 		} catch (Exception e) {
 			req.getSession().setAttribute("errorPage", e);
 		}

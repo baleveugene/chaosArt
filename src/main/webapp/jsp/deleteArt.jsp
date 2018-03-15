@@ -22,6 +22,7 @@
 			<form id="submitForm" ACTION="/Chaos/ControllerServlet" METHOD="POST">
 				<p id="message">Вы действительно хотите удалить этот Арт?</p>
 				<input type="hidden" name="deleteArt" value="Удалить арт"/> 
+				<input type="hidden" name="controlParam" value="deleteArt"/>
 				<input id="button1" type="submit" name="yes" value="Да"> 
 				<input id="button1" type="submit" name="no" value="Нет">
 			</form>

@@ -19,7 +19,8 @@
 		<div id="addForm">
 			<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
 				<p id="message">Введите название категории:</p>
-				<input type="text" name ="category" placeholder="Название категории"/>						
+				<input type="text" name ="category" placeholder="Название категории"/>
+				<input type="hidden" name="controlParam" value="addCategory"/>						
 				<input id="button1" type="submit" name ="addCategory" value="Создать">
 				<input id="button1" type="submit" name ="addCategory" value="Отмена">
 			</form>

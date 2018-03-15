@@ -69,12 +69,13 @@ a {
 
 #buttonMain {
 	width: auto;
+	display: inline-block;
 	font-family: sans-serif;
 	text-transform: uppercase;
 	outline: 0;
 	background: #567348;
 	border: 0;
-	margin: 10px 10px 15px 0;
+	margin: 10px 10px 10px 0;
 	padding: 12px;
 	color: #FFFFFF;
 	font-size: 14px;

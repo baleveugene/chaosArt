@@ -24,15 +24,22 @@
 				<a href="/Chaos/ControllerServlet">Главная</a>
 			</div>
 			<div id="rightTabs">
-				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">
-					<% if (session.getAttribute("roleId") != null) { 
-					out.println("<input id=\"buttonArt\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
-					} else {
-					out.println("<input id=\"buttonArt\" type=\"submit\" name=\"newAccount\" value=\"Регистрация\">");
-					out.println("<input id=\"buttonArt\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
-					}
+					<% 	if (session.getAttribute("roleId") != null) { 					
+						out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+						out.println("<input type=\"hidden\" name=\"controlParam\" value=\"logIn\">");	
+						out.println("<input id=\"buttonMain\" type=\"submit\" name=\"logIn\" value=\"Выйти\">");
+						out.println("</form>");
+						} else {
+							out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+							out.println("<input type=\"hidden\" name=\"controlParam\" value=\"newAccount\">");
+							out.println("<input id=\"buttonMain\" type=\"submit\" name=\"newAccount\" value=\"Регистрация\">");
+							out.println("</form>");
+							out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+							out.println("<input type=\"hidden\" name=\"controlParam\" value=\"logIn\">");
+							out.println("<input id=\"buttonMain\" type=\"submit\" name = \"logIn\" value=\"Вход\">");
+							out.println("</form>");
+						}
 					%>
-				</form>
 			</div>
 		</div>
 	</div>
@@ -44,7 +51,11 @@
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
 				out.println("<div id=\"buttons\">");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"updateArt\">");
 				out.println("<input id=\"buttonArt\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
+				out.println("</form>");
+				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
+				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"deleteArt\">");
 				out.println("<input id=\"buttonArt\" type=\"submit\" name = \"deleteArt\" value=\"Удалить\">");
 				out.println("</form>");
 				out.println("</div>");
@@ -77,6 +88,7 @@
 						"<textarea rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
 				out.println(
 						"<input id=\"buttonArt\" type=\"submit\" name = \"newComment\" value=\"Добавить комментарий\">");
+				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"newComment\">");
 				out.println("</form>");
 				out.println("</div>");
 			}
@@ -90,7 +102,7 @@
 		List<Art> artList = (List<Art>)session.getAttribute("artList");
 		if(artList!=null) {
 		for (Art a : artList) {
-			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "\"><img src=\""
+			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "&controlParam=art\"><img src=\""
 					+ a.getImage() + "\" height=\"120\"></a>");
 			}
 		}

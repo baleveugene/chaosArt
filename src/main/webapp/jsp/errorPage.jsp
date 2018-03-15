@@ -13,7 +13,7 @@
 			<div id="errorForm">
 			<h3>Хаос захлестнул этот мир...</h3>
 			<h3>Попробуйте вернуться к порядку!</h3>
-			<a id="link1" href="/Chaos">К Порядку</a>
+			<a id="link" href="/Chaos">К Порядку</a>
 			</div>
 	</div>
 </body>
