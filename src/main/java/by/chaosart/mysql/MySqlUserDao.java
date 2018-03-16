@@ -57,10 +57,12 @@ public class MySqlUserDao {
 	public User readByLogin(String login) throws PersistException {
 		User persistInstance = new User();
 		try {
-			Criteria criteria = session.createCriteria(User.class)
+			if(!login.isEmpty()){
+				Criteria criteria = session.createCriteria(User.class)
                     .add(Restrictions.eq("login", login));
-			if(!criteria.list().isEmpty()){
-				persistInstance = (User) criteria.list().listIterator().next();
+				if(!criteria.list().isEmpty()){
+					persistInstance = (User) criteria.list().listIterator().next();
+				}
 			}
 		} catch (Exception e) {
 			throw new PersistException("Record with login = " + login
