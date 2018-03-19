@@ -64,50 +64,34 @@ public class ControllerServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
 		String controlParam = req.getParameter("controlParam");
+		String url = null;
 		try {			
 			/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
 			if(controlParam==null){							
-				String url = mainPageProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
+				url = mainPageProcessing(req, resp);
 			} else if(controlParam.equals("art")){
-				String url = artPageProcessing(req, resp);							
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);	
+				url = artPageProcessing(req, resp);								
 			} else if (controlParam.equals("newAccount")){
-				String url = regFormProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);				
+				url = regFormProcessing(req, resp);				
 			} else if(controlParam.equals("logIn")) {		
-				String url = loginFormProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);				
+				url = loginFormProcessing(req, resp);		
 			} else if (controlParam.equals("addCategory")) {
-				String url = addNewCategory(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);								
+				url = addNewCategory(req, resp);						
 			} else if (controlParam.equals("addArt")){
-				String url = addNewArt(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
-	
+				url = addNewArt(req, resp);
 			} else if (controlParam.equals("updateArt")) {			
-				String url = updateArt(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);			
+				url = updateArt(req, resp);
 			} else if (controlParam.equals("deleteArt")){
-				String url = deleteArt(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
+				url = deleteArt(req, resp);
 			} else if(controlParam.equals("newComment")){
-				String url = addComment(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
+				url = addComment(req, resp);
 			}		
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			exceptionPageProcessing(req, resp);		
+			url = exceptionPageProcessing(req, resp);		
 		}
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
+		requestDispatcher.forward(req, resp);
 	}
 
 	// Переход на главную страницу, исходя из роли пользователя
