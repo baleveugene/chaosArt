@@ -210,13 +210,13 @@ textarea {
 /*ADD ART*/
 
 #addArt-page {
-	width: 340px;
-	padding: 8% 0;
+	width: 400px;
+	padding: 4% 0;
 	margin: auto;
 }
 
 #addCat-page {
-	width: 340px;
+	width: 400px;
 	padding: 8% 0;
 	margin: auto;
 }
@@ -226,7 +226,7 @@ textarea {
 	z-index: 1;
 	background: #FFFFFF;
 	margin: 0 auto;
-	padding: 40px;
+	padding: 30px;
 	text-align: center;
 	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0
 		rgba(0, 0, 0, 0.24);
@@ -249,10 +249,10 @@ input {
 	text-transform: uppercase;
 	outline: 0;
 	background: #69A367;
-	width: 45%;
+	width: 43%;
 	border: 0;
 	padding: 15px;
-	margin: 10px 5px 0 5px;
+	margin: 15px 5px 0 5px;
 	color: #FFFFFF;
 	font-size: 14px;
 	-webkit-transition: all 0.3 ease;
@@ -322,20 +322,30 @@ input {
 	font-family: sans-serif;
 	background: #ffffff;
 	border: 0;
-	padding: 12px;
-	width: 45%;
+	padding: 0;
+	width: auto;
 	font-size: 16px;
 	font-color: #494154;
 	font-style: italic;
 	font-weight: 600;
 	text-decoration: underline;
+	margin: 0px auto;
 	cursor: pointer;
 }
+
+#label1 {
+     text-align: center;
+     font-size: 12px;
+     color: #2E0902;
+     margin: 20px 0 7px ;
+     }
+
+
 
 /*LOGIN*/
 
 #login-page {
-	width: 360px;
+	width: 400px;
 	padding: 7% 0 0;
 	margin: auto;
 }
@@ -344,16 +354,46 @@ input {
 	position: relative;
 	z-index: 1;
 	background: #FFFFFF;
-	padding: 45px;
+	padding: 30px;
 	text-align: center;
 	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.message {
+	width: 760px;
+	text-align: left;
+}
+
+.message input,p{
+	display: inline-block;
+	margin: 0;
+}
+
+.message input{
+	border: 5px solid #A30000;
+	background: #EFB1FF;
+	width: 45%;
+	margin: 0 40px 0 0 ;
+}
+
+.message p{
+	text-align: center;
+	vertical-align: middle;
+	margin: 0;
+	background: #EFB1FF;
+	padding: 3px;
+	border: 1;
+	border-color: red; 
+    border-style: solid;
+    -webkit-border-radius: 10px;
+  	border-radius: 10px; 
 }
 
 /*REG*/
 
 #registration-page {
-	width: 360px;
-	padding: 4% 0 0 0;
+	width: 400px;
+	padding-top: 2% ;
 	margin: auto;
 }
 
@@ -388,7 +428,7 @@ input {
 
 #rightSideForm {
 	float: right;
-	width: 50%;
+	width: 53%;
 	text-align: left;
 }
 
@@ -397,6 +437,22 @@ input {
 	width: 40%;
 	padding: 10px;
 }
+
+.buttons input{
+	display: inline-block;
+}
+
+label,input {
+        display: block;
+    }
+    
+label {
+     text-align: left;
+     font-size: 12px;
+     text-transform: uppercase;
+     color: #2E0902;
+     margin: 15px 0 7px ;
+     }
 
 #input1 {
 	font-family: sans-serif;
