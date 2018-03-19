@@ -64,109 +64,56 @@ public class ControllerServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
 		String controlParam = req.getParameter("controlParam");
-		try {
-			/*Если в сессии возникло исключение, переходим на страницу исключения*/
-			if (req.getSession().getAttribute("errorPage")!= null) {
-				exceptionPageProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/errorPage.jsp");
-				requestDispatcher.forward(req, resp);		
-			} else if(controlParam==null){			
-				/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
-				mainPageProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/main.jsp");
+		try {			
+			/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
+			if(controlParam==null){							
+				String url = mainPageProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 				requestDispatcher.forward(req, resp);
 			} else if(controlParam.equals("art")){
-				artPageProcessing(req, resp);							
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/art.jsp");
-				requestDispatcher.forward(req, resp);
-			} else if(controlParam.equals("newAccount")&&req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Регистрация")){				
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/registration.jsp");
-				requestDispatcher.forward(req, resp);
-			} else if(controlParam.equals("newAccount")&&req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Отмена")){
-				resp.sendRedirect("/Chaos/ControllerServlet");	
-			} else if (controlParam.equals("newAccount")&&req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Создать")){
-				String url = regFormProcessing(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);			
-			
-			} else if(controlParam.equals("logIn")&&req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Вход")){
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/login.jsp");
-				requestDispatcher.forward(req, resp);			
-			} else if (controlParam.equals("logIn")&&req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Отмена")) {
-				resp.sendRedirect("/Chaos/ControllerServlet");			
-			} else if (controlParam.equals("logIn")&&req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Выйти")) {
-				HttpSession session = req.getSession();
-				session.removeAttribute("login");
-				session.removeAttribute("password");
-				session.removeAttribute("roleId");
-				// переходим на главную страницу (mainWithOutReg)
-				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (controlParam.equals("logIn")&&req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Войти")) {
-				String url = loginFormProcessing(req, resp);
+				String url = artPageProcessing(req, resp);							
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 				requestDispatcher.forward(req, resp);	
-				
-			} else if (controlParam.equals("addCategory")&&req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Добавить категорию")) {
-				// addCategory
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addCategory.jsp");
-				requestDispatcher.forward(req, resp);
-			} else if (controlParam.equals("addCategory")&&req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Отмена")) {
-				// переходим на главную страницу (mainAdmin)
-				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (controlParam.equals("addCategory")&&req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Создать")) {
+			} else if (controlParam.equals("newAccount")){
+				String url = regFormProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
+				requestDispatcher.forward(req, resp);				
+			} else if(controlParam.equals("logIn")) {		
+				String url = loginFormProcessing(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
+				requestDispatcher.forward(req, resp);				
+			} else if (controlParam.equals("addCategory")) {
 				String url = addNewCategory(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);					
-				
-			} else if (controlParam.equals("addArt")&&req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Добавить Арт")) {
-				// addArt
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/addArt.jsp");
-				requestDispatcher.forward(req, resp);
-			} else if (controlParam.equals("addArt")&&req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Отмена")) {
-				// переходим на главную страницу (mainAdmin)
-				resp.sendRedirect("/Chaos/ControllerServlet");
-			} else if (controlParam.equals("addArt")&&req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Создать")) {
+				requestDispatcher.forward(req, resp);								
+			} else if (controlParam.equals("addArt")){
 				String url = addNewArt(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 				requestDispatcher.forward(req, resp);
 	
-			} else if (controlParam.equals("updateArt")&&req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить")) {
+			} else if (controlParam.equals("updateArt")) {			
 				String url = updateArt(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
-			} else if (controlParam.equals("updateArt")&&req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Отмена")) {
-				// возвращаемся на страницу арта (artAdmin)
-				String artId = (String) req.getSession().getAttribute("artId");
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
-				requestDispatcher.forward(req, resp);
-			} else if (controlParam.equals("updateArt")&&req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить Арт")) {			
-				String url = updateArt(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-				requestDispatcher.forward(req, resp);
-				
-			} else if (controlParam.equals("deleteArt")&&req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить")) {
-				// deleteArt
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("jsp/deleteArt.jsp");
-				requestDispatcher.forward(req, resp);
-			} else if (controlParam.equals("deleteArt")&&req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить арт")) {
+				requestDispatcher.forward(req, resp);			
+			} else if (controlParam.equals("deleteArt")){
 				String url = deleteArt(req, resp);
 				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 				requestDispatcher.forward(req, resp);
-
 			} else if(controlParam.equals("newComment")){
-				String artId = (String) req.getSession().getAttribute("artId");
-				addComment(req, resp);
-				RequestDispatcher requestDispatcher = req.getRequestDispatcher("/ControllerServlet?artId="+artId+"&controlParam=art");
+				String url = addComment(req, resp);
+				RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 				requestDispatcher.forward(req, resp);
 			}		
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);		
+			req.setAttribute("errorPage", e);
+			exceptionPageProcessing(req, resp);		
 		}
 	}
 
 	// Переход на главную страницу, исходя из роли пользователя
-	public void mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
+	public String mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		String url = null;
 		try {
 			List<Category> categoryList = categoryDao.getAll();
 			req.getSession().setAttribute("categoryList", categoryList);			
@@ -179,14 +126,18 @@ public class ControllerServlet extends HttpServlet {
 				artList = artDao.getAllOfCat(categoryDao.read(categoryId));
 				req.getSession().setAttribute("artList", artList);
 			}
+			url = "jsp/main.jsp";
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
+		return url;
 	}
 
 	// Переход на страницу конкретного арта, исходя из роли пользователя
-	public void artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
+	public String artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		String url = null;
 		String artId = req.getParameter("artId");
 		req.getSession().setAttribute("artId", artId);
 		try {
@@ -205,10 +156,13 @@ public class ControllerServlet extends HttpServlet {
 			}
 			req.getSession().setAttribute("userList", userList);
 			List<Art> artList = artist.getArts();
-			req.getSession().setAttribute("artList", artList);			
+			req.getSession().setAttribute("artList", artList);
+			url = "jsp/art.jsp";
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
+		return url;
 	}
 
 	// Форма Регистрации
@@ -216,6 +170,12 @@ public class ControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 			String url = null;
 			try {
+			if(req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Регистрация")){				
+				url = "jsp/registration.jsp";
+			} else if(req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Отмена")){
+				mainPageProcessing(req, resp);
+				url = "jsp/main.jsp";
+			} else if (req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Создать")){		
 				String name = req.getParameter("name");
 				String surname = req.getParameter("surname");
 				String login = req.getParameter("login");
@@ -290,8 +250,10 @@ public class ControllerServlet extends HttpServlet {
 					mainPageProcessing(req,resp);
 					url = "jsp/main.jsp";
 				}
+			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
 		return url;
 	}
@@ -301,38 +263,53 @@ public class ControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 			String url = null;	
 			try {
-				String login = req.getParameter("login");
-				String password = req.getParameter("password");
-				String hashCode = String.valueOf(password.hashCode());
-				Map<String, String> messageMap = new HashMap<String, String>(); 
-				User user = userDao.readByLogin(login);
-				if (user.getLogin() == null) {
-					String message = "Проверьте правильность написания логина.";
-					messageMap.put("messageLogin", message);
-					}					 
-				if (user.getPassword()== null || !hashCode.equals(user.getPassword())) {
-					String message = "Проверьте правильность написания пароля.";
-					messageMap.put("messagePassword", message);	
-					}
-				if(!messageMap.isEmpty()){
-					req.setAttribute("messageMap", messageMap);
-					url = "jsp/login.jsp";
-				} else {
-					String userId = user.getId();
-					String adminPassword = "Admin";
-					String adminHashCode = String.valueOf(adminPassword.hashCode());
-					HttpSession session = req.getSession(true);
-					session.setAttribute("userId", userId);
-					if (hashCode.equals(adminHashCode)) {
-						session.setAttribute("roleId", new String("1"));
-					} else {
-						session.setAttribute("roleId", new String("2"));
-					}
+				if(req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Вход")){
+					url = "jsp/login.jsp";				
+				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Отмена")) {
+					mainPageProcessing(req,resp);
+					url = "jsp/main.jsp";		
+				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Выйти")) {
+					HttpSession session = req.getSession();
+					session.removeAttribute("login");
+					session.removeAttribute("password");
+					session.removeAttribute("roleId");
 					mainPageProcessing(req,resp);
 					url = "jsp/main.jsp";
+				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Войти")) {
+					String login = req.getParameter("login");
+					String password = req.getParameter("password");
+					String hashCode = String.valueOf(password.hashCode());
+					Map<String, String> messageMap = new HashMap<String, String>(); 
+					User user = userDao.readByLogin(login);
+					if (user.getLogin() == null) {
+						String message = "Проверьте правильность написания логина.";
+						messageMap.put("messageLogin", message);
+						}					 
+					if (user.getPassword()== null || !hashCode.equals(user.getPassword())) {
+						String message = "Проверьте правильность написания пароля.";
+						messageMap.put("messagePassword", message);	
+						}
+					if(!messageMap.isEmpty()){
+						req.setAttribute("messageMap", messageMap);
+						url = "jsp/login.jsp";
+					} else {
+						String userId = user.getId();
+						String adminPassword = "Admin";
+						String adminHashCode = String.valueOf(adminPassword.hashCode());
+						HttpSession session = req.getSession(true);
+						session.setAttribute("userId", userId);
+						if (hashCode.equals(adminHashCode)) {
+							session.setAttribute("roleId", new String("1"));
+						} else {
+							session.setAttribute("roleId", new String("2"));
+						}
+						mainPageProcessing(req,resp);
+						url = "jsp/main.jsp";
+					}
 				}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
 		return url;
 	}
@@ -340,8 +317,14 @@ public class ControllerServlet extends HttpServlet {
 	// Форма Добавления новой категории
 	public String addNewCategory(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
-			String url = null;
-			try {				
+		String url = null;
+		try {
+			if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Добавить категорию")) {
+				url = "jsp/addCategory.jsp";
+			} else if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Отмена")) {
+				mainPageProcessing(req,resp);
+				url = "jsp/main.jsp";
+			} else if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Создать")) {
 				String categoryName = req.getParameter("category");
 				// Валидация введенных данных
 				if (categoryName.isEmpty()) {
@@ -367,8 +350,10 @@ public class ControllerServlet extends HttpServlet {
 						url = "jsp/main.jsp";
 					}
 				}
+			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
 			return url;
 	}
@@ -378,6 +363,12 @@ public class ControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 			String url = null;
 			try {
+				if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Добавить Арт")) {
+					url = "jsp/addArt.jsp";
+				} else if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Отмена")) {
+					mainPageProcessing(req, resp);
+					url = "jsp/main.jsp";
+				} else if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Создать")) {
 				String artName = req.getParameter("artName");
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
@@ -448,9 +439,11 @@ public class ControllerServlet extends HttpServlet {
 					art.setOriginalUrl(originalURL);
 					art = artDao.create(art);
 					url = "/ControllerServlet?artId="+art.getId()+"&controlParam=art";
-				}	
+				}
+			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
 		return url;
 	}
@@ -463,13 +456,15 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			Art art = artDao.read(artId);
 			Artist artist = art.getArtist();
-			Category category = art.getCategory();						
-			if(req.getParameter("updateArt").equals("Изменить")){
+			Category category = art.getCategory();	
+			if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить")) {
 				req.getSession().setAttribute("art", art);
 				req.getSession().setAttribute("artist", artist);
 				req.getSession().setAttribute("category", category);
 				url = "jsp/updateArt.jsp";
-			} else if(req.getParameter("updateArt").equals("Изменить Арт")){	
+			} else if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Отмена")) {
+				url = "/ControllerServlet?artId="+art.getId()+"&controlParam=art";
+			} else if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить Арт")) {
 				String artistName = req.getParameter("artistName");			
 				String categoryName = req.getParameter("categoryName");
 				String originalUrl = req.getParameter("originalURL");
@@ -518,7 +513,8 @@ public class ControllerServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 		}
 			return url;
 	}
@@ -528,27 +524,34 @@ public class ControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String url = null;	
 		String artId = (String) req.getSession().getAttribute("artId");	
-			try {
+		try {
+			if (req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить")) {
+				url = "jsp/deleteArt.jsp";
+			} else if (req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить арт")) {
 				String yes = req.getParameter("yes");
 				if (yes != null) {
-				Art art = artDao.read(artId);				
-				artDao.delete(art);
-				req.getSession().removeAttribute("artId");
-				req.removeAttribute("artId");
-				req.removeAttribute("deleteArt");
-				url = "jsp/main.jsp";
+					Art art = artDao.read(artId);				
+					artDao.delete(art);
+					req.getSession().removeAttribute("artId");
+					req.removeAttribute("artId");
+					req.removeAttribute("deleteArt");
+					mainPageProcessing(req, resp);
+					url = "jsp/main.jsp";
 				} else {
 					url = "/ControllerServlet?artId="+artId+"&controlParam=art";
 				}
-			} catch (Exception e) {
-				req.getSession().setAttribute("errorPage", e);
+			}
+		} catch (Exception e) {
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);
 			}
 			return url;
 		}
 
 	// Форма Добавления комментария
-	public void addComment(HttpServletRequest req, HttpServletResponse resp) 
+	public String addComment(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
+			String url = null;
 			try {			
 				String userId = (String) req.getSession().getAttribute("userId");
 				String comment = req.getParameter("comment");
@@ -558,21 +561,28 @@ public class ControllerServlet extends HttpServlet {
 					com.setText(comment);
 					com.setUser(userDao.read(userId));
 					com.setArt(artDao.read(artId));
-					commentDao.create(com);
-				}	
+					commentDao.create(com);				
+				}
+				url ="/ControllerServlet?artId="+artId+"&controlParam=art"; 
 			} catch (Exception e) {
-				req.getSession().setAttribute("errorPage", e);
+				req.setAttribute("errorPage", e);
+				url = exceptionPageProcessing(req, resp);
 			}
+			return url;
 		}
 
-	public void exceptionPageProcessing(HttpServletRequest req, HttpServletResponse resp)
+	public String exceptionPageProcessing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {		
+		String url = null;
 		try {
-			Exception e = (Exception) req.getSession().getAttribute("errorPage"); // получаем исключение из сессии
-			req.getSession().removeAttribute("errorPage"); // обнуляем исключение в сессии
+			Exception e = (Exception) req.getAttribute("errorPage"); // получаем исключение из запроса		
 			e.printStackTrace();
+			req.removeAttribute("errorPage"); // обнуляем исключение в из запроса
+			url = "jsp/errorPage.jsp";
 		} catch (Exception e) {
-			req.getSession().setAttribute("errorPage", e);
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcessing(req, resp);		
 		}
+		return url;
 	}
 }
