@@ -409,9 +409,9 @@ input {
 /*UPDATE*/
 
 #updateArt-page {
-	width: 600px;
+	width: 650px;
 	padding: 8% 0;
-	margin: auto;
+	margin-left: 24%;
 }
 
 #updateForm {
@@ -428,7 +428,7 @@ input {
 
 #rightSideForm {
 	float: right;
-	width: 53%;
+	width: 55%;
 	text-align: left;
 }
 

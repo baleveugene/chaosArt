@@ -67,7 +67,7 @@
 						out.println("<input type=\"text\" name =\"originalURL\" value=\""+originalURL+"\"/>");		
 					} else {
 						out.println("<label for=\"originalURL\">Ссылка на оригинал</label>");
-						out.println("<input id=\"input1\" type=\"text\" name=\"category\" placeholder=\""+art.getOriginalUrl()+"\"/>");
+						out.println("<input id=\"input1\" type=\"text\" name=\"originalURL\" placeholder=\""+art.getOriginalUrl()+"\"/>");
 					}					
 					%>								
 				<input type="hidden" name="controlParam" value="updateArt"/>

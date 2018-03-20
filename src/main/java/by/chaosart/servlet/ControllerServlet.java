@@ -33,7 +33,7 @@ import by.chaosart.mysql.MySqlUserDao;
 
 public class ControllerServlet extends HttpServlet {
 
-	@Autowired	
+	@Autowired
 	private MySqlArtDao artDao;
 	@Autowired
 	private MySqlArtistDao artistDao;
@@ -45,62 +45,68 @@ public class ControllerServlet extends HttpServlet {
 	private MySqlUserDao userDao;
 	@Autowired
 	private MySqlRoleDao roleDao;
-	
+
 	public void init(ServletConfig config) throws ServletException {
-	    super.init(config);
-	    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-	      config.getServletContext());
-	  }
-	
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		processing(req, resp);	
+		super.init(config);
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+				config.getServletContext());
 	}
 
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		processing(req, resp);	
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		processing(req, resp);
 	}
 
-	public void processing(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		processing(req, resp);
+	}
+
+	public void processing(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
 		String controlParam = req.getParameter("controlParam");
 		String url = null;
-		try {			
-			/*Проверяем контрольный параметр запроса и обрабатываем его соответствующим методом*/
-			if(controlParam==null){							
-				url = mainPageProcessing(req, resp);
-			} else if(controlParam.equals("art")){
-				url = artPageProcessing(req, resp);								
-			} else if (controlParam.equals("newAccount")){
-				url = regFormProcessing(req, resp);				
-			} else if(controlParam.equals("logIn")) {		
-				url = loginFormProcessing(req, resp);		
+		try {
+			/*
+			 * Проверяем контрольный параметр запроса и обрабатываем его
+			 * соответствующим методом
+			 */
+			if (controlParam == null) {
+				url = mainPageProcess(req, resp);
+			} else if (controlParam.equals("art")) {
+				url = artPageProcess(req, resp);
+			} else if (controlParam.equals("newAccount")) {
+				url = regFormProcess(req, resp);
+			} else if (controlParam.equals("logIn")) {
+				url = loginFormProcess(req, resp);
 			} else if (controlParam.equals("addCategory")) {
-				url = addNewCategory(req, resp);						
-			} else if (controlParam.equals("addArt")){
+				url = addNewCategory(req, resp);
+			} else if (controlParam.equals("addArt")) {
 				url = addNewArt(req, resp);
-			} else if (controlParam.equals("updateArt")) {			
+			} else if (controlParam.equals("updateArt")) {
 				url = updateArt(req, resp);
-			} else if (controlParam.equals("deleteArt")){
+			} else if (controlParam.equals("deleteArt")) {
 				url = deleteArt(req, resp);
-			} else if(controlParam.equals("newComment")){
+			} else if (controlParam.equals("newComment")) {
 				url = addComment(req, resp);
-			}		
+			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);		
+			url = exceptionPageProcess(req, resp);
 		}
 		RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 		requestDispatcher.forward(req, resp);
 	}
 
 	// Переход на главную страницу, исходя из роли пользователя
-	public String mainPageProcessing(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public String mainPageProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 		String url = null;
 		try {
 			List<Category> categoryList = categoryDao.getAll();
-			req.getSession().setAttribute("categoryList", categoryList);			
+			req.getSession().setAttribute("categoryList", categoryList);
 			List<Art> artList = artDao.getAll();
 			req.getSession().setAttribute("artList", artList);
 			if (req.getParameter("categoryId") != null) {
@@ -113,14 +119,14 @@ public class ControllerServlet extends HttpServlet {
 			url = "jsp/main.jsp";
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}
 
 	// Переход на страницу конкретного арта, исходя из роли пользователя
-	public String artPageProcessing(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public String artPageProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 		String url = null;
 		String artId = req.getParameter("artId");
 		req.getSession().setAttribute("artId", artId);
@@ -132,10 +138,10 @@ public class ControllerServlet extends HttpServlet {
 			List<Comment> commentList = commentDao.getAll(art);
 			req.getSession().setAttribute("commentList", commentList);
 			List<User> userList = new ArrayList<User>();
-			if(commentList!=null) {			
+			if (commentList != null) {
 				for (Comment c : commentList) {
 					User u = c.getUser();
-					userList.add(u);			
+					userList.add(u);
 				}
 			}
 			req.getSession().setAttribute("userList", userList);
@@ -144,76 +150,71 @@ public class ControllerServlet extends HttpServlet {
 			url = "jsp/art.jsp";
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}
 
 	// Форма Регистрации
-	public String regFormProcessing(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-			String url = null;
-			try {
-			if(req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Регистрация")){				
+	public String regFormProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
+		String url = null;
+		try {
+			if (req.getParameter("newAccount") != null
+					&& req.getParameter("newAccount").equals("Регистрация")) {
 				url = "jsp/registration.jsp";
-			} else if(req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Отмена")){
-				mainPageProcessing(req, resp);
+			} else if (req.getParameter("newAccount") != null
+					&& req.getParameter("newAccount").equals("Отмена")) {
+				mainPageProcess(req, resp);
 				url = "jsp/main.jsp";
-			} else if (req.getParameter("newAccount")!=null&&req.getParameter("newAccount").equals("Создать")){		
+			} else if (req.getParameter("newAccount") != null
+					&& req.getParameter("newAccount").equals("Создать")) {
 				String name = req.getParameter("name");
 				String surname = req.getParameter("surname");
 				String login = req.getParameter("login");
 				String password = req.getParameter("password");
 				String password2 = req.getParameter("password2");
 				/* Проверка валидности введенных данных */
-				/* Проверка заполнения обязательных полей */
 				Map<String, String> paramMap = new HashMap<String, String>();
 				paramMap.put("Имя", name);
 				paramMap.put("Логин", login);
 				paramMap.put("Пароль", password);
 				paramMap.put("Повторите пароль", password2);
-				Map<String, String> messageMap = new HashMap<String, String>();
-				for(Iterator<String> i = paramMap.keySet().iterator(); i.hasNext();){
-					String param = i.next();
-					String value = paramMap.get(param);
-					if(value.isEmpty()){
-						messageMap.put(param, "Поле \""+param+"\" <br>является обязательным к заполнению!");
-					}
-				}
-				/* Проверка корректности введенных данных поля Имя*/
-				if (!name.isEmpty() && !name.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					messageMap.put("Имя", "Проверьте правильность заполнения поля Имя.<br>"
-							+ "(формат: Иван либо Ivan)");
-				}
-				/* Проверка корректности введенных данных поля Логин */
-				if (!login.isEmpty() && !login.matches("[\\w]*")) {
-					messageMap.put("Логин", "Проверьте правильность заполнения поля Логин.<br>"
-							+ "(допустимы лишь цифры и буквы)");
-				}
-				if (!password.isEmpty() && !password.matches("\\w*")) {
-					messageMap.put("Пароль", "Проверьте правильность заполнения поля Пароль.<br>"
-							+ "(допустимы лишь цифры и буквы)");
+				Validator validator = new Validator();				
+				/* Так как поля не могут быть пустыми, то устанавливаем параметр
+				 * true */				 
+				Map<String, String> messageMap = validator
+						.validate(paramMap,true);			
+				/* Так как поле не является обязательным для заполнения, то
+				 * устанавливаем параметр false */			 
+				String message = validator.validate("Фамилия", surname, false);
+				if (message != null) {
+					messageMap.put("Фамилия", message);
 				}
 				/* Проверка совпадения паролей */
 				if (!password.equals(password2)) {
-					messageMap.put("Повторите пароль", "Пароли должны совпадать!");
-				} 
+					messageMap.put("Повторите пароль",
+							"Пароли должны совпадать!");
+				}
 				/* Проверка уникальности логина */
 				String hashCode = String.valueOf(password.hashCode());
 				String adminPassword = "Admin";
 				String adminHashCode = String.valueOf(adminPassword.hashCode());
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() != null) {
-					messageMap.put("Логин", "Пользователь с таким логином уже существует.");
-				}
-				/* В случае наличия невалидных введенных данных пользователь возвращается 
-				 * на страницу регистрации с сообщениями о допущенных ошибках */
-				if (!messageMap.isEmpty()){
+					messageMap.put("Логин",
+							"Пользователь с таким логином уже существует.");
+				}		
+				/* В случае наличия невалидных введенных данных пользователь
+				 * возвращается на страницу регистрации с сообщениями о
+				 * допущенных ошибках */			 
+				if (!messageMap.isEmpty()) {
 					req.setAttribute("messageMap", messageMap);
-					url =  "jsp/registration.jsp";
-				} else {
-					/* В случае успешной валидации введенных данных 
-					 * устанавливаем параметры нового пользователя и создаем запись в БД */				  					 
+					url = "jsp/registration.jsp";
+				} else {				
+					/* В случае успешной валидации введенных данных
+					 * устанавливаем параметры нового пользователя и создаем
+					 * запись в БД */			 
 					Role role = new Role();
 					if (hashCode.equals(adminHashCode)) {
 						role = roleDao.read("1");
@@ -231,175 +232,170 @@ public class ControllerServlet extends HttpServlet {
 					HttpSession session = req.getSession();
 					session.setAttribute("userId", user.getId());
 					session.setAttribute("roleId", user.getRole().getId());
-					mainPageProcessing(req,resp);
+					mainPageProcess(req, resp);
 					url = "jsp/main.jsp";
 				}
 			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}
 
 	// Форма Входа
-	public String loginFormProcessing(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-			String url = null;	
-			try {
-				if(req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Вход")){
-					url = "jsp/login.jsp";				
-				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Отмена")) {
-					mainPageProcessing(req,resp);
-					url = "jsp/main.jsp";		
-				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Выйти")) {
-					HttpSession session = req.getSession();
-					session.removeAttribute("login");
-					session.removeAttribute("password");
-					session.removeAttribute("roleId");
-					mainPageProcessing(req,resp);
-					url = "jsp/main.jsp";
-				} else if (req.getParameter("logIn")!=null&&req.getParameter("logIn").equals("Войти")) {
-					String login = req.getParameter("login");
-					String password = req.getParameter("password");
-					String hashCode = String.valueOf(password.hashCode());
-					Map<String, String> messageMap = new HashMap<String, String>(); 
-					User user = userDao.readByLogin(login);
-					if (user.getLogin() == null) {
-						String message = "Проверьте правильность написания логина.";
-						messageMap.put("messageLogin", message);
-						}					 
-					if (user.getPassword()== null || !hashCode.equals(user.getPassword())) {
-						String message = "Проверьте правильность написания пароля.";
-						messageMap.put("messagePassword", message);	
-						}
-					if(!messageMap.isEmpty()){
-						req.setAttribute("messageMap", messageMap);
-						url = "jsp/login.jsp";
-					} else {
-						String userId = user.getId();
-						String adminPassword = "Admin";
-						String adminHashCode = String.valueOf(adminPassword.hashCode());
-						HttpSession session = req.getSession(true);
-						session.setAttribute("userId", userId);
-						if (hashCode.equals(adminHashCode)) {
-							session.setAttribute("roleId", new String("1"));
-						} else {
-							session.setAttribute("roleId", new String("2"));
-						}
-						mainPageProcessing(req,resp);
-						url = "jsp/main.jsp";
-					}
+	public String loginFormProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
+		String url = null;
+		try {
+			if (req.getParameter("logIn") != null
+					&& req.getParameter("logIn").equals("Вход")) {
+				url = "jsp/login.jsp";
+			} else if (req.getParameter("logIn") != null
+					&& req.getParameter("logIn").equals("Отмена")) {
+				mainPageProcess(req, resp);
+				url = "jsp/main.jsp";
+			} else if (req.getParameter("logIn") != null
+					&& req.getParameter("logIn").equals("Выйти")) {
+				HttpSession session = req.getSession();
+				session.removeAttribute("login");
+				session.removeAttribute("password");
+				session.removeAttribute("roleId");
+				mainPageProcess(req, resp);
+				url = "jsp/main.jsp";
+			} else if (req.getParameter("logIn") != null
+					&& req.getParameter("logIn").equals("Войти")) {
+				String login = req.getParameter("login");
+				String password = req.getParameter("password");
+				String hashCode = String.valueOf(password.hashCode());
+				Map<String, String> messageMap = new HashMap<String, String>();
+				User user = userDao.readByLogin(login);
+				if (user.getLogin() == null) {
+					String message = "Проверьте правильность написания логина.";
+					messageMap.put("messageLogin", message);
 				}
+				if (user.getPassword() == null
+						|| !hashCode.equals(user.getPassword())) {
+					String message = "Проверьте правильность написания пароля.";
+					messageMap.put("messagePassword", message);
+				}
+				if (!messageMap.isEmpty()) {
+					req.setAttribute("messageMap", messageMap);
+					url = "jsp/login.jsp";
+				} else {
+					String userId = user.getId();
+					String adminPassword = "Admin";
+					String adminHashCode = String.valueOf(adminPassword
+							.hashCode());
+					HttpSession session = req.getSession(true);
+					session.setAttribute("userId", userId);
+					if (hashCode.equals(adminHashCode)) {
+						session.setAttribute("roleId", new String("1"));
+					} else {
+						session.setAttribute("roleId", new String("2"));
+					}
+					mainPageProcess(req, resp);
+					url = "jsp/main.jsp";
+				}
+			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}
 
 	// Форма Добавления новой категории
-	public String addNewCategory(HttpServletRequest req, HttpServletResponse resp) 
-			throws ServletException, IOException {
+	public String addNewCategory(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 		String url = null;
 		try {
-			if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Добавить категорию")) {
+			if (req.getParameter("addCategory") != null
+					&& req.getParameter("addCategory").equals(
+							"Добавить категорию")) {
 				url = "jsp/addCategory.jsp";
-			} else if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Отмена")) {
-				mainPageProcessing(req,resp);
+			} else if (req.getParameter("addCategory") != null
+					&& req.getParameter("addCategory").equals("Отмена")) {
+				mainPageProcess(req, resp);
 				url = "jsp/main.jsp";
-			} else if (req.getParameter("addCategory")!=null&&req.getParameter("addCategory").equals("Создать")) {
+			} else if (req.getParameter("addCategory") != null
+					&& req.getParameter("addCategory").equals("Создать")) {
 				String categoryName = req.getParameter("category");
 				// Валидация введенных данных
-				if (categoryName.isEmpty()) {
-					String message = "Название категории не может быть пустым.";
-					req.setAttribute("message", message);
-					url = "jsp/addCategory.jsp";
-				} else if (!categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {				
-					String message = "Проверьте данные в поле Название категории.<br>"
-							+ "(формат: Красивые либо Beautiful)";
+				Validator validator = new Validator();
+				String message = validator.validate("Название категории",
+						categoryName, true);
+				if (message != null) {
 					req.setAttribute("message", message);
 					url = "jsp/addCategory.jsp";
 				} else {
 					Category category = categoryDao.readByName(categoryName);
 					if (category.getName() != null) {
-						String message = "Данная категория уже существует.";
+						message = "Данная категория уже существует.";
 						req.setAttribute("message", message);
 						url = "jsp/addCategory.jsp";
 					} else {
 						// устанавливаем параметры категории, записываем ее в БД
 						category.setName(categoryName);
 						categoryDao.create(category);
-						mainPageProcessing(req, resp);
+						mainPageProcess(req, resp);
 						url = "jsp/main.jsp";
 					}
 				}
 			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
-			return url;
+		return url;
 	}
 
 	// Форма Добавления нового арта
-	public String addNewArt(HttpServletRequest req, HttpServletResponse resp) 
+	public String addNewArt(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-			String url = null;
-			try {
-				if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Добавить Арт")) {
-					url = "jsp/addArt.jsp";
-				} else if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Отмена")) {
-					mainPageProcessing(req, resp);
-					url = "jsp/main.jsp";
-				} else if (req.getParameter("addArt")!=null&&req.getParameter("addArt").equals("Создать")) {
+		String url = null;
+		try {
+			if (req.getParameter("addArt") != null
+					&& req.getParameter("addArt").equals("Добавить Арт")) {
+				url = "jsp/addArt.jsp";
+			} else if (req.getParameter("addArt") != null
+					&& req.getParameter("addArt").equals("Отмена")) {
+				mainPageProcess(req, resp);
+				url = "jsp/main.jsp";
+			} else if (req.getParameter("addArt") != null
+					&& req.getParameter("addArt").equals("Создать")) {
 				String artName = req.getParameter("artName");
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("category");
 				String originalURL = req.getParameter("originalURL");
 				/* Проверка валидности введенных данных */
-				/* Проверка заполнения обязательных полей */
 				Map<String, String> paramMap = new HashMap<String, String>();
 				paramMap.put("Название арта", artName);
 				paramMap.put("Имя художника", artistName);
 				paramMap.put("Название категории", categoryName);
 				paramMap.put("Ссылка на оригинал", originalURL);
-				Map<String, String> messageMap = new HashMap<String, String>();
-				for(Iterator<String> i = paramMap.keySet().iterator(); i.hasNext();){
-					String param = i.next();
-					String value = paramMap.get(param);
-					if(value.isEmpty()){
-						messageMap.put(param, "Поле \""+param+"\" <br>является обязательным к заполнению!");
-					}
-				}
-				/* Проверка поля Название арта */
-				if (!artName.isEmpty() && !artName.matches(".+\\.(jpg|png|jpeg|bmp|tif|gif)")) {
-					messageMap.put("Название арта", "Проверьте данные в поле Название арта.<br>"
-							+ "(Формат: название файла. Пример: Арт1.jpg)");
-				}
-				/* Проверка поля Название категории */
-				if (!categoryName.isEmpty() && !categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")) {
-					messageMap.put("Название категории", "Проверьте данные в поле Название категории.<br>"
-							+ "(формат: Красивые либо Beautiful)");
-				}
-				/* Проверка поля Ссылка на оригинал */
-				if (!originalURL.isEmpty() && !originalURL.matches("^(?i)http[s]{0,1}://.*$")) {				
-					messageMap.put("Ссылка на оригинал", "Проверьте данные в поле Ссылка на оригинал.<br>"
-							+ "(формат: http://... либо https://...)");			
-				}
+				System.out.println(artName);
+				Validator validator = new Validator();
+				/* Так как поля не могут быть пустыми, то устанавливаем параметр
+				 * true */
+				Map<String, String> messageMap = validator.validate(paramMap,
+						true);
 				/* Проверка на уникальность добавляемого арта */
 				Art art = artDao.readByName(artName);
-				if (art.getName() != null) {										
-					messageMap.put("Название арта", "Арт с таким названием уже существует.");
-				}		
-				/* В случае наличия невалидных введенных данных пользователь возвращается 
-				 * на страницу добавления арта с сообщениями о допущенных ошибках */
-				if (!messageMap.isEmpty()){
+				if (art.getName() != null) {
+					messageMap.put("Название арта",
+							"Арт с таким названием уже существует.");
+				}				
+				/* В случае наличия невалидных введенных данных пользователь
+				 * возвращается на страницу добавления арта с сообщениями о
+				 * допущенных ошибках */			 
+				if (!messageMap.isEmpty()) {
 					req.setAttribute("messageMap", messageMap);
 					url = "jsp/addArt.jsp";
-				} else {
-					/* В случае успешной валидации введенных данных 
-					 * получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его */												
+				} else {		
+					/* В случае успешной валидации введенных данных получаем и
+					 * устанавливаем id автора арта, если такого автора еще нет,
+					 * создаем его */				 
 					Artist artist = artistDao.readByName(artistName);
 					if (artist.getName() == null) {
 						artist.setName(artistName);
@@ -408,7 +404,8 @@ public class ControllerServlet extends HttpServlet {
 					} else {
 						art.setArtist(artist);
 					}
-					// Получаем и устанавливаем id категории арта, если такой категории еще нет, создаем ее
+					// Получаем и устанавливаем id категории арта, если такой
+					// категории еще нет, создаем ее
 					Category cat = categoryDao.readByName(categoryName);
 					if (cat.getName() == null) {
 						cat.setName(categoryName);
@@ -422,150 +419,166 @@ public class ControllerServlet extends HttpServlet {
 					art.setImage("img/content/" + artName);
 					art.setOriginalUrl(originalURL);
 					art = artDao.create(art);
-					url = "/ControllerServlet?artId="+art.getId()+"&controlParam=art";
+					url = "/ControllerServlet?artId=" + art.getId()
+							+ "&controlParam=art";
 				}
 			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}
 
 	// Форма Изменения арта
-	public String updateArt(HttpServletRequest req, HttpServletResponse resp) 
+	public String updateArt(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String url = null;	
+		String url = null;
 		String artId = (String) req.getSession().getAttribute("artId");
 		try {
 			Art art = artDao.read(artId);
 			Artist artist = art.getArtist();
-			Category category = art.getCategory();	
-			if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить")) {
+			Category category = art.getCategory();
+			if (req.getParameter("updateArt") != null
+					&& req.getParameter("updateArt").equals("Изменить")) {
 				req.getSession().setAttribute("art", art);
 				req.getSession().setAttribute("artist", artist);
 				req.getSession().setAttribute("category", category);
 				url = "jsp/updateArt.jsp";
-			} else if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Отмена")) {
-				url = "/ControllerServlet?artId="+art.getId()+"&controlParam=art";
-			} else if (req.getParameter("updateArt")!=null&&req.getParameter("updateArt").equals("Изменить Арт")) {
-				String artistName = req.getParameter("artistName");			
+			} else if (req.getParameter("updateArt") != null
+					&& req.getParameter("updateArt").equals("Отмена")) {
+				url = "/ControllerServlet?artId=" + artId + "&controlParam=art";
+			} else if (req.getParameter("updateArt") != null
+					&& req.getParameter("updateArt").equals("Изменить Арт")) {
+				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("categoryName");
 				String originalUrl = req.getParameter("originalURL");
-				Map<String, String> messageMap = new HashMap<String, String>();
-				if (!artistName.isEmpty()) {
-					// Получаем и устанавливаем id автора арта, если такого автора еще нет, создаем его
-					artist = artistDao.readByName(artistName);
-					if (artist.getName() == null) {
-						artist.setName(artistName);
-						artist = artistDao.create(artist);
-						art.setArtist(artist);
-					} else {
-						art.setArtist(artist);
-					}
-				}
-				if (!categoryName.isEmpty() && 
-					categoryName.matches("(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)")){
-					/* Получаем и устанавливаем id категории арта, если такой категории еще нет,
-					*создаем ее */
-					Category cat = categoryDao.readByName(categoryName);
-					if (cat.getName() == null) {
-						cat.setName(categoryName);
-						cat = categoryDao.create(cat);
-						art.setCategory(cat);
-					} else {
-						art.setCategory(cat);
-					}
-				} else {
-					messageMap.put("Название категории", "Проверьте данные в поле Название категории.<br>"
-						+ "(формат: Красивые либо Beautiful)");
-				}
-				
-				if (!originalUrl.isEmpty() && originalUrl.matches("^(?i)http[s]{0,1}://\\.*$")){
-					art.setOriginalUrl(originalUrl);
-				} else {				
-					messageMap.put("Ссылка на оригинал", "Проверьте данные в поле Ссылка на оригинал.<br>"
-							+ "(формат: http://... либо https://...)");								
-				}
-				if (!messageMap.isEmpty()){
+				Map<String, String> paramMap = new HashMap<String, String>();
+				paramMap.put("Имя художника", artistName);
+				paramMap.put("Название категории", categoryName);
+				paramMap.put("Ссылка на оригинал", originalUrl);
+				Validator validator = new Validator();			
+				/* Так как поля по умолчанию могут быть пустыми, то
+				 * устанавливаем параметр false */				 
+				Map<String, String> messageMap = validator.validate(paramMap,
+						false);
+				if (!messageMap.isEmpty()) {
 					req.setAttribute("messageMap", messageMap);
 					url = "jsp/updateArt.jsp";
 				} else {
-					artDao.update(art);
-					artPageProcessing(req, resp);
-					url = "jsp/art.jsp";		
+					boolean notEmpty = false;
+					if (!artistName.isEmpty()) {
+						notEmpty = true;
+						/* Получаем и устанавливаем id автора арта, если такого
+						 * автора еще нет, создаем его */
+						artist = artistDao.readByName(artistName);
+						if (artist.getName() == null) {
+							artist.setName(artistName);
+							artist = artistDao.create(artist);
+							art.setArtist(artist);
+						} else {
+							art.setArtist(artist);
+						}
+					}
+					if (!categoryName.isEmpty()) {
+						notEmpty = true;					
+						/* Получаем и устанавливаем id категории арта, если
+						 * такой категории еще нет, создаем ее */					 
+						Category cat = categoryDao.readByName(categoryName);
+						if (cat.getName() == null) {
+							cat.setName(categoryName);
+							cat = categoryDao.create(cat);
+							art.setCategory(cat);
+						} else {
+							art.setCategory(cat);
+						}
+					}
+					if (!originalUrl.isEmpty()) {
+						notEmpty = true;
+						art.setOriginalUrl(originalUrl);
+					}
+					if (notEmpty) {
+						artDao.update(art);
+					}
+					url = "/ControllerServlet?artId=" + artId
+							+ "&controlParam=art";
 				}
 			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
+			url = exceptionPageProcess(req, resp);
 		}
-			return url;
+		return url;
 	}
 
 	// Форма Удаления арта
-	public String deleteArt(HttpServletRequest req, HttpServletResponse resp) 
+	public String deleteArt(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String url = null;	
-		String artId = (String) req.getSession().getAttribute("artId");	
+		String url = null;
+		String artId = (String) req.getSession().getAttribute("artId");
 		try {
-			if (req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить")) {
+			if (req.getParameter("deleteArt") != null
+					&& req.getParameter("deleteArt").equals("Удалить")) {
 				url = "jsp/deleteArt.jsp";
-			} else if (req.getParameter("deleteArt")!=null&&req.getParameter("deleteArt").equals("Удалить арт")) {
+			} else if (req.getParameter("deleteArt") != null
+					&& req.getParameter("deleteArt").equals("Удалить арт")) {
 				String yes = req.getParameter("yes");
 				if (yes != null) {
-					Art art = artDao.read(artId);				
+					Art art = artDao.read(artId);
 					artDao.delete(art);
 					req.getSession().removeAttribute("artId");
 					req.removeAttribute("artId");
 					req.removeAttribute("deleteArt");
-					mainPageProcessing(req, resp);
+					mainPageProcess(req, resp);
 					url = "jsp/main.jsp";
 				} else {
-					url = "/ControllerServlet?artId="+artId+"&controlParam=art";
+					url = "/ControllerServlet?artId=" + artId
+							+ "&controlParam=art";
 				}
 			}
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);
-			}
-			return url;
+			url = exceptionPageProcess(req, resp);
 		}
+		return url;
+	}
 
 	// Форма Добавления комментария
-	public String addComment(HttpServletRequest req, HttpServletResponse resp) 
+	public String addComment(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-			String url = null;
-			try {			
-				String userId = (String) req.getSession().getAttribute("userId");
-				String comment = req.getParameter("comment");
-				String artId = (String) req.getSession().getAttribute("artId");
-				Comment com = new Comment();
-				if (!comment.isEmpty()) {
-					com.setText(comment);
-					com.setUser(userDao.read(userId));
-					com.setArt(artDao.read(artId));
-					commentDao.create(com);				
-				}
-				url ="/ControllerServlet?artId="+artId+"&controlParam=art"; 
-			} catch (Exception e) {
-				req.setAttribute("errorPage", e);
-				url = exceptionPageProcessing(req, resp);
-			}
-			return url;
-		}
-
-	public String exceptionPageProcessing(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {		
 		String url = null;
 		try {
-			Exception e = (Exception) req.getAttribute("errorPage"); // получаем исключение из запроса		
+			String userId = (String) req.getSession().getAttribute("userId");
+			String comment = req.getParameter("comment");
+			String artId = (String) req.getSession().getAttribute("artId");
+			Comment com = new Comment();
+			if (!comment.isEmpty()) {
+				com.setText(comment);
+				com.setUser(userDao.read(userId));
+				com.setArt(artDao.read(artId));
+				commentDao.create(com);
+			}
+			url = "/ControllerServlet?artId=" + artId + "&controlParam=art";
+		} catch (Exception e) {
+			req.setAttribute("errorPage", e);
+			url = exceptionPageProcess(req, resp);
+		}
+		return url;
+	}
+
+	public String exceptionPageProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
+		String url = null;
+		try {
+			// получаем исключение из запроса
+			Exception e = (Exception) req.getAttribute("errorPage"); 																	
 			e.printStackTrace();
-			req.removeAttribute("errorPage"); // обнуляем исключение в из запроса
+			// удаляем исключение в запроса
+			req.removeAttribute("errorPage");  
 			url = "jsp/errorPage.jsp";
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
-			url = exceptionPageProcessing(req, resp);		
+			url = exceptionPageProcess(req, resp);
 		}
 		return url;
 	}

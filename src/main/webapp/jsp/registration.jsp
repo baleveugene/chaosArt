@@ -33,7 +33,7 @@
 					String surname = (String)request.getParameter("surname");
 					if(surname!=null&&messageMap.get("Фамилия")!=null){
 						out.println("<div class=\"message\">");
-						out.println("<label for=\"surname\">Логин</label>");
+						out.println("<label for=\"surname\">Фамилия</label>");
 						out.println("<input type=\"text\" name =\"surname\" value=\""+surname+"\"/>");
 						out.println("<p>"+messageMap.get("Фамилия")+"</p>");
 						out.println("</div>");
