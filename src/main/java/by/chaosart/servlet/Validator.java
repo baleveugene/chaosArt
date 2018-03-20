@@ -31,8 +31,6 @@ public class Validator {
 		if (value.isEmpty()) {
 			if (defaultNotEmpty) {
 				message = "emptyMessagePattern";
-					//	"Поле \"" + param
-					//	+ "\" <br>является обязательным к заполнению!";
 			}
 		} else {
 			String[] patterns = getPattern(param);
