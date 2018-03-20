@@ -15,13 +15,15 @@
 			<div id="loginForm">
 				<form ACTION="/Chaos/ControllerServlet" METHOD="POST">				
 					<% 
+					String messagePattern1 = "Проверьте правильность написания логина.";
+					String messagePattern2 = "Проверьте правильность написания пароля.";
 					HashMap<String, String> messageMap = (HashMap<String, String>) request.getAttribute("messageMap");
 					String login = (String)request.getParameter("login");
 					if(login!=null&&messageMap.get("messageLogin")!=null){
 						out.println("<div class=\"message\">");
 						out.println("<label for=\"login\">Логин</label>");
 						out.println("<input type=\"text\" name =\"login\" value=\""+login+"\"/>");
-						out.println("<p>"+messageMap.get("messageLogin")+"</p>");
+						out.println("<p>"+messagePattern1+"</p>");
 						out.println("</div>");
 					} else if(login!=null){
 						out.println("<label for=\"login\">Логин</label>");
@@ -35,7 +37,7 @@
 						out.println("<div class=\"message\">");
 						out.println("<label for=\"password\">Пароль</label>");
 						out.println("<input type=\"password\" name =\"password\" value=\""+password+"\"/>");
-						out.println("<p>"+messageMap.get("messagePassword")+"</p>");
+						out.println("<p>"+messagePattern2+"</p>");
 						out.println("</div>");
 					} else if(password!=null){
 						out.println("<label for=\"password\">Пароль</label>");

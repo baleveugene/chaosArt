@@ -19,7 +19,13 @@
 					if(category!=null&&message!=null){
 						out.println("<div class=\"message\">");
 						out.println("<input type=\"text\" name =\"category\" value=\""+category+"\"/>");
-						out.println("<p>"+message+"</p>");
+						if(message.equals("emptyMessagePattern")){
+							out.println("<p>Название категории не может быть пустым.</p>");
+						} else if(message.equals("messagePattern1")) {
+							out.println("<p>Проверьте данные в поле Название категории.<br>(формат: Красивые либо Beautiful)</p>");
+						} else {
+							out.println("<p>Данная категория уже существует.</p>");
+						}
 						out.println("</div>");
 					} else {					
 						out.println("<input type=\"text\" name =\"category\" placeholder=\"формат: Красивые либо Beautiful\"/>");

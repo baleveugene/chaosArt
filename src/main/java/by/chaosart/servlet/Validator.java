@@ -14,8 +14,7 @@ public class Validator {
 			String value = paramMap.get(param);
 			if (value.isEmpty()) {
 				if (defaultNotEmpty) {
-					messageMap.put(param, "Поле \"" + param
-							+ "\" <br>является обязательным к заполнению!");
+					messageMap.put(param, "emptyMessagePattern");
 				}
 			} else {
 				String[] patterns = getPattern(param);
@@ -31,8 +30,9 @@ public class Validator {
 		String message = null;
 		if (value.isEmpty()) {
 			if (defaultNotEmpty) {
-				message = "Поле \"" + param
-						+ "\" <br>является обязательным к заполнению!";
+				message = "emptyMessagePattern";
+					//	"Поле \"" + param
+					//	+ "\" <br>является обязательным к заполнению!";
 			}
 		} else {
 			String[] patterns = getPattern(param);
@@ -49,22 +49,18 @@ public class Validator {
 		if (param.equals("Имя") || param.equals("Фамилия")
 				|| param.equals("Название категории")) {
 			patternValue = "(^[A-Z]{1}[a-z]{0,20}$)|(^[А-Я]{1}[а-я]{0,20}$)";
-			patternMessage = "Проверьте данные в поле  " + param + ".<br>"
-					+ "(формат: Иван либо Ivan)";
+			patternMessage = "messagePattern1";
 		} else if (param.equals("Логин") || param.equals("Пароль")
 				|| param.equals("Повторите пароль")
 				|| param.equals("Имя художника")) {
 			patternValue = "\\w*";
-			patternMessage = "Проверьте данные в поле  " + param + ".<br>"
-					+ "(допустимы лишь цифры и буквы)";
+			patternMessage = "messagePattern2";
 		} else if (param.equals("Название арта")) {
 			patternValue = ".+\\.(jpg|png|jpeg|bmp|tif|gif)";
-			patternMessage = "Проверьте данные в поле " + param + ".<br>"
-					+ "(формат: название файла. Пример: арт1.jpg)";
+			patternMessage = "messagePattern3";
 		} else if (param.equals("Ссылка на оригинал")) {
 			patternValue = "^(?i)http[s]{0,1}://.*$";
-			patternMessage = "Проверьте данные в поле " + param + ".<br>"
-					+ "(формат: http://... либо https://...)";
+			patternMessage = "messagePattern4";
 		}
 		String[] patterns = { patternValue, patternMessage };
 		return patterns;

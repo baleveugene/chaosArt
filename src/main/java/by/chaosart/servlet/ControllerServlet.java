@@ -193,8 +193,7 @@ public class ControllerServlet extends HttpServlet {
 				}
 				/* Проверка совпадения паролей */
 				if (!password.equals(password2)) {
-					messageMap.put("Повторите пароль",
-							"Пароли должны совпадать!");
+					messageMap.put("Повторите пароль", "passwordsEqualsPattern");
 				}
 				/* Проверка уникальности логина */
 				String hashCode = String.valueOf(password.hashCode());
@@ -202,8 +201,7 @@ public class ControllerServlet extends HttpServlet {
 				String adminHashCode = String.valueOf(adminPassword.hashCode());
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() != null) {
-					messageMap.put("Логин",
-							"Пользователь с таким логином уже существует.");
+					messageMap.put("Логин", "alreadyExistPattern");
 				}		
 				/* В случае наличия невалидных введенных данных пользователь
 				 * возвращается на страницу регистрации с сообщениями о
@@ -271,12 +269,12 @@ public class ControllerServlet extends HttpServlet {
 				Map<String, String> messageMap = new HashMap<String, String>();
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() == null) {
-					String message = "Проверьте правильность написания логина.";
+					String message = "loginPattern1";
 					messageMap.put("messageLogin", message);
 				}
 				if (user.getPassword() == null
 						|| !hashCode.equals(user.getPassword())) {
-					String message = "Проверьте правильность написания пароля.";
+					String message = "passwordPattern1";
 					messageMap.put("messagePassword", message);
 				}
 				if (!messageMap.isEmpty()) {
@@ -331,7 +329,7 @@ public class ControllerServlet extends HttpServlet {
 				} else {
 					Category category = categoryDao.readByName(categoryName);
 					if (category.getName() != null) {
-						message = "Данная категория уже существует.";
+						message = "alreadyExistPattern";
 						req.setAttribute("message", message);
 						url = "jsp/addCategory.jsp";
 					} else {
@@ -378,13 +376,12 @@ public class ControllerServlet extends HttpServlet {
 				Validator validator = new Validator();
 				/* Так как поля не могут быть пустыми, то устанавливаем параметр
 				 * true */
-				Map<String, String> messageMap = validator.validate(paramMap,
-						true);
+				Map<String, String> messageMap = validator
+						.validate(paramMap,true);
 				/* Проверка на уникальность добавляемого арта */
 				Art art = artDao.readByName(artName);
 				if (art.getName() != null) {
-					messageMap.put("Название арта",
-							"Арт с таким названием уже существует.");
+					messageMap.put("Название арта", "alreadyExistPattern");
 				}				
 				/* В случае наличия невалидных введенных данных пользователь
 				 * возвращается на страницу добавления арта с сообщениями о
@@ -460,8 +457,8 @@ public class ControllerServlet extends HttpServlet {
 				Validator validator = new Validator();			
 				/* Так как поля по умолчанию могут быть пустыми, то
 				 * устанавливаем параметр false */				 
-				Map<String, String> messageMap = validator.validate(paramMap,
-						false);
+				Map<String, String> messageMap = validator
+						.validate(paramMap, false);
 				if (!messageMap.isEmpty()) {
 					req.setAttribute("messageMap", messageMap);
 					url = "jsp/updateArt.jsp";
