@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+  <test thread-count="5" name="ArtTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlArtDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="ArtistTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlArtistDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="CatTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlCategoryDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="UserTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlUserDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="RoleTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlRoleDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="CommentTest">
+    <classes>
+      <class name="by.chaosart.mysql.test.MySqlCommentDaoTest"/>
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->

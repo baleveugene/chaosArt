@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!DOCTYPE hibernate-configuration PUBLIC 
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN" 
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd"> 
+ 
+<hibernate-configuration> 
+    <session-factory> 
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property> 
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ChaosArt_DB?verifyServerCertificate=false&amp;useSSL=true</property> 
+        <property name="hibernate.connection.password">йцукен</property> 
+        <property name="hibernate.connection.username">root</property> 
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> 
+        <property name="show_sql">true</property> 
+        <property name="hibernate.hbm2ddl.auto">update</property> 
+        <property name="hibernate.c3p0.minPoolSize">1</property> 
+        <property name="hibernate.c3p0.maxPoolSize">20</property> 
+        <property name="hibernate.c3p0.timeout">1800</property> 
+        <property name="hibernate.c3p0.max_statement">100</property> 
+        <property name="hibernate.current_session_context_class">thread</property>
+   		<property name="hibernate.connection.CharSet">utf8</property>
+    	<property name="hibernate.connection.characterEncoding">utf8</property>
+    	<property name="hibernate.connection.useUnicode">true</property>
+        <mapping class="by.chaosart.domain.Art"/> 
+        <mapping class="by.chaosart.domain.Artist"/>
+        <mapping class="by.chaosart.domain.Category"/>
+        <mapping class="by.chaosart.domain.Comment"/>
+        <mapping class="by.chaosart.domain.Role"/>
+        <mapping class="by.chaosart.domain.User"/>
+    </session-factory> 
+   
+</hibernate-configuration> 

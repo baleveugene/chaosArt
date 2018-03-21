@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/data/jpa
+                           http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-autowire="byName">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="MySqlDaoFactory" class="by.chaosart.mysql.MySqlDaoFactory">
+    </bean> 
+	<bean name="artDao" class="by.chaosart.mysql.MySqlArtDao"
+	factory-bean="MySqlDaoFactory" factory-method="getMySqlArtDao">
+    </bean>
+ 	<bean id="artistDao" class="by.chaosart.mysql.MySqlArtistDao"
+ 	factory-bean="MySqlDaoFactory" factory-method="getMySqlArtistDao">
+    </bean>
+    <bean id="categoryDao" class="by.chaosart.mysql.MySqlCategoryDao"
+    factory-bean="MySqlDaoFactory" factory-method="getMySqlCategoryDao">
+    </bean>
+ 	<bean id="commentDao" class="by.chaosart.mysql.MySqlCommentDao"
+ 	factory-bean="MySqlDaoFactory" factory-method="getMySqlCommentDao">
+    </bean>
+    <bean id="roleDao" class="by.chaosart.mysql.MySqlRoleDao"
+    factory-bean="MySqlDaoFactory" factory-method="getMySqlRoleDao">
+    </bean>
+ 	<bean id="userDao" class="by.chaosart.mysql.MySqlUserDao"
+ 	factory-bean="MySqlDaoFactory" factory-method="getMySqlUserDao">
+    </bean>		
+</beans>

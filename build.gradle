@@ -1,0 +1,72 @@
+apply plugin: 'java'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+apply plugin: 'war' 
+apply plugin: 'com.bmuschko.tomcat'
+apply plugin: 'co.riiid.gradle'
+compileJava.options.encoding = 'UTF-8'
+ 
+repositories {
+    jcenter()
+}
+
+test {
+     useTestNG {
+         suites 'src/test/resources/testng.xml'
+     }
+ }
+
+sourceSets{
+        	main{
+            	resources {
+                	srcDirs = [
+                 		'src/main/resources'] 
+        		}
+        		}
+        	test{
+        		resources {
+                	srcDirs = [
+                    	'src/test/resources']                
+    			}
+    			}
+ }
+ 
+dependencies {   
+    testCompile 'org.testng:testng:6.13.1'
+    providedCompile "javax.servlet:javax.servlet-api:3.1.0" 
+    compile "mysql:mysql-connector-java:5.1.44"
+    compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
+    compile 'org.springframework:spring-core:3.2.2.RELEASE'
+    compile 'org.springframework:spring-web:3.2.2.RELEASE'
+    compile 'org.hibernate:hibernate-core:5.0.1.Final'
+    compile 'org.hibernate:hibernate-entitymanager:5.0.1.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.0.1.Final'
+    
+}
+ 
+dependencies {
+    def tomcatVersion = '7.0.37' 
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+}
+
+github {
+    owner = 'baleveugene'
+    repo = 'chaosArt'
+    token = '2c23aae13b1bb3354547286e01f22dd175e37666'
+    tagName = '0.1.0'
+    targetCommitish = 'gradle-Chaos'
+    name = 'v0.1.0'
+    body = ""
+}
+
+buildscript {
+     repositories {
+        jcenter()
+    }
+  dependencies {
+    classpath 'co.riiid:gradle-github-plugin:0.4.2'
+    classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
+}
+}
