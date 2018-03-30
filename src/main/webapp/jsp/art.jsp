@@ -7,6 +7,7 @@
 <title>ХаосArt</title>
 <link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg"/>
 <link rel="stylesheet" type="text/css" href="css/main.css"/>
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="js/scriptArt.js"></script>
 </head>
 <body>

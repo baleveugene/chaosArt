@@ -1,77 +1,62 @@
-var xmlHttp = false;
-try {
-	xmlHttp = new XMLHttpRequest();
-} catch (trymicrosoft) {
-  try {
-	  xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-  } catch (othermicrosoft) {
-    try {
-    	xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-    } catch (failed) {
-    	xmlHttp = false;
-    }
-  }
-}
-    
+
 function process() {
-	var page = document.getElementById("click").getAttribute('name');
-    var params = getReqParams(page);
-    var url = "/Chaos/ControllerServlet";
-    xmlHttp.open("post", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlHttp.onreadystatechange = respProcess; 
-    xmlHttp.send(params);  
+	var page = $("#click").attr('name');
+	var params = getReqParams(page);	
+	$.ajax({
+	  type: "POST",
+	  url: "/Chaos/ControllerServlet",
+	  data: params,
+	  success: respProcess
+	});
 }
 
 function getReqParams(page) {
 	var params = null;
 	if(page=="logIn") {
-		var login = document.getElementById("login").value;
-	    var password = document.getElementById("password").value;
+		var login = $("#login").val();
+	    var password = $("#password").val();
 	    params = "login="+login+"&password="+password+"&controlParam=logIn&ajax=true&logIn=Войти";	    
 	} else if(page=="newAccount") {
-		var name = document.getElementById("name").value;
-		var surname = document.getElementById("surname").value;
-		var login = document.getElementById("login").value;
-	    var password = document.getElementById("password").value;
-	    var password2 = document.getElementById("password2").value;
+		var name = $("#name").val();
+		var surname = $("#surname").val();
+		var login = $("#login").val();
+	    var password = $("#password").val();
+	    var password2 = $("#password2").val();
 	    params = "name="+name+"&surname="+surname+"&login="+login+
 	    "&password="+password+"&password2="+password2+
 	    "&controlParam=newAccount&ajax=true&newAccount=Создать";    
 	} else if(page=="addArt") {
-		var artName = document.getElementById("artName").value;
-		var artistName = document.getElementById("artistName").value;
-		var categoryName = document.getElementById("categoryName").value;
-	    var originalUrl = document.getElementById("originalUrl").value;
+		var artName = $("#artName").val();
+		var artistName = $("#artistName").val();
+		var categoryName = $("#categoryName").val();
+	    var originalUrl = $("#originalUrl").val();
 	    params = "artName="+artName+"&artistName="+artistName+
 	    "&categoryName="+categoryName+"&originalUrl="+originalUrl+
 	    "&controlParam=addArt&ajax=true&addArt=Создать";    
 	} else if(page=="addCategory") {		
-		var categoryName = document.getElementById("categoryName").value;
+		var categoryName = $("#categoryName").val();
 	    params = "categoryName="+categoryName+
 	    "&controlParam=addCategory&ajax=true&addCategory=Создать";    
 	} else if(page=="updateArt") {
 		alert(page);
-		var artistName = document.getElementById("artistName").value;
-		var categoryName = document.getElementById("categoryName").value;
-	    var originalUrl = document.getElementById("originalUrl").value;
+		var artistName = $("#artistName").val();
+		var categoryName = $("#categoryName").val();
+	    var originalUrl = $("#originalUrl").val();
 	    params = "artistName="+artistName+"&categoryName="+categoryName+
 	    "&originalUrl="+originalUrl+"&controlParam=updateArt&ajax=true&updateArt=Изменить Арт";
 	}
 	return params;
 }
 
-function respProcess() {
-        if(xmlHttp.readyState == 4){
-        	if(xmlHttp.status == 200){       		
-        		var response = xmlHttp.responseText;  
-        		var param;
-        		var inputName;
-        		var pattern;
-        		if(response.length==0){
-        			document.location.href = "http://localhost:8080/Chaos/ControllerServlet";
-        		} else {
-        		if(response.match("Логин messagePattern2")){
+function respProcess(data) {      		  		
+	var response = data;  
+    var param;
+    var inputName;
+    var pattern;
+    if(response.length==0){
+       document.location.href = "http://localhost:8080/Chaos/ControllerServlet";
+    } else {
+        if(response.match("Логин messagePattern2")){
         			param = "Логин";
         			inputName = "login";
         			pattern = "messagePattern2";
@@ -222,39 +207,15 @@ function respProcess() {
         			resetMessage(inputName);
         		};
         	};
-        } else {
-            alert(xmlHttp.status);
-        }
     };
-}
-
-function formProcess() {
-	var inputs = document.getElementsByTagName('input');
-	for(var i=0; i<inputs.length; i++){
-		if(inputs[i].getAttribute('type')=='text'||inputs[i].getAttribute('type')=='password'){
-			var inputName = inputs[i].getAttribute('name');
-			var inputDiv = document.getElementById(inputName+"Input");
-			inputDiv.className = "message";
-			// вставляем сообщение об ошибке
-			var p = inputDiv.getElementsByTagName("p");
-			if(p.length==0){            			
-				var p = document.createElement("p");             	
-		    	p.innerHTML = getPattern(param, pattern);
-		    	loginInput.appendChild(p);
-			}     		           		
-		}
-	}
-}
 
 // Функция добабляет сообщение об ошибке к полю с name = inputName и меняет стиль css блока
 function inputProcess(param, inputName, pattern) {
-		var inputDiv = document.getElementById(inputName+"Input");
+		var inputDiv = $("#"+inputName+"Input");
 		inputDiv.className = "message";
-		var ps = inputDiv.getElementsByTagName('p');
-		if(ps.length==0){ 
-			var p = document.createElement('p');
-			p.innerHTML = getPattern(param, pattern);
-			inputDiv.appendChild(p);
+		var ps = $('p', inputDiv);
+		if(ps.length==0){			
+			$("#"+inputName).after( "<p>"+getPattern(param, pattern)+"</p>" );
 		} else if(ps.length==1){
 			var p = ps[0];
 			p.innerHTML = getPattern(param, pattern);
@@ -263,10 +224,10 @@ function inputProcess(param, inputName, pattern) {
 
 // Функция возвращает поле в исходное состояние
 function resetMessage(inputName) {	
-	var inputDiv = document.getElementById(inputName+"Input");
+	var inputDiv = $("#"+inputName+"Input");
 	if(inputDiv != null){
 		inputDiv.className = "";
-		var ps = inputDiv.getElementsByTagName("p");
+		var ps = $('p', inputDiv);
 		if(ps.length != 0){ 
 			inputDiv.removeChild(ps[0]);
 		};
