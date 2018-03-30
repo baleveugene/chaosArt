@@ -3,10 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>ХаосArt</title>
-<link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg">
+<link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg"/>
 <link rel="stylesheet" type="text/css" href="css/main.css"/>
+<script type="text/javascript" src="js/scriptArt.js"></script>
 </head>
 <body>
 	<%@ page 
@@ -51,19 +52,19 @@
 		<div id="art">
 			<%
 			Art art = (Art)session.getAttribute("art");
-			out.println("<img src= \"" +art.getImage() + "\" height=\"400\">");	
+			out.println("<img id=\"img\" name=\""+art.getId()+"\" src=\"" +art.getImage()+"\" height=\"400\">");	
 			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
 				out.println("<div class=\"buttons\">");
 				out.println("<div>");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"updateArt\">");
-				out.println("<input id=\"buttonArt\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
+				out.println("<input class=\"buttonArt\" type=\"submit\" name = \"updateArt\" value=\"Изменить\">");
 				out.println("</form>");
 				out.println("</div>");
 				out.println("<div>");
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"deleteArt\">");
-				out.println("<input id=\"buttonArt\" type=\"submit\" name = \"deleteArt\" value=\"Удалить\">");
+				out.println("<input class=\"buttonArt\" type=\"submit\" name = \"deleteArt\" value=\"Удалить\">");
 				out.println("</form>");
 				out.println("</div>");
 				out.println("</div>");
@@ -72,31 +73,17 @@
 		</div>
 		<div id="comments">
 			<h3>Комментарии</h3>
-			<table>
+			<table id="commentTable"></table>		
 			<%
-			List<Comment> commentList = (List<Comment>)session.getAttribute("commentList");
-			if(commentList!=null){
-				List<User> userList = (List<User>)session.getAttribute("userList");
-				int i = 0;
-				for (Comment c : commentList) {		
-					User u = userList.get(i++);
-					out.println("<tr>");
-					out.println("<td id=\"td1\">" + u.getName() + "</td>");
-					out.println("<td>" + c.getText() + "</td>");
-					out.println("</tr>");
-				}
-			}
-			%>
-			</table>
-			<%
-			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals("1") || session.getAttribute("roleId").equals("2"))) {
+			if (session.getAttribute("roleId")!= null && (session.getAttribute("roleId").equals("1") || 
+					session.getAttribute("roleId").equals("2"))) {
 				out.println("<div id=\"form\">");
 				out.println("<form id=\"comment-form\" ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println(
-						"<textarea rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
+						"<textarea id=\"textarea\" rows=\"3\" cols=\"20\" name = \"comment\" placeholder=\"Текст комментария\"/></textarea>");
 				out.println(
-						"<input id=\"buttonArt\" type=\"submit\" name = \"newComment\" value=\"Добавить комментарий\">");
-				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"newComment\">");
+						"<input class=\"buttonArt\" id=\"click\" type=\"button\" name =\"newComment\" value=\"Добавить комментарий\" onclick=\"process()\"/>");
+				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"newComment\"/>");
 				out.println("</form>");
 				out.println("</div>");
 			}
@@ -106,15 +93,7 @@
 	<div id="sidebarArt">
 		<% Artist artist = (Artist)session.getAttribute("artist");%>
 		<h2>Еще работы от <%=artist.getName()%></h2>
-		<%
-		List<Art> artList = (List<Art>)session.getAttribute("artList");
-		if(artList!=null) {
-		for (Art a : artList) {
-			out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + a.getId() + "&controlParam=art\"><img src=\""
-					+ a.getImage() + "\" height=\"120\"></a>");
-			}
-		}
-		%>
+		<div id="artList"></div>
 	</div>
 	<div id="footer">&copy; Balev</div>
 </body>

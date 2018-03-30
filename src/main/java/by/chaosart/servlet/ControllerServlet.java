@@ -18,6 +18,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.google.gson.Gson;
+
 import by.chaosart.domain.Art;
 import by.chaosart.domain.Artist;
 import by.chaosart.domain.Category;
@@ -64,7 +66,6 @@ public class ControllerServlet extends HttpServlet {
 
 	public void processing(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		resp.setContentType("text/html;charset=utf-8");
 		req.setCharacterEncoding("utf-8");
 		String controlParam = req.getParameter("controlParam");
 		String url = null;
@@ -96,25 +97,66 @@ public class ControllerServlet extends HttpServlet {
 			req.setAttribute("errorPage", e);
 			url = exceptionPageProcess(req, resp);
 		}
-		RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
-		requestDispatcher.forward(req, resp);
+		String ajax = req.getParameter("ajax");
+		if(ajax!=null){
+			ajaxProcess(req, resp);
+		} else {
+			resp.setContentType("text/html;charset=utf-8");
+			RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
+			requestDispatcher.forward(req, resp);
+		}
 	}
+	
+	// Обработка ajax запросов
+	private void ajaxProcess(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException{
+		resp.setContentType("text/html;charset=utf-8");
+	    List<Category> categoryList = (List<Category>)req.getAttribute("categoryList");
+	    List<Art> artList = (List<Art>)req.getAttribute("artList");
+	    List<Comment> commentList = (List<Comment>)req.getAttribute("commentList");
+	    List<User> userList = (List<User>)req.getAttribute("userList");
+	    String page = req.getParameter("page");
+	    HashMap<String, String> messageMap = (HashMap<String, String>) req.getAttribute("messageMap");
+		if(req.getAttribute("messageMap")!=null){
+			for(String key: messageMap.keySet()) {
+				String value = messageMap.get(key);
+				resp.getWriter().write(key+" "+value+" ");
+			}
+		} 
+		if(categoryList != null && page!= null) {
+			for(Category cat: categoryList) {
+				resp.getWriter().write(cat.getId()+"_"+cat.getName()+"~");
+			}
+		}
+		if(artList != null && page!= null) {
+			for(Art art: artList) {
+				resp.getWriter().write("|"+art.getId()+"_"+art.getImage()+"|");
+				}
+			}
+		if(commentList != null && page!= null) {
+			for(Comment com: commentList) {
+				resp.getWriter().write(com.getId()+"_"+com.getUser().getLogin()+"_"+com.getText()+"~");
+				}
+			}
+		}	
+	
+	
 
-	// Переход на главную страницу, исходя из роли пользователя
+	// Главная страница
 	public String mainPageProcess(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
 		String url = null;
 		try {
 			List<Category> categoryList = categoryDao.getAll();
-			req.getSession().setAttribute("categoryList", categoryList);
+			req.setAttribute("categoryList", categoryList);
 			List<Art> artList = artDao.getAll();
-			req.getSession().setAttribute("artList", artList);
+			req.setAttribute("artList", artList);
 			if (req.getParameter("categoryId") != null) {
 				String categoryId = req.getParameter("categoryId");
 				String categoryName = categoryDao.read(categoryId).getName();
-				req.getSession().setAttribute("categoryName", categoryName);
+				req.setAttribute("categoryName", categoryName);
 				artList = artDao.getAllOfCat(categoryDao.read(categoryId));
-				req.getSession().setAttribute("artList", artList);
+				req.setAttribute("artList", artList);
 			}
 			url = "jsp/main.jsp";
 		} catch (Exception e) {
@@ -124,7 +166,7 @@ public class ControllerServlet extends HttpServlet {
 		return url;
 	}
 
-	// Переход на страницу конкретного арта, исходя из роли пользователя
+	// Страница арта
 	public String artPageProcess(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
 		String url = null;
@@ -136,7 +178,7 @@ public class ControllerServlet extends HttpServlet {
 			Artist artist = art.getArtist();
 			req.getSession().setAttribute("artist", artist);
 			List<Comment> commentList = commentDao.getAll(art);
-			req.getSession().setAttribute("commentList", commentList);
+			req.setAttribute("commentList", commentList);
 			List<User> userList = new ArrayList<User>();
 			if (commentList != null) {
 				for (Comment c : commentList) {
@@ -144,9 +186,9 @@ public class ControllerServlet extends HttpServlet {
 					userList.add(u);
 				}
 			}
-			req.getSession().setAttribute("userList", userList);
+			req.setAttribute("userList", userList);
 			List<Art> artList = artist.getArts();
-			req.getSession().setAttribute("artList", artList);
+			req.setAttribute("artList", artList);
 			url = "jsp/art.jsp";
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);
@@ -187,8 +229,8 @@ public class ControllerServlet extends HttpServlet {
 						.validate(paramMap,true);			
 				/* Так как поле не является обязательным для заполнения, то
 				 * устанавливаем параметр false */			 
-				String message = validator.validate("Фамилия", surname, false);
-				if (message != null) {
+				String message = validator.validate("Фамилия", surname, false);			
+				if (message != null) {					
 					messageMap.put("Фамилия", message);
 				}
 				/* Проверка совпадения паролей */
@@ -269,13 +311,13 @@ public class ControllerServlet extends HttpServlet {
 				Map<String, String> messageMap = new HashMap<String, String>();
 				User user = userDao.readByLogin(login);
 				if (user.getLogin() == null) {
-					String message = "loginPattern1";
-					messageMap.put("messageLogin", message);
+					String message = "messagePattern2";
+					messageMap.put("Логин", message);
 				}
 				if (user.getPassword() == null
 						|| !hashCode.equals(user.getPassword())) {
-					String message = "passwordPattern1";
-					messageMap.put("messagePassword", message);
+					String message = "messagePattern2";
+					messageMap.put("Пароль", message);
 				}
 				if (!messageMap.isEmpty()) {
 					req.setAttribute("messageMap", messageMap);
@@ -318,13 +360,15 @@ public class ControllerServlet extends HttpServlet {
 				url = "jsp/main.jsp";
 			} else if (req.getParameter("addCategory") != null
 					&& req.getParameter("addCategory").equals("Создать")) {
-				String categoryName = req.getParameter("category");
+				String categoryName = req.getParameter("categoryName");
 				// Валидация введенных данных
 				Validator validator = new Validator();
 				String message = validator.validate("Название категории",
 						categoryName, true);
 				if (message != null) {
-					req.setAttribute("message", message);
+					Map<String, String> messageMap = new HashMap<String, String>();
+					messageMap.put("Название категории", message);
+					req.setAttribute("messageMap", messageMap);
 					url = "jsp/addCategory.jsp";
 				} else {
 					Category category = categoryDao.readByName(categoryName);
@@ -364,15 +408,14 @@ public class ControllerServlet extends HttpServlet {
 					&& req.getParameter("addArt").equals("Создать")) {
 				String artName = req.getParameter("artName");
 				String artistName = req.getParameter("artistName");
-				String categoryName = req.getParameter("category");
-				String originalURL = req.getParameter("originalURL");
+				String categoryName = req.getParameter("categoryName");
+				String originalUrl = req.getParameter("originalUrl");
 				/* Проверка валидности введенных данных */
 				Map<String, String> paramMap = new HashMap<String, String>();
 				paramMap.put("Название арта", artName);
 				paramMap.put("Имя художника", artistName);
 				paramMap.put("Название категории", categoryName);
-				paramMap.put("Ссылка на оригинал", originalURL);
-				System.out.println(artName);
+				paramMap.put("Ссылка на оригинал", originalUrl);
 				Validator validator = new Validator();
 				/* Так как поля не могут быть пустыми, то устанавливаем параметр
 				 * true */
@@ -414,7 +457,7 @@ public class ControllerServlet extends HttpServlet {
 					// Устанавливаем параметры арта, записываем его в БД
 					art.setName(artName);
 					art.setImage("img/content/" + artName);
-					art.setOriginalUrl(originalURL);
+					art.setOriginalUrl(originalUrl);
 					art = artDao.create(art);
 					url = "/ControllerServlet?artId=" + art.getId()
 							+ "&controlParam=art";
@@ -449,7 +492,7 @@ public class ControllerServlet extends HttpServlet {
 					&& req.getParameter("updateArt").equals("Изменить Арт")) {
 				String artistName = req.getParameter("artistName");
 				String categoryName = req.getParameter("categoryName");
-				String originalUrl = req.getParameter("originalURL");
+				String originalUrl = req.getParameter("originalUrl");
 				Map<String, String> paramMap = new HashMap<String, String>();
 				paramMap.put("Имя художника", artistName);
 				paramMap.put("Название категории", categoryName);
@@ -547,7 +590,7 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			String userId = (String) req.getSession().getAttribute("userId");
 			String comment = req.getParameter("comment");
-			String artId = (String) req.getSession().getAttribute("artId");
+			String artId = (String) req.getParameter("artId");
 			Comment com = new Comment();
 			if (!comment.isEmpty()) {
 				com.setText(comment);
@@ -555,6 +598,7 @@ public class ControllerServlet extends HttpServlet {
 				com.setArt(artDao.read(artId));
 				commentDao.create(com);
 			}
+			artPageProcess(req, resp);
 			url = "/ControllerServlet?artId=" + artId + "&controlParam=art";
 		} catch (Exception e) {
 			req.setAttribute("errorPage", e);

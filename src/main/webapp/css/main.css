@@ -191,7 +191,7 @@ textarea {
 	display: inline-block;
 }
 
-#buttonArt {
+.buttonArt {
 	width: auto;
 	font-family: sans-serif;
 	text-transform: uppercase;
@@ -244,7 +244,7 @@ input {
 	font-size: 14px;
 }
 
-#button1 {
+.button1 {
 	font-family: sans-serif;
 	text-transform: uppercase;
 	outline: 0;

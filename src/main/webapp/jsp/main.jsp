@@ -8,6 +8,7 @@
 <title>ХаосArt</title>
 <link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg">
 <link rel="stylesheet" type="text/css" href="css/main.css"/>
+<script type="text/javascript" src="js/scriptMain.js"></script>
 </head>
 <body>
 	<%@ page
@@ -48,13 +49,9 @@
 	</div>
 	<div id="sidebarMain">
 		<h3>Категории</h3>
-		<% 
-			List<Category> categoryList = (List<Category>)session.getAttribute("categoryList"); 
-			for (Category c : categoryList) {
-				out.println("<p><a id=\"link\" href=\"/Chaos/ControllerServlet?categoryId=" + c.getId() + "\">"
-						+ c.getName() + "</a></p>");
-			}			
-			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
+		<div id="categoryList"></div>
+		<%
+			if (session.getAttribute("roleId")!=null && session.getAttribute("roleId").equals("1")) {
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"addCategory\">");
 				out.println("<input id=\"buttonMain\" type=\"submit\" name=\"addCategory\" value=\"Добавить категорию\">");
@@ -64,21 +61,17 @@
 	</div>
 	<div id="contentMain">
 			<%
-			if (session.getAttribute("roleId")!= null && session.getAttribute("roleId").equals("1")) {
+			if (session.getAttribute("roleId")!=null && session.getAttribute("roleId").equals("1")) {
 				out.println("<form ACTION=\"/Chaos/ControllerServlet\" METHOD=\"POST\">");
 				out.println("<input type=\"hidden\" name=\"controlParam\" value=\"addArt\">");
 				out.println("<input id=\"buttonMain\" type=\"submit\" name=\"addArt\" value=\"Добавить Арт\">");
 				out.println("</form>");
-			}			
-			List<Art> artList = (List<Art>)session.getAttribute("artList");
-			if (request.getParameter("categoryId") != null) {			
-				out.println("<h2>" + session.getAttribute("categoryName") + "</h2>");
-			}
-			for (Art art : artList) {
-				out.println("<a id=\"img\" href=\"/Chaos/ControllerServlet?artId=" + art.getId() + "&controlParam=art\"><img src= \""
-						+ art.getImage() + "\"height=\"300\"></a>");
-			}
+			}					
+			if (request.getParameter("categoryId")!=null) {			
+				out.println("<h2>" + request.getAttribute("categoryName") + "</h2>");
+			}				
 			%>
+			<div id="artList"></div>
 	</div>
 	<div id="footer">&copy; Balev</div>
 </body>

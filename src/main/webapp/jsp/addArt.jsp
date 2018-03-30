@@ -3,10 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>ХаосArt</title>
-<link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg">
+<link rel="shortcut icon" href="img/logo_1.jpg" type="image/jpg"/>
 <link rel="stylesheet" type="text/css" href="css/main.css"/>
+<script type="text/javascript" src="js/script.js"></script>
 </head>
 <body>
 	<%@ page 
@@ -31,11 +32,15 @@
 						}
 						out.println("</div>");
 					} else if(artName!=null){
+						out.println("<div id=\"artNameInput\">");
 						out.println("<label for=\"artName\">Название арта</label>");
-						out.println("<input type=\"text\" name =\"artName\" value=\""+artName+"\"/>");		
+						out.println("<input id=\"artName\" type=\"text\" name =\"artName\" value=\""+artName+"\"/>");		
+						out.println("</div>");
 					} else {
+						out.println("<div id=\"artNameInput\">");
 						out.println("<label for=\"artName\">Название арта</label>");
-						out.println("<input type=\"text\" name =\"artName\" placeholder=\"формат: арт1.jpg (обязательное поле)\"/>");
+						out.println("<input id=\"artName\" type=\"text\" name =\"artName\" placeholder=\"формат: арт1.jpg (обязательное поле)\"/>");
+						out.println("</div>");
 					}
 					
 					String artistName = (String)request.getParameter("artistName");
@@ -50,55 +55,67 @@
 						}
 						out.println("</div>");
 					 } else if(artistName!=null){
+						out.println("<div id=\"artistNameInput\">");
 						out.println("<label for=\"artistName\">Имя художника</label>");
-						out.println("<input type=\"text\" name =\"artistName\" value=\""+artistName+"\"/>");		
-					} else {
+						out.println("<input id=\"artistName\" type=\"text\" name =\"artistName\" value=\""+artistName+"\"/>");		
+						out.println("</div>");
+					 } else {
+						out.println("<div id=\"artistNameInput\">");
 						out.println("<label for=\"artistName\">Имя художника</label>");
-						out.println("<input type=\"text\" name =\"artistName\" placeholder=\"(обязательное поле)\"/>");
+						out.println("<input id=\"artistName\" type=\"text\" name =\"artistName\" placeholder=\"(обязательное поле)\"/>");
+						out.println("</div>");
 					}
 					
-					String category = (String)request.getParameter("category");
-					if(category!=null&&messageMap.get("Название категории")!=null){
+					String categoryName = (String)request.getParameter("categoryName");
+					if(categoryName!=null&&messageMap.get("Название категории")!=null){
 						out.println("<div class=\"message\">");
-						out.println("<label for=\"category\">Название категории</label>");
-						out.println("<input type=\"text\" name =\"category\" value=\""+category+"\"/>");
+						out.println("<label for=\"categoryName\">Название категории</label>");
+						out.println("<input type=\"text\" name =\"categoryName\" value=\""+categoryName+"\"/>");
 						if(messageMap.get("Название категории").equals("emptyMessagePattern")){
 							out.println("<p>Поле Название категории<br>является обязательным к заполнению!</p>");
 						} else {
 							out.println("<p>Проверьте данные в поле Название категории.<br>(формат: Красивые либо Beautiful)</p>");
 						}
 						out.println("</div>");
-					} else if(category!=null){
-						out.println("<label for=\"category\">Название категории</label>");
-						out.println("<input type=\"text\" name =\"category\" value=\""+category+"\"/>");		
+					} else if(categoryName!=null){
+						out.println("<div id=\"categoryNameInput\">");
+						out.println("<label for=\"categoryName\">Название категории</label>");
+						out.println("<input id=\"categoryName\" type=\"text\" name =\"categoryName\" value=\""+categoryName+"\"/>");		
+						out.println("</div>");
 					} else {
-						out.println("<label for=\"category\">Название категории</label>");
-						out.println("<input type=\"text\" name =\"category\" placeholder=\"формат: Красивые либо Beautiful\"/>");
+						out.println("<div id=\"categoryNameInput\">");
+						out.println("<label for=\"categoryName\">Название категории</label>");
+						out.println("<input id=\"categoryName\" type=\"text\" name =\"categoryName\" placeholder=\"формат: Красивые либо Beautiful\"/>");
+						out.println("</div>");
 					}
 					
-					String originalURL = (String)request.getParameter("originalURL");
-					if(originalURL!=null&&messageMap.get("Ссылка на оригинал")!=null){
+					String originalUrl = (String)request.getParameter("originalUrl");
+					if(originalUrl!=null&&messageMap.get("Ссылка на оригинал")!=null){
 						out.println("<div class=\"message\">");
-						out.println("<label for=\"originalURL\">Ссылка на оригинал</label>");
-						out.println("<input type=\"text\" name =\"originalURL\" value=\""+originalURL+"\"/>");
+						out.println("<label for=\"originalUrl\">Ссылка на оригинал</label>");
+						out.println("<input type=\"text\" name =\"originalUrl\" value=\""+originalUrl+"\"/>");
 						if(messageMap.get("Ссылка на оригинал").equals("emptyMessagePattern")){
 							out.println("<p>Поле Ссылка на оригинал<br>является обязательным к заполнению!</p>");
 						} else {
 							out.println("<p>Проверьте данные в поле Ссылка на оригинал.<br>(формат: http://... либо https://...)</p>");
 						}
 						out.println("</div>");
-					} else if(originalURL!=null){
-						out.println("<label for=\"originalURL\">Ссылка на оригинал</label>");
-						out.println("<input type=\"text\" name =\"originalURL\" value=\""+originalURL+"\"/>");		
+					} else if(originalUrl!=null){
+						out.println("<div id=\"originalUrlInput\">");
+						out.println("<label for=\"originalUrl\">Ссылка на оригинал</label>");
+						out.println("<input id=\"originalUrl\" type=\"text\" name =\"originalUrl\" value=\""+originalUrl+"\"/>");		
+						out.println("</div>");
 					} else {
-						out.println("<label for=\"originalURL\">Ссылка на оригинал</label>");
-						out.println("<input type=\"text\" name =\"originalURL\" placeholder=\"формат: http://... либо https://...\"/>");
+						out.println("<div id=\"originalUrlInput\">");
+						out.println("<label for=\"originalUrl\">Ссылка на оригинал</label>");
+						out.println("<input id=\"originalUrl\" type=\"text\" name =\"originalUrl\" placeholder=\"формат: http://... либо https://...\"/>");
+						out.println("</div>");
 					}					
 					%>															
 					<input type="hidden" name="controlParam" value="addArt"/>
 					<div class="buttons">
-					<input id="button1" type="submit" name ="addArt" value="Создать">
-					<input id="button1" type="submit" name ="addArt" value="Отмена">
+					<input class="button1" id="click" type="button" name ="addArt" value="Создать" onclick="process()"/>
+					<input class="button1" type="submit" name ="addArt" value="Отмена"/>
 					</div>
 			</form>
 		</div>
